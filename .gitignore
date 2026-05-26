@@ -21,3 +21,6 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Local-only notes (convention: anything *.local.md is private to the working tree)
+*.local.md
