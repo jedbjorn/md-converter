@@ -30,6 +30,21 @@ export function buildClassDefs(colors: ThemeColors, textColor: string): string {
 }
 
 /**
+ * Insert classDef lines into a mermaid source AFTER the diagram-type
+ * declaration (first non-empty line). Mermaid requires classDef to live
+ * inside a diagram context — leading-position classDefs break the
+ * `flowchart`/`graph` parser in v11.x.
+ */
+function injectClassDefs(source: string, classDefs: string): string {
+	const trimmed = source.trim();
+	const nl = trimmed.indexOf('\n');
+	if (nl === -1) return `${trimmed}\n${classDefs}`;
+	const header = trimmed.slice(0, nl);
+	const rest = trimmed.slice(nl + 1);
+	return `${header}\n${classDefs}\n${rest}`;
+}
+
+/**
  * Render every `.mermaid` node in the document with classDefs derived from
  * the active theme. Idempotent: stores original source on first call so
  * re-renders use fresh source instead of the already-rendered SVG markup.
@@ -53,7 +68,7 @@ export async function renderMermaidAll(
 		// Reset to source form so mermaid can re-process
 		node.innerHTML = '';
 		node.removeAttribute('data-processed');
-		node.textContent = `${classDefs}\n${original}`;
+		node.textContent = injectClassDefs(original, classDefs);
 	}
 
 	if (nodes.length > 0) {
@@ -78,6 +93,6 @@ export async function renderMermaidToSvg(
 ): Promise<string> {
 	ensureInit(themeMode);
 	const classDefs = buildClassDefs(colors, textColor);
-	const { svg } = await mermaid.render(id, `${classDefs}\n${source}`);
+	const { svg } = await mermaid.render(id, injectClassDefs(source, classDefs));
 	return svg;
 }
