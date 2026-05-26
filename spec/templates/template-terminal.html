@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terminal — Markdown Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0A0E14;
+  --bg-2: #0F141C;
+  --bg-3: #161B25;
+  --text: #C5C8D1;
+  --text-soft: #6E7686;
+  --rule: #1F2632;
+  --accent: #00FF9F;
+  --class1: #00FF9F;
+  --class2: #FF2E97;
+  --class3: #FFB800;
+  --class4: #00B4FF;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'JetBrains Mono', monospace;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Subtle scanline texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,255,159,0.015) 0px,
+    rgba(0,255,159,0.015) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 1;
+}
+
+/* Vignette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+  z-index: 0;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+}
+
+/* SIDEBAR */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--rule);
+  padding: 40px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  padding: 0 28px 32px;
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+
+.brand::before {
+  content: '> ';
+  color: var(--accent);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  position: absolute;
+  left: 12px;
+  top: 0;
+  animation: blink 1.2s steps(2) infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(0,255,159,0.4);
+  text-transform: lowercase;
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin-top: 12px;
+}
+
+.tab-nav {
+  list-style: none;
+  margin-top: 24px;
+  padding: 0 12px;
+}
+
+.tab-nav button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--text-soft);
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 2px solid transparent;
+}
+
+.tab-nav button:hover {
+  color: var(--text);
+  background: var(--bg-3);
+}
+
+.tab-nav button.active {
+  color: var(--accent);
+  background: var(--bg-3);
+  border-left-color: var(--accent);
+  box-shadow: inset 0 0 24px rgba(0,255,159,0.06);
+}
+
+.tab-nav button.active .tab-num {
+  color: var(--accent);
+}
+
+.tab-num {
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 400;
+}
+
+.tab-prefix {
+  color: var(--text-soft);
+  margin-right: 4px;
+}
+
+.tab-nav button.active .tab-prefix { color: var(--accent); }
+
+.sidebar-status {
+  position: absolute;
+  bottom: 24px;
+  left: 28px;
+  right: 28px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-soft);
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.4; }
+}
+
+/* MAIN */
+.main {
+  padding: 56px 64px 40px;
+  max-width: 1100px;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; animation: fadeIn 0.4s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* H1 */
+.path-line {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: 24px;
+  letter-spacing: 0.05em;
+}
+
+.path-line .path-accent { color: var(--accent); }
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(48px, 6.5vw, 84px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+  color: var(--text);
+  text-shadow: 0 0 40px rgba(197,200,209,0.1);
+}
+
+h1 .accent-char {
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(0,255,159,0.6);
+}
+
+.lede {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-soft);
+  max-width: 640px;
+  margin-bottom: 56px;
+  padding: 16px 20px;
+  border-left: 2px solid var(--accent);
+  background: var(--bg-2);
+}
+
+/* H3 */
+h3 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 56px 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+h3::before {
+  content: '##';
+  color: var(--text-soft);
+  font-weight: 400;
+}
+
+h3::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--rule), transparent);
+}
+
+p {
+  margin-bottom: 1.2em;
+  max-width: 70ch;
+  font-size: 14px;
+}
+
+p strong { font-weight: 700; color: var(--text); }
+p strong::before { content: '*'; color: var(--accent); }
+p strong::after { content: '*'; color: var(--accent); }
+p em { font-style: italic; color: var(--class4); }
+del { color: var(--text-soft); opacity: 0.6; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  position: relative;
+  padding: 0 2px;
+}
+
+a::before { content: '['; color: var(--text-soft); }
+a::after { content: ']'; color: var(--text-soft); }
+
+a:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+a:hover::before, a:hover::after { color: var(--bg); }
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-3);
+  padding: 2px 6px;
+  color: var(--class3);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+
+/* LISTS */
+ul, ol { margin: 1em 0 1.5em 0; list-style: none; }
+ul li, ol li {
+  padding-left: 28px;
+  position: relative;
+  margin-bottom: 0.4em;
+}
+
+ul li::before {
+  content: '▸';
+  position: absolute;
+  left: 6px;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+ol { counter-reset: ol-counter; }
+ol li {
+  counter-increment: ol-counter;
+}
+ol li::before {
+  content: counter(ol-counter, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.task-list li::before { display: none; }
+.task-checkbox {
+  position: absolute;
+  left: 0;
+  top: 0.45em;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--text-soft);
+  background: var(--bg-2);
+}
+.task-checkbox.done {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(0,255,159,0.5);
+}
+.task-checkbox.done::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg);
+  font-size: 10px;
+  font-weight: 700;
+}
+.task-list li.done { color: var(--text-soft); text-decoration: line-through; }
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+}
+
+th {
+  text-align: left;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom: 1px solid var(--rule);
+  background: var(--bg-3);
+}
+
+td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-mono);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg-3); }
+
+/* IMAGES */
+figure {
+  margin: 32px 0;
+  border: 1px solid var(--rule);
+  background: var(--bg-2);
+  padding: 4px;
+  position: relative;
+}
+
+figure::before {
+  content: 'IMG';
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  background: var(--bg);
+  padding: 3px 6px;
+  z-index: 2;
+  border: 1px solid var(--accent);
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: hue-rotate(140deg) saturate(0.7) contrast(1.1) brightness(0.85);
+}
+
+figcaption {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-soft);
+  padding: 12px 8px 6px;
+  letter-spacing: 0.05em;
+}
+
+figcaption::before { content: '// '; color: var(--accent); }
+
+/* CODE BLOCKS */
+pre {
+  background: #000;
+  color: var(--accent);
+  padding: 20px 24px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 24px 0;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 0 24px rgba(0,255,159,0.06);
+  position: relative;
+}
+
+pre::before {
+  content: '$';
+  position: absolute;
+  top: 16px;
+  left: 8px;
+  color: var(--text-soft);
+  font-size: 11px;
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border: none;
+}
+
+/* CALLOUTS */
+.callout {
+  margin: 24px 0;
+  padding: 16px 20px;
+  border-left: 2px solid;
+  position: relative;
+  background: var(--bg-2);
+}
+
+.callout-class1 { border-left-color: var(--class1); background: color-mix(in srgb, var(--class1) 8%, var(--bg-2)); box-shadow: -8px 0 24px -8px var(--class1); }
+.callout-class2 { border-left-color: var(--class2); background: color-mix(in srgb, var(--class2) 8%, var(--bg-2)); box-shadow: -8px 0 24px -8px var(--class2); }
+.callout-class3 { border-left-color: var(--class3); background: color-mix(in srgb, var(--class3) 8%, var(--bg-2)); box-shadow: -8px 0 24px -8px var(--class3); }
+.callout-class4 { border-left-color: var(--class4); background: color-mix(in srgb, var(--class4) 8%, var(--bg-2)); box-shadow: -8px 0 24px -8px var(--class4); }
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.callout-label::before { content: '['; }
+.callout-label::after { content: ']'; }
+.callout-class1 .callout-label { color: var(--class1); }
+.callout-class2 .callout-label { color: var(--class2); }
+.callout-class3 .callout-label { color: var(--class3); }
+.callout-class4 .callout-label { color: var(--class4); }
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 32px 0;
+}
+
+.stat-card {
+  padding: 24px;
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  position: relative;
+}
+
+.stat-card.class1 { border-color: color-mix(in srgb, var(--class1) 40%, var(--rule)); }
+.stat-card.class2 { border-color: color-mix(in srgb, var(--class2) 40%, var(--rule)); }
+.stat-card.class3 { border-color: color-mix(in srgb, var(--class3) 40%, var(--rule)); }
+.stat-card.class4 { border-color: color-mix(in srgb, var(--class4) 40%, var(--rule)); }
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.stat-card.class1::before { background: var(--class1); box-shadow: 0 0 12px var(--class1); }
+.stat-card.class2::before { background: var(--class2); box-shadow: 0 0 12px var(--class2); }
+.stat-card.class3::before { background: var(--class3); box-shadow: 0 0 12px var(--class3); }
+.stat-card.class4::before { background: var(--class4); box-shadow: 0 0 12px var(--class4); }
+
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 48px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  margin: 8px 0 12px;
+}
+
+.stat-card.class1 .stat-value { color: var(--class1); text-shadow: 0 0 24px rgba(0,255,159,0.4); }
+.stat-card.class2 .stat-value { color: var(--class2); text-shadow: 0 0 24px rgba(255,46,151,0.4); }
+.stat-card.class3 .stat-value { color: var(--class3); text-shadow: 0 0 24px rgba(255,184,0,0.4); }
+.stat-card.class4 .stat-value { color: var(--class4); text-shadow: 0 0 24px rgba(0,180,255,0.4); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.stat-desc {
+  font-size: 11px;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+/* LINEAR */
+.linear {
+  display: flex;
+  gap: 8px;
+  margin: 32px 0;
+  overflow-x: auto;
+  padding: 8px 0;
+}
+
+.linear-step {
+  flex: 1;
+  min-width: 140px;
+  padding: 14px 18px;
+  background: var(--bg-2);
+  border: 1px solid;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  position: relative;
+  text-align: center;
+}
+
+.linear-step.class1 { border-color: var(--class1); color: var(--class1); box-shadow: 0 0 16px -4px var(--class1); }
+.linear-step.class2 { border-color: var(--class2); color: var(--class2); box-shadow: 0 0 16px -4px var(--class2); }
+.linear-step.class3 { border-color: var(--class3); color: var(--class3); box-shadow: 0 0 16px -4px var(--class3); }
+.linear-step.class4 { border-color: var(--class4); color: var(--class4); box-shadow: 0 0 16px -4px var(--class4); }
+
+.linear-step:not(:last-child)::after {
+  content: '─►';
+  position: absolute;
+  right: -18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-soft);
+  font-size: 11px;
+  z-index: 2;
+  background: var(--bg);
+  padding: 0 2px;
+}
+
+/* MERMAID */
+.mermaid-wrap {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  padding: 32px;
+  margin: 32px 0;
+  position: relative;
+}
+
+.mermaid-wrap::before {
+  content: '[ DIAGRAM ]';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+}
+
+.mermaid {
+  display: flex;
+  justify-content: center;
+}
+
+/* FOOTER */
+.doc-footer {
+  margin-top: 64px;
+  padding: 28px 0;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.meta-item { font-family: var(--font-mono); }
+
+.meta-label {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.meta-label::before { content: '// '; color: var(--text-soft); }
+
+.meta-value {
+  font-size: 12px;
+  color: var(--text);
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .main { padding: 40px 24px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">terminal</div>
+      <div class="brand-sub">theme.03 · dark</div>
+    </div>
+    <ul class="tab-nav" id="tabNav">
+      <li><button class="active" data-tab="overview"><span class="tab-prefix">~/</span><span>overview</span></button></li>
+      <li><button data-tab="process"><span class="tab-prefix">~/</span><span>process</span></button></li>
+      <li><button data-tab="details"><span class="tab-prefix">~/</span><span>details</span></button></li>
+      <li><button data-tab="notes"><span class="tab-prefix">~/</span><span>notes</span></button></li>
+    </ul>
+    <div class="sidebar-status">
+      <span class="status-dot"></span>
+      <span>SESSION ACTIVE</span>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="tab-panel active" id="overview">
+      <div class="path-line"><span class="path-accent">~/spec</span>/markdown/overview.md</div>
+      <h1>A Spec for<br>Mark<span class="accent-char">d</span>own</h1>
+      <p class="lede">> A converter that turns AI-generated markdown into customizable HTML — designed for the era when documents are written by machines and read by humans.</p>
+
+      <h3>By the Numbers</h3>
+      <div class="stats">
+        <div class="stat-card class1">
+          <div class="stat-label">Syntax Elements</div>
+          <div class="stat-value">14</div>
+          <div class="stat-desc">Covering structure, formatting, and visuals</div>
+        </div>
+        <div class="stat-card class2">
+          <div class="stat-label">Color Classes</div>
+          <div class="stat-value">04</div>
+          <div class="stat-desc">Applied across callouts, cards, and diagrams</div>
+        </div>
+        <div class="stat-card class3">
+          <div class="stat-label">Tokens / Spec</div>
+          <div class="stat-value">~500</div>
+          <div class="stat-desc">Optimized for AI skill efficiency</div>
+        </div>
+        <div class="stat-card class4">
+          <div class="stat-label">Doc In, Doc Out</div>
+          <div class="stat-value">1:1</div>
+          <div class="stat-desc">Single artifact, no config drift</div>
+        </div>
+      </div>
+
+      <h3>Premise</h3>
+      <p>The spec describes <strong>structure, not semantics</strong>. The AI instance is told only how to <em>organize</em> its output — never why. Presentation lives in the application layer, where it belongs.</p>
+
+      <div class="callout callout-class2">
+        <div class="callout-label">Principle</div>
+        Instruct structure, not semantics. The AI emits markdown. The app decides what it looks like.
+      </div>
+    </div>
+
+    <div class="tab-panel" id="process">
+      <div class="path-line"><span class="path-accent">~/spec</span>/markdown/process.md</div>
+      <h1>How It<br><span class="accent-char">F</span>lows</h1>
+      <p class="lede">> One markdown document in. One HTML document out. The intermediate format stays portable, the styling stays editable.</p>
+
+      <h3>The Pipeline</h3>
+      <div class="linear">
+        <div class="linear-step class1">Prompt AI</div>
+        <div class="linear-step class2">Generate MD</div>
+        <div class="linear-step class3">Upload</div>
+        <div class="linear-step class4">Render HTML</div>
+      </div>
+
+      <h3>System Architecture</h3>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+  A[AI Instance]:::c1 --> B[Markdown Doc]:::c2
+  B --> C[Converter App]:::c3
+  C --> D[Themed HTML]:::c4
+  E[Style Sidebar]:::c3 --> C
+  F[Saved Config]:::c4 --> E
+  classDef c1 fill:#0A0E14,stroke:#00FF9F,stroke-width:1.5px,color:#00FF9F
+  classDef c2 fill:#0A0E14,stroke:#FF2E97,stroke-width:1.5px,color:#FF2E97
+  classDef c3 fill:#0A0E14,stroke:#FFB800,stroke-width:1.5px,color:#FFB800
+  classDef c4 fill:#0A0E14,stroke:#00B4FF,stroke-width:1.5px,color:#00B4FF
+        </div>
+      </div>
+
+      <h3>Ordered Steps</h3>
+      <ol>
+        <li>Author writes a prompt to the AI instance</li>
+        <li>AI consults its markdown guide skill</li>
+        <li>AI emits a single markdown document</li>
+        <li>User uploads to the converter</li>
+        <li>App applies chosen theme and renders HTML</li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" id="details">
+      <div class="path-line"><span class="path-accent">~/spec</span>/markdown/details.md</div>
+      <h1>The<br><span class="accent-char">D</span>etails</h1>
+      <p class="lede">> A reference for every element the spec supports — what it does, where it lives, and how it renders.</p>
+
+      <h3>Element Inventory</h3>
+      <table>
+        <thead>
+          <tr><th>Element</th><th>Syntax</th><th>Renders As</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Title</td><td><code>#</code></td><td>Document headline</td></tr>
+          <tr><td>Section</td><td><code>##</code></td><td>Sidebar tab</td></tr>
+          <tr><td>Heading</td><td><code>###</code></td><td>Section heading</td></tr>
+          <tr><td>Callout</td><td><code>&gt; [!class1]</code></td><td>Colored block</td></tr>
+          <tr><td>Stat Cards</td><td><code>```stats</code></td><td>Card grid</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Sample Block</h3>
+      <pre><code>---
+title: My Document
+tags: [spec, draft]
+date: 2026-05-25
+---
+
+# Hello World
+
+## First Section</code></pre>
+
+      <h3>Imagery</h3>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80" alt="Circuit board">
+        <figcaption>fig_01 — circuitry as architecture</figcaption>
+      </figure>
+
+      <p>You can use <a href="#">inline links</a>, <code>inline code</code>, and <del>strikethrough</del> for deprecated content.</p>
+    </div>
+
+    <div class="tab-panel" id="notes">
+      <div class="path-line"><span class="path-accent">~/spec</span>/markdown/notes.md</div>
+      <h1>Open<br><span class="accent-char">T</span>hreads</h1>
+      <p class="lede">> Tasks, decisions still pending, and notes from the build.</p>
+
+      <h3>Outstanding Tasks</h3>
+      <ul class="task-list">
+        <li><span class="task-checkbox done"></span><span class="done">Lock the markdown spec</span></li>
+        <li><span class="task-checkbox done"></span><span class="done">Define the four-class color system</span></li>
+        <li><span class="task-checkbox"></span><span>Build the converter app</span></li>
+        <li><span class="task-checkbox"></span><span>Ship the four template themes</span></li>
+        <li><span class="task-checkbox"></span><span>Design the style sidebar UI</span></li>
+      </ul>
+
+      <h3>Reminders</h3>
+      <div class="callout callout-class1">
+        <div class="callout-label">Watch</div>
+        Token efficiency matters. Every line in the guide is loaded into the AI's context on every generation.
+      </div>
+
+      <div class="callout callout-class3">
+        <div class="callout-label">Decided</div>
+        Graphics live in the app. The markdown stays clean and portable across renderers.
+      </div>
+
+      <div class="callout callout-class4">
+        <div class="callout-label">Open</div>
+        Should the converter support config presets shared via URL?
+      </div>
+    </div>
+
+    <footer class="doc-footer">
+      <div class="meta-item">
+        <div class="meta-label">date</div>
+        <div class="meta-value">2026-05-25</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">project</div>
+        <div class="meta-value">md→html converter</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">purpose</div>
+        <div class="meta-value">theme demo · terminal</div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark', themeVariables: { fontFamily: 'JetBrains Mono', fontSize: '12px', background: '#0A0E14', mainBkg: '#0A0E14', lineColor: '#6E7686' }});
+
+  const buttons = document.querySelectorAll('#tabNav button');
+  const panels = document.querySelectorAll('.tab-panel');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
