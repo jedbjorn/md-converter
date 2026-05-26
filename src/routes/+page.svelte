@@ -18,7 +18,7 @@
 
 	const STORAGE_KEY = 'md-converter-config-v1';
 
-	const ir = parse(demoSource);
+	let ir = $state(parse(demoSource));
 
 	let activeTheme = $state<ThemeId>('editorial');
 	let colorOverrides = $state<Partial<Record<keyof ThemeColors, string>>>({});
@@ -79,8 +79,9 @@
 		}
 	});
 
-	// Re-render mermaid whenever the theme or any class color changes
+	// Re-render mermaid whenever the theme, any class color, or the IR changes
 	$effect(() => {
+		void ir;
 		void activeTheme;
 		void colorOverrides.class1;
 		void colorOverrides.class2;
@@ -143,6 +144,17 @@
 		showToast('Guide downloaded');
 	}
 
+	async function handleUploadMd() {
+		const text = await pickFile('text/markdown,.md,.markdown');
+		if (!text) return;
+		try {
+			ir = parse(text);
+			showToast('Markdown loaded');
+		} catch (err) {
+			showToast(`Parse failed: ${(err as Error).message}`);
+		}
+	}
+
 	function handleExportHtml() {
 		const layout = document.querySelector('.layout');
 		if (!layout) {
@@ -180,6 +192,7 @@
 	onImportConfig={handleImportConfig}
 	onExportHtml={handleExportHtml}
 	onDownloadGuide={handleDownloadGuide}
+	onUploadMd={handleUploadMd}
 />
 
 {#if toast}
