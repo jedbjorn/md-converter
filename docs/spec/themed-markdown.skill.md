@@ -160,6 +160,8 @@ Step 1 :::class1 -> Step 2 :::class2 -> Step 3 :::class3
 - Footnotes
 - Raw HTML
 - Any indication of color, font, size, theme, or visual treatment
+- **Content between the H1 and the first H2** — it will be silently dropped. Put intro material under a tab (e.g. an H2 called "Overview").
+- **Comma-separated tags** — `tags` must be a YAML list, not a string. Use `tags: [alpha, beta]` or `tags: []`, never `tags: alpha, beta`.
 
 ---
 
