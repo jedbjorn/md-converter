@@ -6,15 +6,14 @@
 
 	interface Props {
 		ir: IR;
+		activeSlug?: string;
 	}
 
-	let { ir }: Props = $props();
-
-	// Initial-tab capture is intentional; the effect below resyncs if the IR
-	// is later swapped (e.g. user uploads a new doc) to a tab set that doesn't
-	// contain the current slug.
+	// activeSlug is bindable so the parent can observe tab changes
+	// (e.g. to re-render mermaid when a previously-hidden tab becomes visible).
+	// Defaults to the first tab's slug; parent doesn't need to seed.
 	// svelte-ignore state_referenced_locally
-	let activeSlug = $state(ir.tabs[0]?.slug ?? '');
+	let { ir, activeSlug = $bindable(ir.tabs[0]?.slug ?? '') }: Props = $props();
 
 	$effect(() => {
 		if (!ir.tabs.some((t) => t.slug === activeSlug)) {
