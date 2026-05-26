@@ -5,26 +5,26 @@ description: Use whenever the user asks for a doc, docs, spec, specs, design doc
 
 # themed-markdown
 
-Output documents in this format. The document is one markdown file; a separate web app turns it into themed HTML. **Your job is structure; styling is the app's job — never include visual instructions in the output.**
+Output = one .md file. A web app renders it as themed HTML. **Job = structure. Styling = app's job — never include visual instructions.**
 
-## When to use
+## When
 
-Default format for **any structured doc**: doc, docs, spec, specs, design doc, RFC, ADR, report, brief, plan, runbook, summary, write-up, project notes. If the user is asking for a document longer than a paragraph or two, use this.
+Default for any structured doc (doc/spec/RFC/ADR/report/brief/plan/runbook/summary). Skip for: code-only, one-liners, chat, scratch.
 
-Skip for: code-only answers, one-line replies, chat-flow conversation, throwaway scratch.
+## Contract
 
-## Output contract
+Output:
+- starts with valid YAML frontmatter
+- uses only constructs below
+- applies `class1`–`class4` semantically (you pick which fits)
+- never names colors, fonts, sizes, themes, or visual treatments
 
-When you follow this skill, your output:
+## Legend
 
-- Starts with valid YAML frontmatter
-- Uses only the constructs defined below
-- Applies `class1`–`class4` semantically (your choice of which class fits each piece of content)
-- Does **not** include styling values, theme references, font names, color names, or visual instructions
+- `req` = required, `opt` = optional
+- `≤N` = soft cap, N characters. Over-cap → wraps awkwardly or overflows a fixed UI slot.
 
 ## 1 · Frontmatter
-
-Every document begins with:
 
 ```
 ---
@@ -36,53 +36,57 @@ purpose: Brief description
 ---
 ```
 
-`title` and `tags` are required (`tags` may be empty: `[]`). `date`, `project`, `purpose` are optional. Optional fields render as footer metadata.
+| Field | Status | Cap |
+|---|---|---|
+| `title` | req | ≤40 |
+| `tags` | req (list; `[]` ok) | — |
+| `date` | opt | `YYYY-MM-DD` |
+| `project` | opt | ≤40 |
+| `purpose` | opt | ≤40 |
+
+`date`/`project`/`purpose` → footer meta cards.
 
 ## 2 · Structure
 
-| Level | Use | Notes |
+| Syntax | Role | Cap |
 |---|---|---|
-| `# Title` | Document title, once at top | Optional — falls back to `frontmatter.title` |
-| `## Section` | Major section | Becomes a sidebar tab |
-| `### Heading` | Subsection inside a section | Renders as `<h3>` |
+| `# Title` | doc title (opt; falls back to `frontmatter.title`) | — |
+| `## Section` | sidebar tab | ≤28 |
+| `### Heading` | subsection → `<h3>` | ≤80 |
 
-H4–H6 are not supported. Don't use them.
+H4–H6 ⛔.
 
-**Every H2 is a tab.** Content between an H2 and the next H2 belongs to that tab. Content before the first H2 is dropped — put nothing between the H1 and the first H2.
+**Tab rule:** every H2 = one tab. Content between two H2s belongs to the first. Content between H1 and first H2 is **silently dropped** — put intro under an H2 (e.g. "Overview").
 
-If the document has only one section, you may omit H2s; the whole doc renders as one tab.
+Single-section docs may omit H2s; whole doc = one tab.
 
-## 3 · Inline formatting
+**Doc scale:** the app renders every section up-front and re-renders every Mermaid on each tab switch. Aim for ≤25 sections and ≤15 Mermaid diagrams; split larger material.
 
-- `**bold**` — strong emphasis
-- `*italic*` — soft emphasis
-- `~~strike~~` — removed / deprecated content
-- `` `code` `` — technical terms, filenames, UI labels
-- `[text](https://url.com)` — links
+## 3 · Inline
+
+`**bold**` · `*italic*` · `~~strike~~` · `` `code` `` · `[text](url)`
 
 ## 4 · Lists
 
-- Unordered with `-`
-- Ordered with `1.`
-- Task lists with `- [ ]` (incomplete) and `- [x]` (complete)
+`-` unordered · `1.` ordered · `- [ ]` / `- [x]` tasks
 
 ## 5 · Tables
 
 Standard GFM pipe tables.
 
 ```
-| Column A | Column B |
-|----------|----------|
-| Cell     | Cell     |
+| Col A | Col B |
+|-------|-------|
+| Cell  | Cell  |
 ```
 
 ## 6 · Images
 
 ```
-![alt text](https://url.com/image.png)
+![alt](https://url/img.png)
 ```
 
-URL only — no relative paths. Use descriptive alt text.
+Absolute URLs only. Descriptive alt text.
 
 ## 7 · Code blocks
 
@@ -90,28 +94,26 @@ Fenced with a language hint:
 
 ````
 ```language
-code here
+code
 ```
 ````
 
 ## 8 · Color classes
 
-Four classes are available: `class1`, `class2`, `class3`, `class4`. Use them on callouts, stat cards, mermaid nodes, and linear diagram steps. **You choose which class fits each piece of content based on its meaning** — the theme decides what those four colors actually look like.
+`class1`–`class4`. Available on callouts, stat cards, mermaid nodes, linear steps. **You choose which class fits each piece based on meaning** — the theme decides the actual colors.
 
-A common pattern: pick one class per semantic role consistently across the doc (e.g. `class1` = primary subject, `class2` = supporting / cross-reference, `class3` = positive / done, `class4` = caution / warning). Consistency matters more than which specific class you pick.
+Pattern: one class per semantic role across the doc (e.g. `class1` = primary, `class2` = supporting, `class3` = positive/done, `class4` = caution/warning). Consistency > specific choice.
 
 ## 9 · Callouts
 
 ```
 > [!class1]
-> Callout content goes here.
+> Callout content.
 ```
 
-Replace `class1` with any of the four classes. Keep callouts short — one short paragraph is typical.
+Cap: ≤280 (one short paragraph). Class1–class4.
 
 ## 10 · Stat cards
-
-Group one or more stat cards in a single `stats` block:
 
 ````
 ```stats
@@ -128,11 +130,15 @@ label: App rating
 ```
 ````
 
-`value` and `label` are required per card. `description` is optional. Use them for at-a-glance numeric summaries.
+| Field | Status | Cap | Notes |
+|---|---|---|---|
+| `value` | req | ≤12 | Short token: `87%`, `1.2M`, `Editorial`. Not sentences. |
+| `label` | req | ≤28 | One short noun phrase. |
+| `description` | opt | one short line | Omit if no signal. |
 
-## 11 · Mermaid diagrams
+Layout: 2 per row; trailing odd card spans the row.
 
-Apply classes to nodes with `:::classN`:
+## 11 · Mermaid
 
 ````
 ```mermaid
@@ -141,11 +147,11 @@ graph LR
 ```
 ````
 
-The app injects a `classDef` preamble that binds `class1`–`class4` to the active theme's colors — you don't need to (and should not) include any `classDef`, `fill:`, or other style directives.
+Class via `:::classN` on nodes. The app injects `classDef` — don't write `classDef`, `fill:`, or any style directive.
 
-## 12 · Linear diagrams
+Node label cap: ≤24 (Mermaid auto-sizes nodes to fit; long labels balloon them).
 
-Simple linear flow / timeline. Steps separated by `->`, each optionally tagged with a class:
+## 12 · Linear
 
 ````
 ```linear
@@ -153,15 +159,17 @@ Step 1 :::class1 -> Step 2 :::class2 -> Step 3 :::class3
 ```
 ````
 
-## 13 · Do not use
+Steps separated by `->`, optional class via `:::classN`. Step text cap: ≤24 (fixed-size cards).
+
+## 13 · Never
 
 - H4–H6
-- Blockquotes (other than callouts)
+- Blockquotes (except callouts)
 - Footnotes
 - Raw HTML
-- Any indication of color, font, size, theme, or visual treatment
-- **Content between the H1 and the first H2** — it will be silently dropped. Put intro material under a tab (e.g. an H2 called "Overview").
-- **Comma-separated tags** — `tags` must be a YAML list, not a string. Use `tags: [alpha, beta]` or `tags: []`, never `tags: alpha, beta`.
+- Color/font/size/theme/visual mentions
+- Content between H1 and first H2 → silently dropped. Use an H2 ("Overview").
+- Comma-separated `tags` → must be a YAML list. `tags: [a, b]` or `tags: []`. Never `tags: a, b`.
 
 ---
 

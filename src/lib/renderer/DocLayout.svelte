@@ -26,7 +26,7 @@
 	<Sidebar title={ir.title} tabs={ir.tabs} {activeSlug} onSelect={(s) => (activeSlug = s)} />
 	<main class="main">
 		{#each ir.tabs as tab, i (tab.slug)}
-			<TabPanel {tab} isActive={tab.slug === activeSlug} isFirst={i === 0} />
+			<TabPanel {tab} index={i} isActive={tab.slug === activeSlug} isFirst={i === 0} />
 		{/each}
 		<DocFooter frontmatter={ir.frontmatter} />
 	</main>

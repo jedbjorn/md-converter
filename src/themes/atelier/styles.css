@@ -440,11 +440,13 @@ pre code {
 /* STATS */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 32px;
   margin: 40px 0;
   padding: 0;
 }
+
+.stat-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .stat-card {
   padding: 32px 0;
@@ -470,9 +472,11 @@ pre code {
   font-family: var(--font-display);
   font-weight: 300;
   font-size: 64px;
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.04em;
   margin-bottom: 16px;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .stat-card.class1 .stat-value { color: var(--class1); }
