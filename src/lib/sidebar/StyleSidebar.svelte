@@ -14,6 +14,9 @@
 		onThemeChange: (id: ThemeId) => void;
 		onClose: () => void;
 		onReset: () => void;
+		onExportConfig: () => void;
+		onImportConfig: () => void;
+		onExportHtml: () => void;
 	}
 
 	let {
@@ -23,7 +26,10 @@
 		open = $bindable(),
 		onThemeChange,
 		onClose,
-		onReset
+		onReset,
+		onExportConfig,
+		onImportConfig,
+		onExportHtml
 	}: Props = $props();
 
 	const COLOR_FIELDS: { key: ColorKey; label: string }[] = [
@@ -207,7 +213,12 @@
 	</section>
 
 	<footer class="ss-footer">
-		<button class="ss-reset-all" onclick={onReset}>Reset overrides</button>
+		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
+		<div class="ss-btn-row">
+			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
+			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
+		</div>
+		<button class="ss-btn ss-btn--ghost" onclick={onReset}>Reset overrides</button>
 	</footer>
 </aside>
 
@@ -365,8 +376,9 @@
 	.ss-reset--shown { visibility: visible; }
 	.ss-reset:hover { color: #fff; }
 
-	.ss-footer { padding: 1rem 1.25rem; margin-top: auto; }
-	.ss-reset-all {
+	.ss-footer { padding: 1rem 1.25rem; margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem; }
+	.ss-btn-row { display: flex; gap: 0.5rem; }
+	.ss-btn {
 		width: 100%;
 		background: #2a2a30;
 		color: inherit;
@@ -377,5 +389,8 @@
 		font: 500 12px ui-sans-serif, system-ui, sans-serif;
 		letter-spacing: 0.05em;
 	}
-	.ss-reset-all:hover { background: #34343a; }
+	.ss-btn:hover { background: #34343a; }
+	.ss-btn--half { flex: 1; }
+	.ss-btn--ghost { background: transparent; color: #6a6a76; }
+	.ss-btn--ghost:hover { background: #232328; color: #b0b0b8; }
 </style>
