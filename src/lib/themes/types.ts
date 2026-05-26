@@ -29,7 +29,7 @@ export interface ThemeTokens {
 	fontsHref?: string;
 }
 
-export type ThemeId = 'editorial' | 'bauhaus' | 'terminal' | 'atelier';
+export type ThemeId = 'editorial' | 'bauhaus' | 'terminal' | 'atelier' | 'dossier';
 
 export interface ThemeEntry {
 	id: ThemeId;
