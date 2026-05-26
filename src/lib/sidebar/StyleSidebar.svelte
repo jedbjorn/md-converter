@@ -17,6 +17,7 @@
 		onExportConfig: () => void;
 		onImportConfig: () => void;
 		onExportHtml: () => void;
+		onDownloadGuide: () => void;
 	}
 
 	let {
@@ -29,7 +30,8 @@
 		onReset,
 		onExportConfig,
 		onImportConfig,
-		onExportHtml
+		onExportHtml,
+		onDownloadGuide
 	}: Props = $props();
 
 	const COLOR_FIELDS: { key: ColorKey; label: string }[] = [
@@ -218,6 +220,9 @@
 			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
 			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
 		</div>
+		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
+			Download Markdown Guide
+		</button>
 		<button class="ss-btn ss-btn--ghost" onclick={onReset}>Reset overrides</button>
 	</footer>
 </aside>
