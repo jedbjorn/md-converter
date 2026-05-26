@@ -1,3 +1,7 @@
+<script>
+	import '$lib/styles/legal.css';
+</script>
+
 <svelte:head>
 	<title>Privacy Policy — md-converter</title>
 	<meta name="robots" content="noindex" />
@@ -147,67 +151,3 @@
 		<a href="/">Back to app</a>
 	</footer>
 </main>
-
-<style>
-	:global(body) {
-		background: #fafaf9;
-		color: #1a1a1a;
-		font-family: ui-serif, Georgia, 'Times New Roman', serif;
-	}
-	.legal {
-		max-width: 68ch;
-		margin: 0 auto;
-		padding: 4rem 1.5rem 6rem;
-		line-height: 1.6;
-		font-size: 16px;
-	}
-	.back {
-		display: inline-block;
-		margin-bottom: 2rem;
-		font: 500 13px ui-sans-serif, system-ui, sans-serif;
-		color: #555;
-		text-decoration: none;
-	}
-	.back:hover { color: #000; }
-	h1 {
-		font-size: 38px;
-		font-weight: 600;
-		line-height: 1.15;
-		margin: 0 0 0.5rem;
-		letter-spacing: -0.01em;
-	}
-	h2 {
-		font-size: 22px;
-		font-weight: 600;
-		margin: 2.5rem 0 0.75rem;
-		letter-spacing: -0.01em;
-	}
-	h3 {
-		font-size: 17px;
-		font-weight: 600;
-		margin: 1.5rem 0 0.5rem;
-	}
-	p, li { margin: 0.6rem 0; }
-	ul { padding-left: 1.4rem; }
-	code {
-		font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace;
-		background: #efeee9;
-		padding: 0.1em 0.35em;
-		border-radius: 3px;
-	}
-	a { color: #2a4a8a; text-decoration: underline; text-underline-offset: 2px; }
-	a:hover { color: #1a3060; }
-	.meta {
-		color: #777;
-		font: 0.85em ui-sans-serif, system-ui, sans-serif;
-		margin: 0 0 1rem;
-	}
-	.legal-footer {
-		margin-top: 4rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid #ddd;
-		color: #777;
-		font: 13px ui-sans-serif, system-ui, sans-serif;
-		text-align: center;
-	}
-</style>
