@@ -118,6 +118,17 @@
 		<button class="ss-close" onclick={onClose} aria-label="Close style panel">×</button>
 	</header>
 
+	<div class="ss-actions">
+		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
+		<div class="ss-btn-row">
+			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
+			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
+		</div>
+		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
+			Download Markdown Guide
+		</button>
+	</div>
+
 	<section class="ss-section">
 		<h3>Theme</h3>
 		<div class="ss-themes">
@@ -215,14 +226,6 @@
 	</section>
 
 	<footer class="ss-footer">
-		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
-		<div class="ss-btn-row">
-			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
-			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
-		</div>
-		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
-			Download Markdown Guide
-		</button>
 		<button class="ss-btn ss-btn--ghost" onclick={onReset}>Reset overrides</button>
 	</footer>
 </aside>
@@ -288,6 +291,14 @@
 		padding: 0 0.25rem;
 	}
 	.ss-close:hover { color: #fff; }
+
+	.ss-actions {
+		padding: 1rem 1.25rem 1.25rem;
+		border-bottom: 1px solid #2a2a30;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
 
 	.ss-section { padding: 1rem 1.25rem 1.25rem; border-bottom: 1px solid #2a2a30; }
 	.ss-section h3 { margin: 0 0 0.75rem; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6a6a76; }
