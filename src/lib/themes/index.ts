@@ -48,35 +48,39 @@ export const themes: Record<ThemeId, ThemeEntry> = {
 export const themeIds = Object.keys(themes) as ThemeId[];
 
 const STYLE_ID = 'md-theme';
-const FONTS_ID = 'md-theme-fonts';
 
 /**
- * Inject the active theme's CSS + Google Fonts link into <head>.
- * Replaces any previously-injected theme. Browser-only.
+ * Inject the active theme's CSS into <head>. Replaces any previously-injected
+ * theme. Fonts are pre-loaded separately via preloadAllFonts() so the font
+ * picker works across themes without per-swap network roundtrips. Browser-only.
  */
 export function applyTheme(id: ThemeId): void {
 	if (typeof document === 'undefined') return;
-	const entry = themes[id];
-
 	let style = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
 	if (!style) {
 		style = document.createElement('style');
 		style.id = STYLE_ID;
 		document.head.appendChild(style);
 	}
-	style.textContent = entry.css;
+	style.textContent = themes[id].css;
+}
 
-	let link = document.getElementById(FONTS_ID) as HTMLLinkElement | null;
-	if (entry.tokens.fontsHref) {
-		if (!link) {
-			link = document.createElement('link');
-			link.id = FONTS_ID;
-			link.rel = 'stylesheet';
-			document.head.appendChild(link);
-		}
-		if (link.href !== entry.tokens.fontsHref) link.href = entry.tokens.fontsHref;
-	} else if (link) {
-		link.remove();
+/**
+ * Inject one <link rel="stylesheet"> per theme's Google Fonts URL so every
+ * face from every theme is available regardless of which theme is active.
+ * Idempotent. Browser-only.
+ */
+export function preloadAllFonts(): void {
+	if (typeof document === 'undefined') return;
+	for (const theme of Object.values(themes)) {
+		if (!theme.tokens.fontsHref) continue;
+		const id = `md-font-${theme.id}`;
+		if (document.getElementById(id)) continue;
+		const link = document.createElement('link');
+		link.id = id;
+		link.rel = 'stylesheet';
+		link.href = theme.tokens.fontsHref;
+		document.head.appendChild(link);
 	}
 }
 
