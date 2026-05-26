@@ -1,9 +1,9 @@
 # Markdown → HTML Converter
 ## Product Specification
 
-**Version:** 0.1
-**Date:** May 25, 2026
-**Status:** Draft
+**Version:** 0.2
+**Date:** May 26, 2026
+**Status:** Reconciled to implementation (PRs #1–#9)
 
 ---
 
@@ -67,13 +67,17 @@ Optional fields render as footer metadata in the HTML output.
 
 | Markdown | Role | Rendered As |
 |----------|------|-------------|
-| `# Title` | Document title (once, at top) | Document headline |
-| `## Section` | Major section | Sidebar tab |
-| `### Heading` | Subsection within a section | Section heading inside tab content |
+| `# Title` | Document title (once, at top) | Captured as `docTitle`; falls back to `frontmatter.title` if omitted |
+| `## Section` | Major section | Sidebar tab; section text becomes the tab label and the panel's H1 |
+| `### Heading` | Subsection within a section | `<h3>` inside tab content |
 
 H4–H6 are not supported.
 
 **Tab boundary rule:** content between an H2 and the next H2 (or end of document) belongs to that H2's tab. No explicit delimiters are needed.
+
+**Preamble:** any content between the H1 and the first H2 is dropped — per spec discipline, all content lives under H2 sections.
+
+**No H2 case:** a document with no H2 headings gets a single default tab containing all content.
 
 ### 2.3 Inline Formatting
 
@@ -95,7 +99,7 @@ Standard markdown lists, including nested lists.
 
 ### 2.5 Tables
 
-Standard GFM pipe tables with optional column alignment.
+Standard GFM pipe tables.
 
 ```
 | Column A | Column B |
@@ -107,10 +111,9 @@ Standard GFM pipe tables with optional column alignment.
 
 ```
 ![alt text](https://url.com/image.png)
-*Caption text*
 ```
 
-URL only (no relative paths). An optional italic line immediately following the image is treated as a caption.
+URL only (no relative paths). The standalone-caption pattern (italic line after an image becoming a `<figcaption>`) is deferred — see §11.
 
 ### 2.7 Code Blocks
 
@@ -171,6 +174,8 @@ graph LR
 ```
 ```
 
+The renderer injects a `classDef` preamble (see §8.2) so `:::class1`–`:::class4` bind to the active theme's colors automatically.
+
 ### 2.12 Linear Diagrams
 
 A simplified linear flow / timeline syntax.
@@ -193,11 +198,11 @@ The AI is instructed to avoid: H4–H6, blockquotes (other than callouts), footn
 
 ### 3.1 High-Level Structure
 
-The application has four logical components:
+Four logical components:
 
-1. **Parser** — reads markdown, produces a structured intermediate representation
+1. **Parser** — reads markdown, produces a structured intermediate representation (IR)
 2. **Renderer** — converts the IR into themed HTML
-3. **Theme Engine** — supplies the theme's tokens (colors, fonts, type sizes, spacing) to the renderer
+3. **Theme Engine** — supplies the theme's tokens (colors, fonts) to the renderer
 4. **Style Sidebar** — UI for adjusting the active theme's tokens at runtime
 
 ### 3.2 Theme-Agnostic Output
@@ -210,90 +215,105 @@ The renderer emits a consistent HTML structure regardless of theme. Theme differ
 
 ### 3.3 Parse Pipeline
 
-1. Extract and parse frontmatter (YAML)
-2. Walk the markdown AST
+1. Extract and parse frontmatter (YAML via `js-yaml`)
+2. Walk the markdown-it token stream
 3. Group content under H2 boundaries (tabs)
-4. Detect and parse custom block fences (`stats`, `linear`, `mermaid`)
-5. Detect callout syntax (`> [!classN]`) and convert to callout nodes
-6. Build the IR
+4. Detect and transform custom block fences (`stats`, `linear`, `mermaid`)
+5. Detect callout syntax (`> [!classN]`) and convert to callout tokens
+6. Detect task list items (`- [ ]` / `- [x]`) and annotate
+7. Return IR: `{ frontmatter, title, tabs: [{ heading, slug, tokens }] }`
 
 ### 3.4 Render Output Structure
 
-The rendered HTML follows this structural pattern. Theme implementations apply their own CSS to this structure.
+The rendered HTML follows this structural pattern. Theme stylesheets target the exact class names below.
 
-```
-<div class="doc-layout">
-  <aside class="doc-sidebar">
-    <div class="doc-brand">{title}</div>
-    <ul class="doc-tabs">
-      <li><button data-tab="..." class="active">{H2 text}</button></li>
+```html
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">{title}</div>
+    </div>
+    <ul class="tab-nav">
+      <li>
+        <button data-tab="{slug}" class="active">
+          <span class="tab-num"></span>{H2 text}
+        </button>
+      </li>
       ...
     </ul>
   </aside>
-  <main class="doc-main">
-    <article class="doc-tab-panel active" id="...">
-      <h1>{title from frontmatter or first H1}</h1>
+  <main class="main">
+    <article class="tab-panel active first-tab" id="{slug}" data-tab="{slug}">
+      <h1 class="doc-tab-heading">{H2 text}</h1>
       <!-- content -->
     </article>
     ...
     <footer class="doc-footer">
-      <div class="doc-meta" data-key="date">{date}</div>
-      <div class="doc-meta" data-key="project">{project}</div>
-      <div class="doc-meta" data-key="purpose">{purpose}</div>
+      <div class="meta-item" data-key="date">
+        <div class="meta-label">Date</div>
+        <div class="meta-value">{date}</div>
+      </div>
+      <div class="meta-item" data-key="project">...</div>
+      <div class="meta-item" data-key="purpose">...</div>
     </footer>
   </main>
 </div>
 ```
+
+**Tab markers.** The `<span class="tab-num"></span>` is emitted empty. Each theme fills it via CSS counter (`counter(md-tab, upper-roman)`, `decimal-leading-zero`, etc.) so marker style stays theme-owned. Themes may also hide `.tab-num` entirely and use `button::before` for a different marker (Terminal does this with `~/`).
 
 ### 3.5 Element-Level Rendering
 
 Each markdown construct maps to a stable HTML pattern that all themes share.
 
 **Callouts:**
-```
-<div class="doc-callout doc-callout-class1">
-  <div class="doc-callout-content">...</div>
+```html
+<div class="callout callout-class1">
+  <p>content</p>
 </div>
 ```
 
 **Stat cards:**
-```
-<div class="doc-stats">
-  <div class="doc-stat doc-stat-class1">
-    <div class="doc-stat-value">87%</div>
-    <div class="doc-stat-label">User satisfaction</div>
-    <div class="doc-stat-desc">Up 12% from last quarter</div>
+```html
+<div class="stats">
+  <div class="stat-card class1">
+    <div class="stat-value">87%</div>
+    <div class="stat-label">User satisfaction</div>
+    <div class="stat-desc">Up 12% from last quarter</div>
   </div>
   ...
 </div>
 ```
 
+`stat-desc` is omitted when the card has no `description`.
+
 **Linear diagrams:**
-```
-<div class="doc-linear">
-  <div class="doc-linear-step doc-linear-class1">Step 1</div>
-  <div class="doc-linear-step doc-linear-class2">Step 2</div>
+```html
+<div class="linear">
+  <div class="linear-step class1">Step 1</div>
+  <div class="linear-step class2">Step 2</div>
   ...
 </div>
 ```
 
-**Mermaid diagrams:** rendered client-side by mermaid.js. The renderer emits a `<div class="doc-mermaid">` wrapper with the mermaid source inside, plus a `classDef` block injected at the top of the diagram code that maps `class1`–`class4` to the theme's current colors.
+**Mermaid diagrams:**
+```html
+<div class="mermaid-wrap">
+  <div class="mermaid">{source}</div>
+</div>
+```
 
-**Images with captions:**
-```
-<figure class="doc-figure">
-  <img src="..." alt="...">
-  <figcaption>Caption text</figcaption>
-</figure>
-```
+Mermaid.js renders client-side and replaces the inner div's text with an inline `<svg>`. The renderer injects a `classDef` preamble (see §8.2) so `:::classN` references in the diagram bind to the active theme's colors.
 
 **Task lists:**
-```
-<ul class="doc-task-list">
-  <li class="doc-task done"><span class="doc-task-check"></span>Task text</li>
-  ...
+```html
+<ul class="task-list">
+  <li><span class="task-checkbox"></span><span>Task text</span></li>
+  <li class="done"><span class="task-checkbox done"></span><span class="done">Done text</span></li>
 </ul>
 ```
+
+**Standard markdown** (paragraphs, headings, inline emphasis, links, code, tables, ordered/unordered lists, fenced code) renders through markdown-it's default rules — no custom class names are added.
 
 ---
 
@@ -301,71 +321,66 @@ Each markdown construct maps to a stable HTML pattern that all themes share.
 
 ### 4.1 Theme as a Token Set
 
-A theme is a structured set of design tokens. Each theme defines values for the same set of variables; only the values differ.
+A theme is a structured set of design tokens plus a CSS stylesheet that targets the canonical class skeleton (§3.4, §3.5).
 
 ### 4.2 Token Schema
 
-```
+CSS variable names are kebab-case and match the JSON keys 1:1.
+
+```json
 {
-  "name": "string",
-  "mode": "light" | "dark",
+  "name": "Editorial",
+  "mode": "light",
   "colors": {
-    "background": "hex",
-    "background_alt": "hex",
-    "text": "hex",
-    "text_soft": "hex",
-    "rule": "hex",
-    "accent": "hex",
-    "class1": "hex",
-    "class2": "hex",
-    "class3": "hex",
-    "class4": "hex"
+    "bg": "#F5F1E8",
+    "bg-2": "#EFE9DA",
+    "bg-3": "#EFE9DA",
+    "text": "#1A1612",
+    "text-soft": "#4A413A",
+    "rule": "#C9BFA8",
+    "rule-soft": "#C9BFA8",
+    "accent": "#C8553D",
+    "class1": "#C8553D",
+    "class2": "#588B8B",
+    "class3": "#C99846",
+    "class4": "#6B4F8F"
   },
   "typography": {
-    "font_display": "css font-family stack",
-    "font_body": "css font-family stack",
-    "font_mono": "css font-family stack",
-    "size_title": "px or rem",
-    "size_section": "px or rem",
-    "size_heading": "px or rem",
-    "size_body": "px or rem"
-  }
+    "font-display": "'DM Serif Display', Georgia, serif",
+    "font-body": "'Source Serif 4', Georgia, serif",
+    "font-mono": "'JetBrains Mono', monospace"
+  },
+  "fontsHref": "https://fonts.googleapis.com/css2?..."
 }
 ```
+
+`fontsHref` is optional but every bundled theme provides one.
+
+Themes that don't visually need every color (e.g. Editorial doesn't reference `--bg-3`) simply omit it from their `:root`; the JSON declares the full schema for the style sidebar.
 
 ### 4.3 Token Application
 
-Tokens are applied as CSS custom properties on the document root. Theme styles reference them rather than hard-coding values.
-
-```
-:root {
-  --bg: #14110D;
-  --text: #E8DFD0;
-  --accent: #C9A961;
-  --class1: #C9A961;
-  /* ... */
-}
-```
+Tokens are applied as CSS custom properties on `:root`. Sidebar overrides write to `document.documentElement.style.setProperty('--<name>', value)`, which takes precedence over the theme's `:root` rule.
 
 ### 4.4 Bundled Themes
 
-The app ships with four themes:
+Five themes ship:
 
-1. **Editorial** (light) — magazine/literary aesthetic
-2. **Bauhaus** (light) — Swiss-grid technical aesthetic
-3. **Terminal** (dark) — cyberpunk monospace aesthetic
-4. **Atelier** (dark) — luxe architectural aesthetic
+1. **Editorial** (light) — magazine/literary aesthetic; DM Serif Display + Source Serif 4
+2. **Bauhaus** (light) — Swiss-grid technical; Archivo + IBM Plex
+3. **Terminal** (dark) — cyberpunk monospace; Syne + JetBrains Mono
+4. **Atelier** (dark) — luxe architectural; Cormorant Garamond + Manrope
+5. **Dossier** (dark) — quiet-technical-warm; Fraunces italic numerals + DM Sans
 
-Each theme provides its own complete CSS stylesheet, written against the shared HTML structure defined in §3.4 and §3.5.
+Each theme is `src/themes/<id>/{styles.css, tokens.json}`.
 
 ### 4.5 Adding New Themes
 
-A new theme requires:
-- A token JSON file
-- A CSS stylesheet implementing the shared HTML structure
-- A preview thumbnail (optional but recommended)
+1. Create `src/themes/<id>/styles.css` targeting the canonical class skeleton
+2. Create `src/themes/<id>/tokens.json` matching the schema in §4.2
+3. Add the id to `ThemeId` and register in `src/lib/themes/index.ts`
 
-No changes to the parser or renderer are needed.
+No changes to parser or renderer.
 
 ---
 
@@ -377,45 +392,41 @@ The style sidebar lets users adjust the active theme's tokens in real time. Chan
 
 ### 5.2 Controls
 
-The sidebar exposes:
+A right-edge slide-in panel toggled by a floating "Style" button (Esc closes).
 
-**Theme selector** — dropdown or grid of the four bundled themes plus any user-imported configs
+**Theme** — five swatches (background + accent dot) with active state styling.
 
-**Colors** — color pickers for:
-- Background
-- Text
-- Accent
-- Class 1
-- Class 2
-- Class 3
-- Class 4
+**Colors** — one row per canonical color token (12 total: `bg`, `bg-2`, `bg-3`, `text`, `text-soft`, `rule`, `rule-soft`, `accent`, `class1`–`class4`). Each row pairs a native color picker with a hex text input that stay in sync, plus a reset arrow that appears only when the value is overridden.
 
-**Typography** — font selectors for:
-- Display font (used for title and sections)
-- Body font (used for headings and body text)
+**Typography** — three font fields: `font-display`, `font-body`, `font-mono`. Each is a grouped `<select>` over a curated face list (every face is preloaded by some bundled theme, so picking any of them works across all themes), plus a "Custom…" option that reveals a free-text input for any CSS `font-family` string.
 
-Font selection draws from a curated list (Google Fonts subset) or accepts a custom CSS font-family value.
+**Footer actions** — Export HTML / Export config / Import config / Download Markdown Guide / Reset overrides.
 
-**Text sizes** — numeric inputs for:
-- Title
-- Section
-- Heading
-- Body
+Picking a theme clears overrides (fresh start). Reset overrides clears them without changing theme.
+
+**Size sliders** are not yet implemented; deferred per §11.
 
 ### 5.3 Live Preview
 
-All changes update the rendered document in real time as the user adjusts controls.
+Color and font edits update the rendered document immediately via inline `:root` style mutations. Mermaid diagrams re-render on theme change and on `class1`–`class4` / `bg` / `text` changes (so their inline SVGs follow the palette).
 
 ### 5.4 Config Export and Import
 
-**Export:** the current token set serializes to JSON. User can download the file or copy it to clipboard.
+Config shape (see `src/lib/export/json-config.ts`):
 
-**Import:** user uploads a previously exported JSON file. The app loads the tokens as the active theme.
+```json
+{
+  "version": 1,
+  "theme": "editorial",
+  "colorOverrides": { ... },
+  "fontOverrides": { ... }
+}
+```
 
-This allows users to:
-- Save personalized themes for reuse
-- Share theme configs with others
-- Build a library of brand-specific configs
+**Export:** downloads as `md-converter-<theme>.config.json`.
+**Import:** file picker; validated against the schema (unknown keys filtered, non-string values dropped, unknown theme rejected).
+
+The same shape is used for localStorage persistence (§8.4).
 
 ---
 
@@ -423,11 +434,11 @@ This allows users to:
 
 ### 6.1 The Markdown Output Guide
 
-A standalone markdown file (the spec defined in §2) is provided as a downloadable artifact. Users load it into their AI tool as a skill, system prompt, or persistent instruction.
+A standalone markdown file (`docs/spec/Markdown Output Guide.md`) is bundled into the app and downloadable from the sidebar. Users load it into their AI tool as a skill, system prompt, or persistent instruction.
 
 ### 6.2 Distribution
 
-The guide is available from the app as a one-click download. It is also versioned alongside the app so users can confirm they have the current version.
+The guide is imported via Vite's `?raw` at build time so the bundled string is always in sync with the repo source.
 
 ### 6.3 Token Efficiency
 
@@ -443,26 +454,31 @@ When the AI follows the guide, its output:
 
 ---
 
-## 7. Application Features (MVP)
+## 7. Application Features
 
-### 7.1 Required
+### 7.1 Implemented (MVP)
 
-- Markdown file upload (drag-and-drop or file picker)
-- Live HTML preview
-- Theme selection (four bundled themes)
-- Style sidebar with all controls listed in §5.2
-- Config export and import (JSON)
-- HTML export (self-contained file with embedded styles)
-- Markdown guide download
+- Live markdown rendering from a hardcoded demo fixture
+- Five bundled themes with live switching
+- Style sidebar with all controls listed in §5.2 (sizes excepted)
+- Config export / import (JSON)
+- HTML export (self-contained file with embedded CSS, vanilla tab-switch JS, mermaid pre-rendered to inline SVG)
+- Markdown Guide download
+- localStorage persistence of theme + overrides
 
-### 7.2 Deferred to Post-MVP
+### 7.2 Deferred
 
-- Inline markdown editing within the app
-- Multi-document projects
-- URL-based config sharing
-- Additional bundled themes
-- Print stylesheet variants
-- Accessibility audit and adjustments (WCAG AA contrast checking on custom configs)
+- **Drag-and-drop markdown upload UI** (currently the demo is hardcoded)
+- **Inline markdown editing** within the app
+- **Multi-document projects**
+- **URL-based config sharing**
+- **Print stylesheet variants**
+- **Accessibility audit** (WCAG AA contrast checking on custom configs)
+- **Image captions** (italic line following an image → `<figcaption>`)
+- **Size sliders** in sidebar (themes hard-code font sizes; would need a refactor to use `--size-*` vars)
+- **Mermaid pre-rendering on the server** (currently the HTML export captures already-rendered SVGs from the live DOM)
+- **Validation of AI output against the spec** (current behavior: best-effort render; unsupported constructs render as plain text or are ignored by markdown-it)
+- **Per-theme construct opt-out** (themes declaring "I don't render mermaid well, skip it")
 
 ---
 
@@ -470,37 +486,59 @@ When the AI follows the guide, its output:
 
 ### 8.1 Parser
 
-A standard CommonMark/GFM-compliant markdown parser, extended with:
-- Custom fence block handlers (`stats`, `linear`)
-- Obsidian-style callout detection (`> [!classN]`)
-- Frontmatter extraction (YAML)
+`markdown-it` in token mode (HTML disabled, linkify enabled), extended with:
+- YAML frontmatter extraction via `js-yaml` (browser-safe; replaced gray-matter, which depended on Node's `Buffer`)
+- Custom core rules: `callouts`, `stats` fence, `linear` fence, `mermaid` fence, `tasks`
+- A tab splitter that walks the token stream and partitions on H2 boundaries
 
-Recommended: `markdown-it` or `remark` with custom plugins.
+The parser exports the IR shape `{ frontmatter, title, tabs }`. The renderer consumes it via `renderTokens(tokens)` per-tab.
 
 ### 8.2 Mermaid Rendering
 
-Mermaid.js is loaded and initialized client-side. The renderer injects a `classDef` block at the top of each mermaid source that maps `class1`–`class4` to the active theme's current color values.
+`mermaid.js` initializes once per session and is invoked via `renderMermaidAll(colors, textColor, themeMode)` which:
+
+1. Walks every `.mermaid` node in the DOM
+2. Stores the original source in `data-original` (first call only)
+3. Injects a `classDef` preamble that maps `class1`–`class4` to the active theme's colors
+4. Calls `mermaid.run({ querySelector: '.mermaid' })` which replaces source with inline SVG
+
+The renderer fires on mount and on theme / class color changes via a Svelte `$effect`, deferred with `requestAnimationFrame` so the CSS swap lands first.
 
 ### 8.3 HTML Export
 
 Exported HTML is fully self-contained:
-- Theme CSS inlined in a `<style>` tag
-- Mermaid pre-rendered to inline SVG (no runtime dependency)
-- Fonts referenced via Google Fonts CDN or inlined as base64 (user choice)
-- No external CSS or JS dependencies
+- Inlined `base.css` + active theme CSS + `:root { ... }` override rule
+- Google Fonts referenced via `<link>` (not inlined as base64)
+- Mermaid diagrams are pulled from the live DOM as already-rendered inline SVG (no mermaid.js runtime in the export)
+- Vanilla tab-switch JS for click-to-switch behavior (no SvelteKit hydration needed)
+- No external CSS or JS dependencies beyond Google Fonts
+
+Pipeline (`src/lib/export/html-export.ts`):
+1. Caller hands in the live `.layout.outerHTML`
+2. Wrap with `<head>` containing inlined CSS + fonts link
+3. Append `<script>` block with the tab-switch JS
+
+Implication: the export reflects whatever overrides are active at export time.
 
 ### 8.4 State Persistence
 
-The active theme and config persist in browser local storage so users return to their last setup.
+Active theme + color overrides + font overrides persist to `localStorage` under `md-converter-config-v1`, using the same JSON shape as config export (§5.4). Restore runs once on mount; save fires on every state change. Wrapped in try/catch so a full or disabled localStorage degrades silently.
 
 ---
 
 ## 9. Open Questions
 
-- Should mermaid diagrams be pre-rendered server-side for faster initial paint?
-- What happens if the AI emits an unsupported construct? (Silently strip? Render as plain text? Show a warning?)
-- Should the converter validate the markdown against the spec and surface errors, or render best-effort?
-- Should themes be able to declare incompatible markdown constructs they don't render well? (E.g., a minimalist theme that skips diagrams entirely.)
+Resolved during build (PRs #1–#9):
+
+- ~~Should mermaid be pre-rendered server-side?~~ — No. Live mermaid renders client-side; the HTML export captures the rendered SVGs from the live DOM at export time.
+- ~~What happens if the AI emits an unsupported construct?~~ — markdown-it renders it as best-effort (often as plain text); we don't validate or warn.
+- ~~Validate or render best-effort?~~ — Best-effort.
+
+Still open:
+
+- Should themes be able to declare incompatible constructs they don't render well? (e.g., a minimalist theme that skips diagrams entirely)
+- Should the exported HTML inline Google Fonts as base64 for true offline portability, or is a Google Fonts CDN link acceptable?
+- Should the size sliders be added once themes are refactored to use `--size-*` vars, or dropped from the spec entirely?
 
 ---
 
@@ -508,14 +546,47 @@ The active theme and config persist in browser local storage so users return to 
 
 **Class (class1–class4):** One of four semantic color buckets used across callouts, stat cards, and diagrams. The AI assigns classes; the theme assigns colors to classes.
 
-**Config:** A saved set of theme tokens (colors, fonts, sizes). Can be exported and imported as JSON.
+**Config:** A saved set of `{ theme, colorOverrides, fontOverrides }`. Exportable as JSON; identical shape lives in localStorage.
 
-**Guide:** The markdown specification document provided to the AI as a skill.
+**Guide:** The markdown specification document (`docs/spec/Markdown Output Guide.md`) provided to the AI as a skill.
 
-**IR (Intermediate Representation):** The parsed structure produced by the parser and consumed by the renderer.
+**IR (Intermediate Representation):** The parsed structure `{ frontmatter, title, tabs }` produced by the parser and consumed by the renderer.
 
 **Tab:** A section of the document delimited by H2 headings, rendered as a sidebar nav item.
 
-**Theme:** A complete visual treatment — colors, fonts, type sizes, layout patterns, and CSS — that can be applied to any conforming markdown document.
+**Theme:** A complete visual treatment — colors, fonts, CSS — that can be applied to any conforming markdown document.
 
-**Token:** A single design variable (e.g., `accent` color, `font_body`) defined by a theme.
+**Token:** A single design variable (e.g., `accent` color, `font-body`) defined by a theme and editable via the style sidebar.
+
+---
+
+## 11. Implementation Status (PRs #1–#9)
+
+| PR | Subject |
+|----|---------|
+| #1 | Scaffold SvelteKit + adapter-static + Prettier |
+| #2 | Parser pipeline: frontmatter, custom plugins, tab splitter |
+| #3 | Canonical renderer + Svelte layout components |
+| #4 | Extract 4 bundled themes + runtime swap |
+| #5 | Dossier (5th theme) from alt-style spec |
+| #6 | Browser-safe frontmatter (gray-matter → js-yaml) |
+| #7 | Style sidebar: theme + color + font controls |
+| #8 | Config + HTML export + live mermaid |
+| #9 | localStorage persistence + Markdown Guide download |
+
+Source layout:
+
+```
+src/
+  routes/+page.svelte           App shell: state, effects, demo fixture
+  lib/
+    parser/                     markdown-it + plugins + tab splitter → IR
+    renderer/                   HTML renderer + Svelte layout + mermaid + base.css
+    themes/                     Theme registry; per-theme CSS+JSON under src/themes/
+    sidebar/                    StyleSidebar component + curated font list
+    export/                     JSON config + HTML export helpers
+    fixtures/                   demo.md
+docs/spec/                      This file + Markdown Output Guide + reference HTML templates
+```
+
+Test surface: 40 vitest cases across parser (frontmatter, slug, tab splitting, each custom plugin), renderer (each custom HTML rule), and config (round-trip, validation, key filtering).
