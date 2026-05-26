@@ -128,7 +128,7 @@
 			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
 		</div>
 		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
-			Download Markdown Guide
+			Download Skill for AI
 		</button>
 	</div>
 
