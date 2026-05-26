@@ -3,7 +3,7 @@
 	import { DocLayout } from '$lib/renderer';
 	import '$lib/renderer/base.css';
 	import demoSource from '$lib/fixtures/demo.md?raw';
-	import guideSource from '../../docs/spec/Markdown Output Guide.md?raw';
+	import skillSource from '../../docs/spec/themed-markdown.skill.md?raw';
 	import { applyTheme, preloadAllFonts, themes, type ThemeId } from '$lib/themes';
 	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
 	import { StyleSidebar } from '$lib/sidebar';
@@ -139,9 +139,9 @@
 		showToast('Config imported');
 	}
 
-	function handleDownloadGuide() {
-		downloadFile('Markdown Output Guide.md', guideSource, 'text/markdown');
-		showToast('Guide downloaded');
+	function handleDownloadSkill() {
+		downloadFile('themed-markdown.skill.md', skillSource, 'text/markdown');
+		showToast('Skill downloaded');
 	}
 
 	async function handleUploadMd() {
@@ -191,7 +191,7 @@
 	onExportConfig={handleExportConfig}
 	onImportConfig={handleImportConfig}
 	onExportHtml={handleExportHtml}
-	onDownloadGuide={handleDownloadGuide}
+	onDownloadGuide={handleDownloadSkill}
 	onUploadMd={handleUploadMd}
 />
 
