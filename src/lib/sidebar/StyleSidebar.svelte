@@ -18,6 +18,7 @@
 		onImportConfig: () => void;
 		onExportHtml: () => void;
 		onDownloadGuide: () => void;
+		onUploadMd: () => void;
 	}
 
 	let {
@@ -31,7 +32,8 @@
 		onExportConfig,
 		onImportConfig,
 		onExportHtml,
-		onDownloadGuide
+		onDownloadGuide,
+		onUploadMd
 	}: Props = $props();
 
 	const COLOR_FIELDS: { key: ColorKey; label: string }[] = [
@@ -117,6 +119,18 @@
 		<h2>Style</h2>
 		<button class="ss-close" onclick={onClose} aria-label="Close style panel">×</button>
 	</header>
+
+	<div class="ss-actions">
+		<button class="ss-btn ss-btn--primary" onclick={onUploadMd}>Upload markdown</button>
+		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
+		<div class="ss-btn-row">
+			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
+			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
+		</div>
+		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
+			Download Markdown Guide
+		</button>
+	</div>
 
 	<section class="ss-section">
 		<h3>Theme</h3>
@@ -215,14 +229,6 @@
 	</section>
 
 	<footer class="ss-footer">
-		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
-		<div class="ss-btn-row">
-			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
-			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
-		</div>
-		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
-			Download Markdown Guide
-		</button>
 		<button class="ss-btn ss-btn--ghost" onclick={onReset}>Reset overrides</button>
 	</footer>
 </aside>
@@ -288,6 +294,14 @@
 		padding: 0 0.25rem;
 	}
 	.ss-close:hover { color: #fff; }
+
+	.ss-actions {
+		padding: 1rem 1.25rem 1.25rem;
+		border-bottom: 1px solid #2a2a30;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
 
 	.ss-section { padding: 1rem 1.25rem 1.25rem; border-bottom: 1px solid #2a2a30; }
 	.ss-section h3 { margin: 0 0 0.75rem; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6a6a76; }
@@ -398,4 +412,6 @@
 	.ss-btn--half { flex: 1; }
 	.ss-btn--ghost { background: transparent; color: #6a6a76; }
 	.ss-btn--ghost:hover { background: #232328; color: #b0b0b8; }
+	.ss-btn--primary { background: #4a6fa5; border-color: #5a7fb5; color: #fff; }
+	.ss-btn--primary:hover { background: #5a7fb5; }
 </style>
