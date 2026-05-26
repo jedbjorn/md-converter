@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Editorial — Markdown Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #F5F1E8;
+  --bg-2: #EFE9DA;
+  --ink: #1A1612;
+  --ink-soft: #4A413A;
+  --rule: #C9BFA8;
+  --accent: #C8553D;
+  --class1: #C8553D;
+  --class2: #588B8B;
+  --class3: #C99846;
+  --class4: #6B4F8F;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  font-feature-settings: "liga", "kern";
+  -webkit-font-smoothing: antialiased;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+}
+
+/* SIDEBAR TABS (H2) */
+.sidebar {
+  background: var(--bg-2);
+  border-right: 1px solid var(--rule);
+  padding: 60px 0 40px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.brand {
+  padding: 0 40px 40px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 30px;
+}
+
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 28px;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.brand-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 12px;
+}
+
+.tab-nav {
+  list-style: none;
+}
+
+.tab-nav li {
+  position: relative;
+}
+
+.tab-nav button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 14px 40px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-style: italic;
+  letter-spacing: -0.01em;
+}
+
+.tab-nav button:hover {
+  color: var(--ink);
+}
+
+.tab-nav button.active {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.tab-nav button.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: var(--accent);
+}
+
+.tab-num {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-style: normal;
+  color: var(--ink-soft);
+  margin-right: 14px;
+  letter-spacing: 0.1em;
+  vertical-align: middle;
+}
+
+/* MAIN CONTENT */
+.main {
+  padding: 80px 80px 40px;
+  max-width: 880px;
+}
+
+.tab-panel { display: none; animation: fadeIn 0.5s ease; }
+.tab-panel.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* H1 — TITLE */
+h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  margin-bottom: 24px;
+  color: var(--ink);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+  max-width: 200px;
+}
+
+.lede {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  max-width: 600px;
+  margin: 32px 0 60px;
+  padding-left: 24px;
+  border-left: 2px solid var(--accent);
+}
+
+/* H3 — SECTION HEADINGS */
+h3 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 50px 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+p {
+  margin-bottom: 1.2em;
+  max-width: 65ch;
+}
+
+p strong { font-weight: 600; color: var(--ink); }
+p em { font-style: italic; }
+p del { color: var(--ink-soft); }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+  transition: all 0.2s;
+}
+
+a:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--bg-2);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--accent);
+}
+
+/* LISTS */
+ul, ol { margin: 1em 0 1.5em 1.5em; }
+li { margin-bottom: 0.5em; }
+ul li::marker { color: var(--accent); }
+ol li::marker { color: var(--accent); font-weight: 600; }
+
+.task-list { list-style: none; margin-left: 0; }
+.task-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+}
+.task-checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.task-checkbox.done { background: var(--accent); border-color: var(--accent); }
+.task-checkbox.done::after {
+  content: '✓';
+  color: var(--bg);
+  font-size: 12px;
+  font-weight: 700;
+}
+.task-list li.done { color: var(--ink-soft); text-decoration: line-through; }
+
+/* TABLES */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 15px;
+}
+
+th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 12px 16px 8px;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* IMAGES */
+figure {
+  margin: 32px 0;
+}
+
+figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: sepia(0.05) contrast(1.02);
+}
+
+figcaption {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+/* CODE BLOCKS */
+pre {
+  background: var(--ink);
+  color: #E8E0D0;
+  padding: 24px;
+  border-radius: 2px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 24px 0;
+  border-left: 3px solid var(--accent);
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+}
+
+/* CALLOUTS */
+.callout {
+  margin: 28px 0;
+  padding: 20px 24px;
+  border-left: 2px solid;
+  position: relative;
+}
+
+.callout-class1 {
+  border-color: var(--class1);
+  background: color-mix(in srgb, var(--class1) 12%, transparent);
+}
+.callout-class2 {
+  border-color: var(--class2);
+  background: color-mix(in srgb, var(--class2) 12%, transparent);
+}
+.callout-class3 {
+  border-color: var(--class3);
+  background: color-mix(in srgb, var(--class3) 12%, transparent);
+}
+.callout-class4 {
+  border-color: var(--class4);
+  background: color-mix(in srgb, var(--class4) 12%, transparent);
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+.callout-class1 .callout-label { color: var(--class1); }
+.callout-class2 .callout-label { color: var(--class2); }
+.callout-class3 .callout-label { color: var(--class3); }
+.callout-class4 .callout-label { color: var(--class4); }
+
+/* STAT CARDS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  margin: 32px 0;
+}
+
+.stat-card {
+  background: var(--bg);
+  padding: 28px 24px;
+  border-top: 3px solid;
+}
+
+.stat-card.class1 { border-top-color: var(--class1); }
+.stat-card.class2 { border-top-color: var(--class2); }
+.stat-card.class3 { border-top-color: var(--class3); }
+.stat-card.class4 { border-top-color: var(--class4); }
+
+.stat-value {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
+}
+
+.stat-card.class1 .stat-value { color: var(--class1); }
+.stat-card.class2 .stat-value { color: var(--class2); }
+.stat-card.class3 .stat-value { color: var(--class3); }
+.stat-card.class4 .stat-value { color: var(--class4); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.stat-desc {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+/* LINEAR DIAGRAM */
+.linear {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 32px 0;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.linear-step {
+  flex: 1;
+  min-width: 140px;
+  padding: 18px 20px;
+  border-top: 3px solid;
+  background: var(--bg-2);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 16px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.linear-step.class1 { border-color: var(--class1); }
+.linear-step.class2 { border-color: var(--class2); }
+.linear-step.class3 { border-color: var(--class3); }
+.linear-step.class4 { border-color: var(--class4); }
+
+.linear-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background: var(--bg);
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+/* MERMAID */
+.mermaid-wrap {
+  background: var(--bg-2);
+  padding: 32px;
+  margin: 32px 0;
+  border-left: 3px solid var(--accent);
+}
+
+.mermaid {
+  display: flex;
+  justify-content: center;
+}
+
+/* FOOTER */
+.doc-footer {
+  margin-top: 80px;
+  padding: 40px 0 20px;
+  border-top: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.meta-item {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.meta-label {
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.meta-value {
+  color: var(--ink);
+  font-size: 13px;
+  font-family: var(--font-body);
+}
+
+/* Decorative drop cap on first paragraph of first tab */
+.tab-panel.active.first-tab > p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 5em;
+  float: left;
+  line-height: 0.85;
+  margin: 4px 12px 0 0;
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: relative; height: auto; }
+  .main { padding: 40px 32px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">Editorial</div>
+      <div class="brand-sub">Theme 01 · Light</div>
+    </div>
+    <ul class="tab-nav" id="tabNav">
+      <li><button class="active" data-tab="overview"><span class="tab-num">I</span>Overview</button></li>
+      <li><button data-tab="process"><span class="tab-num">II</span>Process</button></li>
+      <li><button data-tab="details"><span class="tab-num">III</span>Details</button></li>
+      <li><button data-tab="notes"><span class="tab-num">IV</span>Notes</button></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+
+    <div class="tab-panel active first-tab" id="overview">
+      <div class="eyebrow">Document · 2026</div>
+      <h1>A Specification<br>for Markdown</h1>
+      <p class="lede">A converter that turns AI-generated markdown into beautiful, customizable HTML — designed for the era when documents are written by machines and read by humans.</p>
+
+      <h3>By the Numbers</h3>
+      <div class="stats">
+        <div class="stat-card class1">
+          <div class="stat-value">14</div>
+          <div class="stat-label">Syntax Elements</div>
+          <div class="stat-desc">Covering structure, formatting, and visuals</div>
+        </div>
+        <div class="stat-card class2">
+          <div class="stat-value">4</div>
+          <div class="stat-label">Color Classes</div>
+          <div class="stat-desc">Applied across callouts, cards, and diagrams</div>
+        </div>
+        <div class="stat-card class3">
+          <div class="stat-value">~500</div>
+          <div class="stat-label">Tokens / Spec</div>
+          <div class="stat-desc">Optimized for AI skill efficiency</div>
+        </div>
+        <div class="stat-card class4">
+          <div class="stat-value">1:1</div>
+          <div class="stat-label">Doc In, Doc Out</div>
+          <div class="stat-desc">Single artifact, no config drift</div>
+        </div>
+      </div>
+
+      <h3>Premise</h3>
+      <p>The spec describes <strong>structure, not semantics</strong>. The AI instance is told only how to <em>organize</em> its output — never why. Presentation lives in the application layer, where it belongs.</p>
+
+      <div class="callout callout-class2">
+        <div class="callout-label">Principle</div>
+        Instruct structure, not semantics. The AI emits markdown. The app decides what it looks like.
+      </div>
+    </div>
+
+    <div class="tab-panel" id="process">
+      <div class="eyebrow">Workflow</div>
+      <h1>How It Flows</h1>
+      <p class="lede">One markdown document in. One HTML document out. The intermediate format stays portable, the styling stays editable.</p>
+
+      <h3>The Pipeline</h3>
+      <div class="linear">
+        <div class="linear-step class1">Prompt AI</div>
+        <div class="linear-step class2">Generate Markdown</div>
+        <div class="linear-step class3">Upload to Converter</div>
+        <div class="linear-step class4">Render HTML</div>
+      </div>
+
+      <h3>System Architecture</h3>
+      <div class="mermaid-wrap">
+        <div class="mermaid">
+flowchart LR
+  A[AI Instance]:::c1 --> B[Markdown Doc]:::c2
+  B --> C[Converter App]:::c3
+  C --> D[Themed HTML]:::c4
+  E[Style Sidebar]:::c3 --> C
+  F[Saved Config]:::c4 --> E
+  classDef c1 fill:#C8553D,stroke:#1A1612,stroke-width:1.5px,color:#F5F1E8
+  classDef c2 fill:#588B8B,stroke:#1A1612,stroke-width:1.5px,color:#F5F1E8
+  classDef c3 fill:#C99846,stroke:#1A1612,stroke-width:1.5px,color:#1A1612
+  classDef c4 fill:#6B4F8F,stroke:#1A1612,stroke-width:1.5px,color:#F5F1E8
+        </div>
+      </div>
+
+      <h3>Ordered Steps</h3>
+      <ol>
+        <li>Author writes a prompt to the AI instance</li>
+        <li>AI consults its markdown guide skill</li>
+        <li>AI emits a single markdown document</li>
+        <li>User uploads to the converter</li>
+        <li>App applies chosen theme and renders HTML</li>
+      </ol>
+    </div>
+
+    <div class="tab-panel" id="details">
+      <div class="eyebrow">Reference</div>
+      <h1>The Details</h1>
+      <p class="lede">A reference for every element the spec supports — what it does, where it lives, and how it renders.</p>
+
+      <h3>Element Inventory</h3>
+      <table>
+        <thead>
+          <tr><th>Element</th><th>Syntax</th><th>Renders As</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Title</td><td><code>#</code></td><td>Document headline</td></tr>
+          <tr><td>Section</td><td><code>##</code></td><td>Sidebar tab</td></tr>
+          <tr><td>Heading</td><td><code>###</code></td><td>Section heading</td></tr>
+          <tr><td>Callout</td><td><code>&gt; [!class1]</code></td><td>Colored block</td></tr>
+          <tr><td>Stat Cards</td><td><code>```stats</code></td><td>Card grid</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Sample Block</h3>
+      <pre><code>---
+title: My Document
+tags: [spec, draft]
+date: 2026-05-25
+---
+
+# Hello World
+
+## First Section</code></pre>
+
+      <h3>Imagery</h3>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=1200&q=80" alt="Open book pages">
+        <figcaption>Figure 1 — The document, in its natural habitat.</figcaption>
+      </figure>
+
+      <p>You can also use <a href="#">inline links</a>, <code>inline code</code>, and ~~<del>strikethrough</del>~~ for deprecated content.</p>
+    </div>
+
+    <div class="tab-panel" id="notes">
+      <div class="eyebrow">Working File</div>
+      <h1>Open Threads</h1>
+      <p class="lede">Tasks, decisions still pending, and notes from the build.</p>
+
+      <h3>Outstanding Tasks</h3>
+      <ul class="task-list">
+        <li><span class="task-checkbox done"></span><span class="done">Lock the markdown spec</span></li>
+        <li><span class="task-checkbox done"></span><span class="done">Define the four-class color system</span></li>
+        <li><span class="task-checkbox"></span><span>Build the converter app</span></li>
+        <li><span class="task-checkbox"></span><span>Ship the four template themes</span></li>
+        <li><span class="task-checkbox"></span><span>Design the style sidebar UI</span></li>
+      </ul>
+
+      <h3>Reminders</h3>
+      <div class="callout callout-class1">
+        <div class="callout-label">Watch</div>
+        Token efficiency matters. Every line in the guide is loaded into the AI's context on every generation.
+      </div>
+
+      <div class="callout callout-class3">
+        <div class="callout-label">Decided</div>
+        Graphics live in the app. The markdown stays clean and portable across renderers.
+      </div>
+
+      <div class="callout callout-class4">
+        <div class="callout-label">Open</div>
+        Should the converter support config presets shared via URL?
+      </div>
+    </div>
+
+    <footer class="doc-footer">
+      <div class="meta-item">
+        <div class="meta-label">Date</div>
+        <div class="meta-value">May 25, 2026</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Project</div>
+        <div class="meta-value">Markdown → HTML Converter</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Purpose</div>
+        <div class="meta-value">Theme demonstration · Editorial</div>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'base', themeVariables: { fontFamily: 'JetBrains Mono', fontSize: '13px' }});
+
+  const buttons = document.querySelectorAll('#tabNav button');
+  const panels = document.querySelectorAll('.tab-panel');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
