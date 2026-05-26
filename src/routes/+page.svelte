@@ -3,6 +3,7 @@
 	import { DocLayout } from '$lib/renderer';
 	import '$lib/renderer/base.css';
 	import demoSource from '$lib/fixtures/demo.md?raw';
+	import guideSource from '../../docs/spec/Markdown Output Guide.md?raw';
 	import { applyTheme, preloadAllFonts, themes, type ThemeId } from '$lib/themes';
 	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
 	import { StyleSidebar } from '$lib/sidebar';
@@ -14,6 +15,8 @@
 		pickFile,
 		exportHtml
 	} from '$lib/export';
+
+	const STORAGE_KEY = 'md-converter-config-v1';
 
 	const ir = parse(demoSource);
 
@@ -31,6 +34,31 @@
 
 	$effect(() => {
 		preloadAllFonts();
+	});
+
+	// Restore from localStorage once on mount (no reactive deps → runs once)
+	$effect(() => {
+		if (typeof localStorage === 'undefined') return;
+		const stored = localStorage.getItem(STORAGE_KEY);
+		if (!stored) return;
+		const result = parseConfig(stored);
+		if (!result.ok) return;
+		activeTheme = result.config.theme;
+		colorOverrides = result.config.colorOverrides;
+		fontOverrides = result.config.fontOverrides;
+	});
+
+	// Persist on every change
+	$effect(() => {
+		if (typeof localStorage === 'undefined') return;
+		try {
+			localStorage.setItem(
+				STORAGE_KEY,
+				exportConfig(activeTheme, colorOverrides, fontOverrides)
+			);
+		} catch {
+			// localStorage may be full or disabled — silently degrade
+		}
 	});
 
 	$effect(() => {
@@ -110,6 +138,11 @@
 		showToast('Config imported');
 	}
 
+	function handleDownloadGuide() {
+		downloadFile('Markdown Output Guide.md', guideSource, 'text/markdown');
+		showToast('Guide downloaded');
+	}
+
 	function handleExportHtml() {
 		const layout = document.querySelector('.layout');
 		if (!layout) {
@@ -146,6 +179,7 @@
 	onExportConfig={handleExportConfig}
 	onImportConfig={handleImportConfig}
 	onExportHtml={handleExportHtml}
+	onDownloadGuide={handleDownloadGuide}
 />
 
 {#if toast}
