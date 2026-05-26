@@ -27,29 +27,18 @@ function configure(colors: ThemeColors, textColor: string, themeMode: 'light' | 
 }
 
 /**
- * Pick black or white as the text color that contrasts best against a given
- * fill. YIQ brightness — good enough to keep node labels legible whether the
- * fill is bright sage or deep coral, light or dark theme.
- */
-function contrastingText(hex: string): string {
-	const c = hex.replace('#', '');
-	if (c.length !== 6) return '#000000';
-	const r = parseInt(c.slice(0, 2), 16);
-	const g = parseInt(c.slice(2, 4), 16);
-	const b = parseInt(c.slice(4, 6), 16);
-	return (r * 299 + g * 587 + b * 114) / 1000 > 128 ? '#000000' : '#ffffff';
-}
-
-/**
  * Build a mermaid `classDef` preamble that binds class1..class4 to the
  * active theme's colors. Spec §3.5 / §8.2 — the renderer must inject this.
- * Per-class text color is chosen for contrast against the class fill so
- * labels stay legible whichever theme + class combination is in play.
+ *
+ * Node fill is the theme's panel bg (--bg-2) so node text always reads
+ * against the same surface the rest of the doc uses; class identity lives
+ * in a 2px colored border. Mirrors the alt-style spec's pipeline-card
+ * pattern and keeps text legibility consistent across all themes.
  */
-export function buildClassDefs(colors: ThemeColors): string {
-	const stroke = colors.bg;
+export function buildClassDefs(colors: ThemeColors, textColor: string): string {
+	const fill = colors['bg-2'];
 	const def = (k: 'class1' | 'class2' | 'class3' | 'class4') =>
-		`classDef ${k} fill:${colors[k]},stroke:${stroke},stroke-width:1.5px,color:${contrastingText(colors[k])};`;
+		`classDef ${k} fill:${fill},stroke:${colors[k]},stroke-width:2px,color:${textColor};`;
 	return [def('class1'), def('class2'), def('class3'), def('class4')].join('\n');
 }
 
@@ -82,7 +71,7 @@ export async function renderMermaidAll(
 	configure(colors, textColor, themeMode);
 
 	const nodes = document.querySelectorAll<HTMLElement>('.mermaid');
-	const classDefs = buildClassDefs(colors);
+	const classDefs = buildClassDefs(colors, textColor);
 
 	for (const node of nodes) {
 		const original =
@@ -116,7 +105,7 @@ export async function renderMermaidToSvg(
 	themeMode: 'light' | 'dark'
 ): Promise<string> {
 	configure(colors, textColor, themeMode);
-	const classDefs = buildClassDefs(colors);
+	const classDefs = buildClassDefs(colors, textColor);
 	const { svg } = await mermaid.render(id, injectClassDefs(source, classDefs));
 	return svg;
 }
