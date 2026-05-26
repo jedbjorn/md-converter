@@ -19,6 +19,7 @@
 	const STORAGE_KEY = 'md-converter-config-v1';
 
 	let ir = $state(parse(demoSource));
+	let activeSlug = $state('');
 
 	let activeTheme = $state<ThemeId>('editorial');
 	let colorOverrides = $state<Partial<Record<keyof ThemeColors, string>>>({});
@@ -79,9 +80,14 @@
 		}
 	});
 
-	// Re-render mermaid whenever the theme, any class color, or the IR changes
+	// Re-render mermaid whenever theme, class colors, IR, or active tab changes.
+	// Tab dep covers diagrams in initially-hidden panels: mermaid measures from
+	// the live DOM, so a panel that was display:none on first render produces
+	// 0-sized SVG. Re-running on slug change gives those panels a render pass
+	// while they're actually visible.
 	$effect(() => {
 		void ir;
+		void activeSlug;
 		void activeTheme;
 		void colorOverrides.class1;
 		void colorOverrides.class2;
@@ -178,7 +184,7 @@
 	<title>{ir.title}</title>
 </svelte:head>
 
-<DocLayout {ir} />
+<DocLayout {ir} bind:activeSlug />
 
 <StyleSidebar
 	bind:themeId={activeTheme}
