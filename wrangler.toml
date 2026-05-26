@@ -1,0 +1,9 @@
+# Cloudflare Workers static-assets config.
+# This project ships nothing but prerendered files (adapter-static),
+# so the Worker is purely an assets serve — no fetch handler needed.
+
+name = "md-converter"
+compatibility_date = "2026-05-26"
+
+[assets]
+directory = "./build"

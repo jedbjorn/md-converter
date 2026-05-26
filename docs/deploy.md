@@ -1,25 +1,23 @@
-# Deploying to Cloudflare Pages
+# Deploying to Cloudflare (Workers Static Assets)
 
-The app is a pure-static SvelteKit build (`@sveltejs/adapter-static`, every route prerendered). Cloudflare Pages serves the `build/` directory directly — no Workers, no SSR.
+The app is a pure-static SvelteKit build (`@sveltejs/adapter-static`, every route prerendered). Cloudflare's unified Workers flow now serves static sites via a Worker whose only job is to hand out files — config lives in `wrangler.toml` at the repo root.
 
 ## One-time setup (CF dashboard)
 
-1. **Cloudflare → Workers & Pages → Create → Pages → Connect to Git**
+1. **Cloudflare → Workers & Pages → Create application → Connect git**
 2. Authorize Cloudflare's GitHub app on `jedbjorn/md-converter` (the repo is public, so the GitHub app only needs read access)
-3. **Production branch:** `main`
-4. **Build settings:**
-   - **Framework preset:** `SvelteKit (static)` (auto-fills the values below)
+3. CF reads `wrangler.toml` and detects the project automatically. **Production branch:** `main`
+4. **Build settings** (should auto-fill from wrangler.toml + framework detection):
    - **Build command:** `npm run build`
-   - **Build output directory:** `build`
-   - **Root directory:** _(leave blank)_
+   - **Deploy command / Output directory:** `build`
    - **Environment variables:** none
 5. Save and deploy. First build takes a couple of minutes; subsequent builds ~30–60s.
 
 ## Custom domain
 
-After the first deploy lands at `<project>.pages.dev`:
+After the first deploy lands at `md-converter.<your-subdomain>.workers.dev`:
 
-1. **Project → Custom domains → Set up a custom domain**
+1. **Project → Settings → Domains & Routes → Add**
 2. Enter `md-converter.designs-os.com`
 3. Cloudflare auto-creates a CNAME in the `designs-os.com` zone (which is in the same account, since `emergence.designs-os.com` is already on it) and issues an SSL cert. No manual DNS work.
 
