@@ -4,13 +4,15 @@
 
 	interface Props {
 		tab: Tab;
+		index: number;
 		isActive: boolean;
 		isFirst: boolean;
 	}
 
-	let { tab, isActive, isFirst }: Props = $props();
+	let { tab, index, isActive, isFirst }: Props = $props();
 
 	const body = $derived(renderTokens(tab.tokens));
+	const tabIndex = $derived(String(index + 1).padStart(2, '0'));
 </script>
 
 <article
@@ -19,9 +21,10 @@
 	class:first-tab={isFirst}
 	id={tab.slug}
 	data-tab={tab.slug}
+	data-tab-index={tabIndex}
 >
 	{#if tab.heading}
-		<h1 class="doc-tab-heading">{tab.heading}</h1>
+		<h1 class="doc-tab-heading" data-tab-index={tabIndex}>{tab.heading}</h1>
 	{/if}
 	{@html body}
 </article>
