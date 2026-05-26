@@ -150,12 +150,25 @@
 		showToast('Skill downloaded');
 	}
 
+	function sizeWarning(parsed: typeof ir): string | null {
+		const tabs = parsed.tabs.length;
+		let mermaid = 0;
+		for (const tab of parsed.tabs) {
+			for (const tok of tab.tokens) if (tok.type === 'mermaid_block') mermaid++;
+		}
+		const flags: string[] = [];
+		if (tabs >= 25) flags.push(`${tabs} sections`);
+		if (mermaid >= 15) flags.push(`${mermaid} diagrams`);
+		if (flags.length === 0) return null;
+		return `Loaded — large doc (${flags.join(', ')}). Tab switches and theme changes may lag.`;
+	}
+
 	async function handleUploadMd() {
 		const text = await pickFile('text/markdown,.md,.markdown');
 		if (!text) return;
 		try {
 			ir = parse(text);
-			showToast('Markdown loaded');
+			showToast(sizeWarning(ir) ?? 'Markdown loaded');
 		} catch (err) {
 			showToast(`Parse failed: ${(err as Error).message}`);
 		}

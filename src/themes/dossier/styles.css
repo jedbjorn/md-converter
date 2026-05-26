@@ -142,11 +142,9 @@ body::before {
 .main {
 	padding: 56px 64px 96px;
 	max-width: 1008px;
-	counter-reset: md-panel;
 }
 
 .tab-panel {
-	counter-increment: md-panel;
 	animation: dossier-fade 320ms ease;
 }
 
@@ -169,7 +167,7 @@ body::before {
 }
 
 .doc-tab-heading::before {
-	content: counter(md-panel, decimal-leading-zero);
+	content: attr(data-tab-index);
 	display: block;
 	font-family: var(--font-display);
 	font-style: italic;
@@ -307,11 +305,13 @@ td code, th code {
 /* ─── stat cards ──────────────────────────────────────── */
 .stats {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	grid-template-columns: repeat(2, 1fr);
 	gap: 12px;
 	margin: 28px 0;
 	max-width: 68ch;
 }
+
+.stat-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .stat-card {
 	background: var(--bg-3);
@@ -331,8 +331,10 @@ td code, th code {
 	font-style: italic;
 	font-weight: 400;
 	font-size: 36px;
-	line-height: 1;
+	line-height: 1.05;
 	margin-bottom: 10px;
+	overflow-wrap: anywhere;
+	hyphens: auto;
 }
 
 .stat-card.class1 .stat-value { color: var(--class1); }
