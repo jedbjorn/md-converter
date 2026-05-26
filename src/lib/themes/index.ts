@@ -2,11 +2,13 @@ import editorialCss from '../../themes/editorial/styles.css?raw';
 import bauhausCss from '../../themes/bauhaus/styles.css?raw';
 import terminalCss from '../../themes/terminal/styles.css?raw';
 import atelierCss from '../../themes/atelier/styles.css?raw';
+import dossierCss from '../../themes/dossier/styles.css?raw';
 
 import editorialTokens from '../../themes/editorial/tokens.json';
 import bauhausTokens from '../../themes/bauhaus/tokens.json';
 import terminalTokens from '../../themes/terminal/tokens.json';
 import atelierTokens from '../../themes/atelier/tokens.json';
+import dossierTokens from '../../themes/dossier/tokens.json';
 
 import type { ThemeEntry, ThemeId, ThemeTokens } from './types';
 
@@ -34,6 +36,12 @@ export const themes: Record<ThemeId, ThemeEntry> = {
 		label: 'Atelier',
 		tokens: atelierTokens as ThemeTokens,
 		css: atelierCss
+	},
+	dossier: {
+		id: 'dossier',
+		label: 'Dossier',
+		tokens: dossierTokens as ThemeTokens,
+		css: dossierCss
 	}
 };
 
