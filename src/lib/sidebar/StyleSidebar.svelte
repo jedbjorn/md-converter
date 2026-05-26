@@ -230,6 +230,11 @@
 
 	<footer class="ss-footer">
 		<button class="ss-btn ss-btn--ghost" onclick={onReset}>Reset overrides</button>
+		<nav class="ss-legal" aria-label="Legal">
+			<a href="/privacy">Privacy</a>
+			<span aria-hidden="true">·</span>
+			<a href="/terms">Terms</a>
+		</nav>
 	</footer>
 </aside>
 
@@ -412,6 +417,17 @@
 	.ss-btn--half { flex: 1; }
 	.ss-btn--ghost { background: transparent; color: #6a6a76; }
 	.ss-btn--ghost:hover { background: #232328; color: #b0b0b8; }
+
+	.ss-legal {
+		display: flex;
+		justify-content: center;
+		gap: 0.4rem;
+		font: 11px ui-sans-serif, system-ui, sans-serif;
+		color: #5a5a64;
+		padding-top: 0.25rem;
+	}
+	.ss-legal a { color: #6a6a76; text-decoration: none; }
+	.ss-legal a:hover { color: #b0b0b8; text-decoration: underline; }
 	.ss-btn--primary { background: #4a6fa5; border-color: #5a7fb5; color: #fff; }
 	.ss-btn--primary:hover { background: #5a7fb5; }
 </style>

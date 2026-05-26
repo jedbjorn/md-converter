@@ -430,10 +430,12 @@ pre code {
 /* STAT CARDS */
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin: 32px 0;
 }
+
+.stat-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 
 .stat-card {
   padding: 24px;
@@ -461,9 +463,11 @@ pre code {
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 56px;
-  line-height: 1;
+  line-height: 1.05;
   letter-spacing: -0.04em;
   margin: 12px 0 12px;
+  overflow-wrap: anywhere;
+  hyphens: auto;
 }
 
 .stat-card.class1 .stat-value { color: var(--class1); }
