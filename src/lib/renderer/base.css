@@ -1,0 +1,56 @@
+/* Structural defaults — themes layer visual styling on top.
+   Anything here is contract-level: layout grid, tab visibility toggle,
+   sensible resets. No colors, no fonts. */
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+}
+
+.layout {
+	display: grid;
+	grid-template-columns: 280px 1fr;
+	min-height: 100vh;
+}
+
+.sidebar {
+	border-right: 1px solid currentColor;
+	padding: 1.5rem 0;
+}
+
+.brand {
+	padding: 0 1.5rem 1.5rem;
+	border-bottom: 1px solid currentColor;
+}
+
+.tab-nav {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.tab-nav button {
+	display: block;
+	width: 100%;
+	background: none;
+	border: 0;
+	padding: 0.75rem 1.5rem;
+	text-align: left;
+	cursor: pointer;
+	font: inherit;
+	color: inherit;
+}
+
+.main {
+	padding: 2rem 3rem;
+}
+
+.tab-panel {
+	display: none;
+}
+.tab-panel.active {
+	display: block;
+}

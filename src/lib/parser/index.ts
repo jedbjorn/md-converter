@@ -4,6 +4,7 @@ import { calloutsPlugin } from './plugins/callouts';
 import { statsPlugin } from './plugins/stats';
 import { linearPlugin } from './plugins/linear';
 import { mermaidPlugin } from './plugins/mermaid';
+import { tasksPlugin } from './plugins/tasks';
 import { splitTabs } from './tabs';
 import type { IR } from './types';
 
@@ -18,6 +19,7 @@ export function createParser(): MarkdownIt {
 	md.use(statsPlugin);
 	md.use(linearPlugin);
 	md.use(mermaidPlugin);
+	md.use(tasksPlugin);
 	return md;
 }
 
