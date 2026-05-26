@@ -18,6 +18,7 @@
 		onImportConfig: () => void;
 		onExportHtml: () => void;
 		onDownloadGuide: () => void;
+		onUploadMd: () => void;
 	}
 
 	let {
@@ -31,7 +32,8 @@
 		onExportConfig,
 		onImportConfig,
 		onExportHtml,
-		onDownloadGuide
+		onDownloadGuide,
+		onUploadMd
 	}: Props = $props();
 
 	const COLOR_FIELDS: { key: ColorKey; label: string }[] = [
@@ -119,6 +121,7 @@
 	</header>
 
 	<div class="ss-actions">
+		<button class="ss-btn ss-btn--primary" onclick={onUploadMd}>Upload markdown</button>
 		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
 		<div class="ss-btn-row">
 			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
@@ -409,4 +412,6 @@
 	.ss-btn--half { flex: 1; }
 	.ss-btn--ghost { background: transparent; color: #6a6a76; }
 	.ss-btn--ghost:hover { background: #232328; color: #b0b0b8; }
+	.ss-btn--primary { background: #4a6fa5; border-color: #5a7fb5; color: #fff; }
+	.ss-btn--primary:hover { background: #5a7fb5; }
 </style>
