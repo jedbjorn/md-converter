@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+	import { parse } from '$lib/parser';
+	import { DocLayout } from '$lib/renderer';
+	import '$lib/renderer/base.css';
+	import demoSource from '$lib/fixtures/demo.md?raw';
+
+	const ir = parse(demoSource);
+</script>
+
+<svelte:head>
+	<title>{ir.title}</title>
+</svelte:head>
+
+<DocLayout {ir} />
