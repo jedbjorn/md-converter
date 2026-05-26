@@ -21,7 +21,8 @@ function configure(colors: ThemeColors, textColor: string, themeMode: 'light' | 
 			lineColor: colors['text-soft'],
 			textColor,
 			mainBkg: colors.bg,
-			edgeLabelBackground: colors.bg
+			edgeLabelBackground: colors.bg,
+			fontSize: '15px'
 		}
 	});
 }
