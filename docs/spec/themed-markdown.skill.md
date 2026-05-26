@@ -1,6 +1,6 @@
 ---
 name: themed-markdown
-description: Output documents (specs, design docs, reports, briefs, project notes) in a structured markdown format with YAML frontmatter, H2-as-tabs, callouts, stat cards, mermaid diagrams, linear flow diagrams, task lists, and a four-color class system. Use whenever the user asks for output in "themed markdown", "md-converter format", or wants a document that will be uploaded to md-converter for themed HTML rendering. Trigger words include "themed markdown", "md-converter", "make a doc for", "spec doc", "design doc with tabs".
+description: Use whenever the user asks for a doc, docs, spec, specs, design doc, report, brief, plan, summary, write-up, RFC, ADR, runbook, or similar structured document. Outputs YAML frontmatter + H2-as-tabs + callouts + stat cards + mermaid + linear diagrams + four-class color system; renders to themed HTML via md-converter.
 ---
 
 # themed-markdown
@@ -9,10 +9,9 @@ Output documents in this format. The document is one markdown file; a separate w
 
 ## When to use
 
-- User asks for output in "themed markdown" / "md-converter format"
-- User mentions md-converter
-- User wants a multi-section document that will be presented visually (spec, design doc, report, brief, project plan)
-- User asks for a doc "with tabs", "with callouts", "with stat cards"
+Default format for **any structured doc**: doc, docs, spec, specs, design doc, RFC, ADR, report, brief, plan, runbook, summary, write-up, project notes. If the user is asking for a document longer than a paragraph or two, use this.
+
+Skip for: code-only answers, one-line replies, chat-flow conversation, throwaway scratch.
 
 ## Output contract
 
