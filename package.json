@@ -19,6 +19,7 @@
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.57.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
+		"@types/js-yaml": "^4.0.9",
 		"@types/markdown-it": "^14.1.2",
 		"@types/node": "^25.9.1",
 		"prettier": "^3.8.1",
@@ -30,7 +31,7 @@
 		"vitest": "^4.1.7"
 	},
 	"dependencies": {
-		"gray-matter": "^4.0.3",
+		"js-yaml": "^4.1.1",
 		"markdown-it": "^14.2.0"
 	}
 }
