@@ -17,7 +17,7 @@ A web application that converts a single markdown document into a styled HTML do
 
 ### 1.2 User Flow
 
-1. User prompts an AI instance that has the Markdown Output Guide loaded as a skill
+1. User prompts an AI instance that has the themed-markdown skill loaded
 2. AI generates a single markdown document conforming to the spec
 3. User uploads the markdown to the converter web app
 4. User selects a theme (or applies a saved config)
@@ -400,7 +400,8 @@ A right-edge slide-in panel toggled by a floating "Style" button (Esc closes).
 
 **Typography** — three font fields: `font-display`, `font-body`, `font-mono`. Each is a grouped `<select>` over a curated face list (every face is preloaded by some bundled theme, so picking any of them works across all themes), plus a "Custom…" option that reveals a free-text input for any CSS `font-family` string.
 
-**Footer actions** — Export HTML / Export config / Import config / Download Markdown Guide / Reset overrides.
+**Top actions** — Upload markdown / Export HTML / Export config / Import config / Download Skill for AI.
+**Footer action** — Reset overrides.
 
 Picking a theme clears overrides (fresh start). Reset overrides clears them without changing theme.
 
@@ -432,17 +433,17 @@ The same shape is used for localStorage persistence (§8.4).
 
 ## 6. AI Skill Integration
 
-### 6.1 The Markdown Output Guide
+### 6.1 The themed-markdown Skill
 
-A standalone markdown file (`docs/spec/Markdown Output Guide.md`) is bundled into the app and downloadable from the sidebar. Users load it into their AI tool as a skill, system prompt, or persistent instruction.
+A Claude-format skill (`docs/spec/themed-markdown.skill.md`) is bundled into the app and downloadable from the sidebar via "Download Skill for AI". It carries a `name` + `description` frontmatter so it can be loaded into any skill-aware AI tool (Claude Code, Claude API agents, etc.) and auto-invoked when the user asks for output in this format. Non-skill-aware tools can still load it as a system prompt or persistent instruction.
 
 ### 6.2 Distribution
 
-The guide is imported via Vite's `?raw` at build time so the bundled string is always in sync with the repo source.
+The skill file is imported via Vite's `?raw` at build time so the bundled string is always in sync with the repo source.
 
 ### 6.3 Token Efficiency
 
-The guide is intentionally short (~500 tokens) to minimize context overhead. It contains only the syntax rules — no examples beyond minimal demonstrations, no rationale, no styling instructions.
+The skill body is short (~700 tokens including the example) to minimize context overhead. It contains the syntax rules, when-to-use triggers, output contract, and one minimal example — no styling instructions.
 
 ### 6.4 AI Output Contract
 
@@ -463,7 +464,8 @@ When the AI follows the guide, its output:
 - Style sidebar with all controls listed in §5.2 (sizes excepted)
 - Config export / import (JSON)
 - HTML export (self-contained file with embedded CSS, vanilla tab-switch JS, mermaid pre-rendered to inline SVG)
-- Markdown Guide download
+- themed-markdown Skill download
+- Markdown upload via system file picker
 - localStorage persistence of theme + overrides
 
 ### 7.2 Deferred
@@ -548,7 +550,7 @@ Still open:
 
 **Config:** A saved set of `{ theme, colorOverrides, fontOverrides }`. Exportable as JSON; identical shape lives in localStorage.
 
-**Guide:** The markdown specification document (`docs/spec/Markdown Output Guide.md`) provided to the AI as a skill.
+**Skill:** The Claude-format skill file (`docs/spec/themed-markdown.skill.md`) provided to the AI; carries `name` + `description` frontmatter for auto-invocation.
 
 **IR (Intermediate Representation):** The parsed structure `{ frontmatter, title, tabs }` produced by the parser and consumed by the renderer.
 
@@ -572,7 +574,7 @@ Still open:
 | #6 | Browser-safe frontmatter (gray-matter → js-yaml) |
 | #7 | Style sidebar: theme + color + font controls |
 | #8 | Config + HTML export + live mermaid |
-| #9 | localStorage persistence + Markdown Guide download |
+| #9 | localStorage persistence + Skill download |
 
 Source layout:
 
@@ -586,7 +588,7 @@ src/
     sidebar/                    StyleSidebar component + curated font list
     export/                     JSON config + HTML export helpers
     fixtures/                   demo.md
-docs/spec/                      This file + Markdown Output Guide + reference HTML templates
+docs/spec/                      This file + themed-markdown.skill.md + reference HTML templates
 ```
 
 Test surface: 40 vitest cases across parser (frontmatter, slug, tab splitting, each custom plugin), renderer (each custom HTML rule), and config (round-trip, validation, key filtering).
