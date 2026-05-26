@@ -3,56 +3,75 @@
 	import { DocLayout } from '$lib/renderer';
 	import '$lib/renderer/base.css';
 	import demoSource from '$lib/fixtures/demo.md?raw';
-	import { themes, themeIds, applyTheme, type ThemeId } from '$lib/themes';
+	import { applyTheme, preloadAllFonts, type ThemeId } from '$lib/themes';
+	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
+	import { StyleSidebar } from '$lib/sidebar';
 
 	const ir = parse(demoSource);
 
-	let active = $state<ThemeId>('editorial');
+	let activeTheme = $state<ThemeId>('editorial');
+	let colorOverrides = $state<Partial<Record<keyof ThemeColors, string>>>({});
+	let fontOverrides = $state<Partial<Record<keyof ThemeTypography, string>>>({});
+	let sidebarOpen = $state(false);
+
+	const COLOR_KEYS: (keyof ThemeColors)[] = [
+		'bg', 'bg-2', 'bg-3', 'text', 'text-soft', 'rule', 'rule-soft',
+		'accent', 'class1', 'class2', 'class3', 'class4'
+	];
+	const FONT_KEYS: (keyof ThemeTypography)[] = ['font-display', 'font-body', 'font-mono'];
 
 	$effect(() => {
-		applyTheme(active);
+		preloadAllFonts();
 	});
+
+	$effect(() => {
+		applyTheme(activeTheme);
+	});
+
+	$effect(() => {
+		const root = document.documentElement;
+		for (const key of COLOR_KEYS) {
+			const v = colorOverrides[key];
+			if (v) root.style.setProperty(`--${key}`, v);
+			else root.style.removeProperty(`--${key}`);
+		}
+		for (const key of FONT_KEYS) {
+			const v = fontOverrides[key];
+			if (v) root.style.setProperty(`--${key}`, v);
+			else root.style.removeProperty(`--${key}`);
+		}
+	});
+
+	function setTheme(id: ThemeId) {
+		activeTheme = id;
+		colorOverrides = {};
+		fontOverrides = {};
+	}
+
+	function resetOverrides() {
+		colorOverrides = {};
+		fontOverrides = {};
+	}
 </script>
 
 <svelte:head>
 	<title>{ir.title}</title>
 </svelte:head>
 
-<div class="theme-picker">
-	{#each themeIds as id (id)}
-		<button class:is-active={active === id} onclick={() => (active = id)}>
-			{themes[id].label}
-		</button>
-	{/each}
-</div>
-
 <DocLayout {ir} />
 
-<style>
-	.theme-picker {
-		position: fixed;
-		top: 0.5rem;
-		right: 0.5rem;
-		z-index: 100;
-		display: flex;
-		gap: 0.25rem;
-		padding: 0.25rem;
-		background: rgba(0, 0, 0, 0.6);
-		border-radius: 4px;
-		font-family: ui-sans-serif, system-ui, sans-serif;
-		font-size: 0.75rem;
-	}
-	.theme-picker button {
-		background: transparent;
-		color: #fff;
-		border: 1px solid rgba(255, 255, 255, 0.25);
-		padding: 0.25rem 0.5rem;
-		border-radius: 2px;
-		cursor: pointer;
-		font: inherit;
-	}
-	.theme-picker button.is-active {
-		background: #fff;
-		color: #000;
-	}
-</style>
+<StyleSidebar
+	bind:themeId={activeTheme}
+	bind:colorOverrides
+	bind:fontOverrides
+	bind:open={sidebarOpen}
+	onThemeChange={setTheme}
+	onClose={() => (sidebarOpen = false)}
+	onReset={resetOverrides}
+/>
+
+<svelte:window
+	onkeydown={(e) => {
+		if (e.key === 'Escape') sidebarOpen = false;
+	}}
+/>
