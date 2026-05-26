@@ -10,9 +10,13 @@
 
 	let { ir }: Props = $props();
 
-	let activeSlug = $state('');
+	// Initial-tab capture is intentional; the effect below resyncs if the IR
+	// is later swapped (e.g. user uploads a new doc) to a tab set that doesn't
+	// contain the current slug.
+	// svelte-ignore state_referenced_locally
+	let activeSlug = $state(ir.tabs[0]?.slug ?? '');
 
-	$effect.pre(() => {
+	$effect(() => {
 		if (!ir.tabs.some((t) => t.slug === activeSlug)) {
 			activeSlug = ir.tabs[0]?.slug ?? '';
 		}
