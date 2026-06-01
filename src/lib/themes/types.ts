@@ -29,7 +29,16 @@ export interface ThemeTokens {
 	fontsHref?: string;
 }
 
-export type ThemeId = 'editorial' | 'bauhaus' | 'terminal' | 'atelier' | 'dossier';
+export type ThemeId =
+	| 'editorial'
+	| 'bauhaus'
+	| 'terminal'
+	| 'atelier'
+	| 'dossier'
+	| 'risograph'
+	| 'almanac'
+	| 'neongrid'
+	| 'manuscript';
 
 export interface ThemeEntry {
 	id: ThemeId;
