@@ -3,12 +3,20 @@ import bauhausCss from '../../themes/bauhaus/styles.css?raw';
 import terminalCss from '../../themes/terminal/styles.css?raw';
 import atelierCss from '../../themes/atelier/styles.css?raw';
 import dossierCss from '../../themes/dossier/styles.css?raw';
+import risographCss from '../../themes/risograph/styles.css?raw';
+import almanacCss from '../../themes/almanac/styles.css?raw';
+import neongridCss from '../../themes/neongrid/styles.css?raw';
+import manuscriptCss from '../../themes/manuscript/styles.css?raw';
 
 import editorialTokens from '../../themes/editorial/tokens.json';
 import bauhausTokens from '../../themes/bauhaus/tokens.json';
 import terminalTokens from '../../themes/terminal/tokens.json';
 import atelierTokens from '../../themes/atelier/tokens.json';
 import dossierTokens from '../../themes/dossier/tokens.json';
+import risographTokens from '../../themes/risograph/tokens.json';
+import almanacTokens from '../../themes/almanac/tokens.json';
+import neongridTokens from '../../themes/neongrid/tokens.json';
+import manuscriptTokens from '../../themes/manuscript/tokens.json';
 
 import type { ThemeEntry, ThemeId, ThemeTokens } from './types';
 
@@ -42,6 +50,30 @@ export const themes: Record<ThemeId, ThemeEntry> = {
 		label: 'Dossier',
 		tokens: dossierTokens as ThemeTokens,
 		css: dossierCss
+	},
+	risograph: {
+		id: 'risograph',
+		label: 'Risograph',
+		tokens: risographTokens as ThemeTokens,
+		css: risographCss
+	},
+	almanac: {
+		id: 'almanac',
+		label: 'Almanac',
+		tokens: almanacTokens as ThemeTokens,
+		css: almanacCss
+	},
+	neongrid: {
+		id: 'neongrid',
+		label: 'Neon Grid',
+		tokens: neongridTokens as ThemeTokens,
+		css: neongridCss
+	},
+	manuscript: {
+		id: 'manuscript',
+		label: 'Manuscript',
+		tokens: manuscriptTokens as ThemeTokens,
+		css: manuscriptCss
 	}
 };
 
