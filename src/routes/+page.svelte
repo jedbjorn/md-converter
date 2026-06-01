@@ -8,6 +8,7 @@
 	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
 	import { StyleSidebar } from '$lib/sidebar';
 	import { renderMermaidAll } from '$lib/renderer/mermaid';
+	import { readInlineParam } from '$lib/inline';
 	import {
 		exportConfig,
 		parseConfig,
@@ -47,6 +48,22 @@
 		activeTheme = result.config.theme;
 		colorOverrides = result.config.colorOverrides;
 		fontOverrides = result.config.fontOverrides;
+	});
+
+	// Load an inline doc from the ?c= deep link once on mount. The markdown rides
+	// in the URL (gzip+base64url) so this works cross-origin against the live app
+	// with no fetch. After loading, strip the param so a reload/share doesn't
+	// drag the whole doc along and the address bar stays clean.
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		readInlineParam(window.location.search)
+			.then((md) => {
+				if (md === null) return;
+				ir = parse(md);
+				history.replaceState(null, '', window.location.pathname + window.location.hash);
+				showToast(sizeWarning(ir) ?? 'Loaded from link');
+			})
+			.catch(() => showToast('Could not read the document from this link'));
 	});
 
 	// Persist on every change
