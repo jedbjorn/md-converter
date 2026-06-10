@@ -154,7 +154,7 @@ body {
 /* MAIN */
 .main {
   padding: 80px 88px 40px;
-  max-width: 980px;
+  max-width: 1300px;
 }
 
 .tab-panel { display: none; }
@@ -188,7 +188,7 @@ body {
 h1 {
   font-family: var(--font-display);
   font-weight: 300;
-  font-size: clamp(56px, 7.5vw, 96px);
+  font-size: clamp(40px, 7.5vw, 60px);
   line-height: 0.95;
   letter-spacing: -0.02em;
   margin-bottom: 32px;

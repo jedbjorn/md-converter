@@ -156,7 +156,7 @@ body::after {
 /* MAIN */
 .main {
   padding: 64px 72px 48px;
-  max-width: 880px;
+  max-width: 1300px;
   position: relative;
 }
 
@@ -172,7 +172,7 @@ body::after {
 h1 {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: clamp(40px, 8vw, 68px);
+  font-size: clamp(40px, 8vw, 60px);
   line-height: 1;
   letter-spacing: -0.02em;
   margin-bottom: 8px;
