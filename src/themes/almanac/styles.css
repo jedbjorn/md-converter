@@ -192,7 +192,7 @@ h3 {
   border-bottom: 2px solid var(--rule);
 }
 
-p { margin-bottom: 0.9em; max-width: 66ch; }
+p { margin-bottom: 0.9em; min-width: 500px; max-width: 700px; }
 p strong { font-family: var(--font-display); font-weight: 600; }
 p em { font-style: italic; }
 p del { color: var(--text-soft); }

@@ -175,7 +175,7 @@ h3::before {
   margin-right: 14px;
 }
 
-p { margin-bottom: 1.25em; max-width: 64ch; font-weight: 300; }
+p { margin-bottom: 1.25em; min-width: 500px; max-width: 700px; font-weight: 300; }
 p strong { font-weight: 600; }
 p em { font-family: var(--font-display); font-style: italic; font-size: 1.05em; }
 p del { color: var(--text-soft); }
