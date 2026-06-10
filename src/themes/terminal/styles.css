@@ -194,7 +194,7 @@ body::after {
 /* MAIN */
 .main {
   padding: 56px 64px 40px;
-  max-width: 1300px;
+  max-width: 1210px;
 }
 
 .tab-panel { display: none; }

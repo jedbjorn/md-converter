@@ -50,7 +50,7 @@ body::before {
 
 /* ─── layout ──────────────────────────────────────────── */
 .layout {
-	grid-template-columns: 320px 1fr;
+	grid-template-columns: 280px 1fr;
 	position: relative;
 	z-index: 2;
 }
@@ -141,7 +141,7 @@ body::before {
 /* ─── main ────────────────────────────────────────────── */
 .main {
 	padding: 56px 64px 96px;
-	max-width: 1300px;
+	max-width: 1210px;
 }
 
 .tab-panel {
@@ -157,7 +157,7 @@ body::before {
 .doc-tab-heading {
 	font-family: var(--font-display);
 	font-weight: 500;
-	font-size: 38px;
+	font-size: clamp(40px, 6vw, 60px);
 	line-height: 1.1;
 	letter-spacing: -0.02em;
 	color: var(--text);
@@ -407,7 +407,6 @@ td code, th code {
 	border-radius: 4px;
 	padding: 22px 26px;
 	margin: 22px 0;
-	max-width: 68ch;
 	position: relative;
 }
 
@@ -507,6 +506,5 @@ td code, th code {
 	.layout { grid-template-columns: 1fr; }
 	.sidebar { position: relative; height: auto; }
 	.main { padding: 40px 28px 64px; }
-	.doc-tab-heading { font-size: 30px; }
 	.doc-tab-heading::before { font-size: 48px; }
 }
