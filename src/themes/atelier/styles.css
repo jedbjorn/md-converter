@@ -237,7 +237,8 @@ h3::after {
 
 p {
   margin-bottom: 1.3em;
-  max-width: 64ch;
+  min-width: 500px;
+  max-width: 700px;
   color: var(--text);
   font-weight: 300;
 }
