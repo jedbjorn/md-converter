@@ -9,13 +9,8 @@
 	import { StyleSidebar } from '$lib/sidebar';
 	import { renderMermaidAll } from '$lib/renderer/mermaid';
 	import { readInlineParam } from '$lib/inline';
-	import {
-		exportConfig,
-		parseConfig,
-		downloadFile,
-		pickFile,
-		exportHtml
-	} from '$lib/export';
+	import { readUrlParam } from '$lib/remote';
+	import { exportConfig, parseConfig, downloadFile, pickFile, exportHtml } from '$lib/export';
 
 	const STORAGE_KEY = 'md-converter-config-v1';
 
@@ -29,8 +24,18 @@
 	let toast = $state<string | null>(null);
 
 	const COLOR_KEYS: (keyof ThemeColors)[] = [
-		'bg', 'bg-2', 'bg-3', 'text', 'text-soft', 'rule', 'rule-soft',
-		'accent', 'class1', 'class2', 'class3', 'class4'
+		'bg',
+		'bg-2',
+		'bg-3',
+		'text',
+		'text-soft',
+		'rule',
+		'rule-soft',
+		'accent',
+		'class1',
+		'class2',
+		'class3',
+		'class4'
 	];
 	const FONT_KEYS: (keyof ThemeTypography)[] = ['font-display', 'font-body', 'font-mono'];
 
@@ -50,30 +55,34 @@
 		fontOverrides = result.config.fontOverrides;
 	});
 
-	// Load an inline doc from the ?c= deep link once on mount. The markdown rides
-	// in the URL (gzip+base64url) so this works cross-origin against the live app
-	// with no fetch. After loading, strip the param so a reload/share doesn't
-	// drag the whole doc along and the address bar stays clean.
+	// Load a doc from a deep link once on mount: `?c=` (inline gzip+base64url,
+	// rides in the URL) or `?url=` (fetch an allowlisted raw GitHub doc). After
+	// loading, strip the query so a reload/share doesn't drag the param along and
+	// the address bar stays clean.
 	$effect(() => {
 		if (typeof window === 'undefined') return;
-		readInlineParam(window.location.search)
-			.then((md) => {
-				if (md === null) return;
-				ir = parse(md);
+		const search = window.location.search;
+		(async () => {
+			const inline = await readInlineParam(search);
+			if (inline !== null) return { md: inline, note: 'Loaded from link' };
+			const remote = await readUrlParam(search);
+			if (remote !== null) return { md: remote, note: 'Loaded from URL' };
+			return null;
+		})()
+			.then((res) => {
+				if (!res) return;
+				ir = parse(res.md);
 				history.replaceState(null, '', window.location.pathname + window.location.hash);
-				showToast(sizeWarning(ir) ?? 'Loaded from link');
+				showToast(sizeWarning(ir) ?? res.note);
 			})
-			.catch(() => showToast('Could not read the document from this link'));
+			.catch(() => showToast('Could not load the document from this link'));
 	});
 
 	// Persist on every change
 	$effect(() => {
 		if (typeof localStorage === 'undefined') return;
 		try {
-			localStorage.setItem(
-				STORAGE_KEY,
-				exportConfig(activeTheme, colorOverrides, fontOverrides)
-			);
+			localStorage.setItem(STORAGE_KEY, exportConfig(activeTheme, colorOverrides, fontOverrides));
 		} catch {
 			// localStorage may be full or disabled — silently degrade
 		}
@@ -204,7 +213,11 @@
 			fontOverrides,
 			layoutHtml: layout.outerHTML
 		});
-		const filename = ir.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'document';
+		const filename =
+			ir.title
+				.toLowerCase()
+				.replace(/[^a-z0-9]+/g, '-')
+				.replace(/^-|-$/g, '') || 'document';
 		downloadFile(`${filename}.html`, html, 'text/html');
 		showToast('HTML exported');
 	}
@@ -252,7 +265,10 @@
 		padding: 0.6rem 1.2rem;
 		border-radius: 4px;
 		z-index: 300;
-		font: 500 13px ui-sans-serif, system-ui, sans-serif;
+		font:
+			500 13px ui-sans-serif,
+			system-ui,
+			sans-serif;
 		box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
 	}
 </style>
