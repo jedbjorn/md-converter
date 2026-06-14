@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
-import type { ClassName, LinearStep, StatCard } from '$lib/parser/types';
+import type { ClassName, LinearStep, StatCard } from '../parser/types';
 
 const md = new MarkdownIt({ html: false, linkify: true });
 const esc = md.utils.escapeHtml;

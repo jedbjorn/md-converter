@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IR } from '$lib/parser/types';
+	import type { IR } from '../parser/types';
 	import Sidebar from './Sidebar.svelte';
 	import TabPanel from './TabPanel.svelte';
 	import DocFooter from './DocFooter.svelte';

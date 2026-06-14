@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { themes, themeIds, type ThemeId } from '$lib/themes';
-	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
+	import { themes, themeIds, type ThemeId } from '../themes';
+	import type { ThemeColors, ThemeTypography } from '../themes/types';
 	import { FONT_OPTIONS, GROUP_LABELS, type FontOption } from './fonts';
 
 	type ColorKey = keyof ThemeColors;

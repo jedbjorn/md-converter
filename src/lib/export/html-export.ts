@@ -1,6 +1,6 @@
-import baseCss from '$lib/renderer/base.css?raw';
-import { themes, type ThemeId } from '$lib/themes';
-import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
+import baseCss from '../renderer/base.css?raw';
+import { themes, type ThemeId } from '../themes';
+import type { ThemeColors, ThemeTypography } from '../themes/types';
 
 const TAB_SWITCH_JS = `(function(){
 	var buttons = document.querySelectorAll('.tab-nav button[data-tab]');
