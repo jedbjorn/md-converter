@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Tab } from '$lib/parser/types';
+	import type { Tab } from '../parser/types';
 	import { renderTokens } from './render-html';
 
 	interface Props {
