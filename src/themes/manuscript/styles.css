@@ -370,10 +370,10 @@ pre code { background: none; color: inherit; padding: 0; }
 /* LINEAR DIAGRAM */
 .linear {
   display: flex;
-  align-items: center;
-  gap: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
   margin: 32px 0;
-  flex-wrap: wrap;
 }
 .linear-step {
   padding: 9px 16px;
@@ -383,19 +383,17 @@ pre code { background: none; color: inherit; padding: 0; }
   text-transform: uppercase;
   letter-spacing: 0.06em;
   position: relative;
-  margin-right: 28px;
-  margin-bottom: 8px;
 }
 .linear-step.class1 { border-bottom: 2px solid var(--class1); }
 .linear-step.class2 { border-bottom: 2px solid var(--class2); }
 .linear-step.class3 { border-bottom: 2px solid var(--class3); }
 .linear-step.class4 { border-bottom: 2px solid var(--class4); }
 .linear-step:not(:last-child)::after {
-  content: '→';
+  content: '↓';
   position: absolute;
-  right: -22px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
   color: var(--text-soft);
 }
 

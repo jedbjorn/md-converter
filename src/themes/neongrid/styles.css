@@ -428,10 +428,10 @@ pre code { background: none; color: inherit; padding: 0; border: none; }
 /* LINEAR DIAGRAM */
 .linear {
   display: flex;
-  align-items: center;
-  gap: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
   margin: 32px 0;
-  flex-wrap: wrap;
 }
 .linear-step {
   padding: 8px 16px;
@@ -443,19 +443,17 @@ pre code { background: none; color: inherit; padding: 0; border: none; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
   position: relative;
-  margin-right: 26px;
-  margin-bottom: 8px;
 }
 .linear-step.class1 { border-color: var(--class1); box-shadow: var(--glow) rgba(255, 45, 149, 0.3); }
 .linear-step.class2 { border-color: var(--class2); box-shadow: var(--glow) rgba(45, 226, 255, 0.3); }
 .linear-step.class3 { border-color: var(--class3); box-shadow: var(--glow) rgba(255, 225, 77, 0.28); }
 .linear-step.class4 { border-color: var(--class4); box-shadow: var(--glow) rgba(124, 255, 94, 0.28); }
 .linear-step:not(:last-child)::after {
-  content: '→';
+  content: '↓';
   position: absolute;
-  right: -20px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
   color: var(--accent);
 }
 

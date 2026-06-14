@@ -418,16 +418,14 @@ pre code {
 /* LINEAR DIAGRAM */
 .linear {
   display: flex;
+  flex-direction: column;
   align-items: stretch;
-  gap: 0;
+  gap: 22px;
   margin: 32px 0;
-  overflow-x: auto;
   padding: 4px 0;
 }
 
 .linear-step {
-  flex: 1;
-  min-width: 140px;
   padding: 18px 20px;
   border-top: 3px solid;
   background: var(--bg-2);
@@ -445,11 +443,11 @@ pre code {
 .linear-step.class4 { border-color: var(--class4); }
 
 .linear-step:not(:last-child)::after {
-  content: '→';
+  content: '↓';
   position: absolute;
-  right: -8px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
   z-index: 2;
   background: var(--bg);
   width: 16px;
