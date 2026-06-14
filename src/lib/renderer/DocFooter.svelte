@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Frontmatter } from '$lib/parser/types';
+	import type { Frontmatter } from '../parser/types';
 
 	interface Props {
 		frontmatter: Frontmatter;

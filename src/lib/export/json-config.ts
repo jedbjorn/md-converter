@@ -1,6 +1,6 @@
-import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
-import type { ThemeId } from '$lib/themes';
-import { themeIds } from '$lib/themes';
+import type { ThemeColors, ThemeTypography } from '../themes/types';
+import type { ThemeId } from '../themes';
+import { themeIds } from '../themes';
 
 export interface SavedConfig {
 	version: 1;

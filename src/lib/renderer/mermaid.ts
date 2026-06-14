@@ -1,5 +1,5 @@
 import mermaid from 'mermaid';
-import type { ThemeColors } from '$lib/themes/types';
+import type { ThemeColors } from '../themes/types';
 
 /**
  * (Re-)initialize mermaid with theme-aware defaults. Called before every

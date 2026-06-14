@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parse } from '$lib/parser';
+import { parse } from '../parser';
 import { renderTokens } from './render-html';
 
 const fm = `---\ntitle: T\ntags: []\n---\n\n`;
