@@ -497,16 +497,14 @@ pre code {
 /* LINEAR */
 .linear {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   margin: 40px 0;
-  overflow-x: auto;
-  gap: 0;
+  gap: 28px;
   padding: 8px 0;
 }
 
 .linear-step {
-  flex: 1;
-  min-width: 140px;
   padding: 24px 20px;
   font-family: var(--font-display);
   font-weight: 400;
@@ -538,13 +536,13 @@ pre code {
 .linear-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  right: -1px;
-  top: -1px;
+  left: 50%;
+  bottom: -19px;
   width: 14px;
   height: 14px;
   border-right: 1px solid var(--text-soft);
-  border-top: 1px solid var(--text-soft);
-  transform: rotate(45deg) translateY(-4px);
+  border-bottom: 1px solid var(--text-soft);
+  transform: translateX(-50%) rotate(45deg);
 }
 
 /* MERMAID */
