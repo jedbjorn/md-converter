@@ -42,7 +42,11 @@ doc renders, themed, in the app:
 [![Open in md-converter](https://img.shields.io/badge/Open%20in-md--converter-6b46c1?style=flat-square)](https://md-converter.designs-os.com/?url=https://github.com/<owner>/<repo>/blob/main/README.md)
 ```
 
-Swap `<owner>/<repo>` for your repository.
+Swap `<owner>/<repo>` for your repository. The badge can point at **any doc in
+your repo**, not just the root `README.md` — change the `blob/main/README.md`
+tail to the file's path (e.g. `blob/main/docs/architecture.md`). See
+[The ?url= deep link](#the-url-deep-link) for subdirectory, branch, and tag
+forms.
 
 **One requirement: the document must follow the themed-markdown syntax.**
 md-converter does **not** render arbitrary Markdown — a file that doesn't
@@ -77,17 +81,31 @@ This README itself follows the contract — that's why its own badge renders.
 https://md-converter.designs-os.com/?url=<github-document-url>
 ```
 
-The `url` param accepts **any public GitHub document**, in either shape:
+The `url` param takes the GitHub address of **any single document** — the exact
+URL you see in your browser when viewing that file on GitHub. Copy it, paste it
+after `?url=`. It is **not** limited to a repo's root `README.md`: a file in a
+subdirectory, nested any number of folders deep, or on a different branch, tag,
+or commit all work, because the part after the ref is just the file's path in
+the repo.
 
-| Shape                       | Example                                                          |
-| --------------------------- | ---------------------------------------------------------------- |
-| `github.com` blob/raw link  | `https://github.com/<owner>/<repo>/blob/main/<doc>.md`           |
-| `raw.githubusercontent.com` | `https://raw.githubusercontent.com/<owner>/<repo>/main/<doc>.md` |
+| Where the doc lives  | URL to pass                                                           |
+| -------------------- | --------------------------------------------------------------------- |
+| Repo root            | `https://github.com/<owner>/<repo>/blob/main/README.md`               |
+| A subdirectory       | `https://github.com/<owner>/<repo>/blob/main/docs/architecture.md`    |
+| Nested deeper        | `https://github.com/<owner>/<repo>/blob/main/docs/specs/v2/design.md` |
+| On another branch    | `https://github.com/<owner>/<repo>/blob/release-2.0/CHANGELOG.md`     |
+| At a tag or commit   | `https://github.com/<owner>/<repo>/blob/v1.4.0/README.md`             |
+| Raw host (also fine) | `https://raw.githubusercontent.com/<owner>/<repo>/main/docs/spec.md`  |
+
+The general form is `…/blob/<ref>/<path>`, where `<ref>` is a branch, tag, or
+commit SHA and `<path>` is the file's location at any subdirectory depth. The
+single rule: **link a file, not a folder** — a bare repo or directory page (no
+`/blob/<ref>/<file>`) is refused.
 
 A `github.com` `/blob/` or `/raw/` link is normalized to the raw host before
 fetching. The app is a static site, so the fetch runs in your browser against
 `raw.githubusercontent.com` (which is CORS-permissive) — there is no server leg
-and no SSRF surface. Non-GitHub hosts, non-`https` URLs, bare repo pages, and
+and no SSRF surface. Non-GitHub hosts, non-`https` URLs, folder/repo pages, and
 documents that don't follow the themed-markdown syntax are refused; for the
 last case, rewrite the doc against the contract (download the skill above).
 
