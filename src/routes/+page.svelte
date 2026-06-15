@@ -56,23 +56,30 @@
 	});
 
 	// Load a doc from a deep link once on mount: `?c=` (inline gzip+base64url,
-	// rides in the URL) or `?url=` (fetch an allowlisted raw GitHub doc). After
-	// loading, strip the query so a reload/share doesn't drag the param along and
-	// the address bar stays clean.
+	// rides in the URL) or `?url=` (fetch a public GitHub doc).
+	//
+	// A `?url=` load is an *embedded page*: the param is left in the address bar
+	// so the URL stays a shareable, reload-safe link — the in-browser GitHub
+	// fetch is what makes it work, so no server, DB, or auth is involved. An
+	// inline `?c=` load strips its (potentially huge) param to keep the address
+	// bar sane; the doc is self-contained in `ir` either way.
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 		const search = window.location.search;
 		(async () => {
 			const inline = await readInlineParam(search);
-			if (inline !== null) return { md: inline, note: 'Loaded from link' };
+			if (inline !== null) return { md: inline, note: 'Loaded from link', keepUrl: false };
 			const remote = await readUrlParam(search);
-			if (remote !== null) return { md: remote, note: 'Loaded from URL' };
+			if (remote !== null)
+				return { md: remote, note: 'Loaded — shareable link in your address bar', keepUrl: true };
 			return null;
 		})()
 			.then((res) => {
 				if (!res) return;
 				ir = parse(res.md);
-				history.replaceState(null, '', window.location.pathname + window.location.hash);
+				if (!res.keepUrl) {
+					history.replaceState(null, '', window.location.pathname + window.location.hash);
+				}
 				showToast(sizeWarning(ir) ?? res.note);
 			})
 			.catch(() => showToast('Could not load the document from this link'));
@@ -194,6 +201,9 @@
 		if (!text) return;
 		try {
 			ir = parse(text);
+			// A locally-uploaded doc no longer lives at the address-bar URL — clear any
+			// retained ?url= so the link can't be shared as if it points at this file.
+			history.replaceState(null, '', window.location.pathname + window.location.hash);
 			showToast(sizeWarning(ir) ?? 'Markdown loaded');
 		} catch (err) {
 			showToast(`Parse failed: ${(err as Error).message}`);
