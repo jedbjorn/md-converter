@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { validateRemoteUrl, getUrlParam } from './index';
 
-describe('validateRemoteUrl — accepts allowlisted sources', () => {
-	it('passes a raw.githubusercontent URL for the allowed owner unchanged', () => {
+describe('validateRemoteUrl — accepts any GitHub source', () => {
+	it('passes a raw.githubusercontent URL unchanged', () => {
 		const url = 'https://raw.githubusercontent.com/jedbjorn/super-coder/main/README.md';
 		expect(validateRemoteUrl(url)).toBe(url);
 	});
@@ -19,6 +19,14 @@ describe('validateRemoteUrl — accepts allowlisted sources', () => {
 		);
 	});
 
+	it('accepts any owner, not just one', () => {
+		expect(validateRemoteUrl('https://github.com/someoneelse/repo/blob/main/README.md')).toBe(
+			'https://raw.githubusercontent.com/someoneelse/repo/main/README.md'
+		);
+		const raw = 'https://raw.githubusercontent.com/someoneelse/repo/main/README.md';
+		expect(validateRemoteUrl(raw)).toBe(raw);
+	});
+
 	it('keeps a nested file path intact', () => {
 		const url = 'https://raw.githubusercontent.com/jedbjorn/repo/main/a/b/c.md';
 		expect(validateRemoteUrl(url)).toBe(url);
@@ -26,18 +34,6 @@ describe('validateRemoteUrl — accepts allowlisted sources', () => {
 });
 
 describe('validateRemoteUrl — refuses everything else', () => {
-	it('rejects a different owner on the raw host', () => {
-		expect(() =>
-			validateRemoteUrl('https://raw.githubusercontent.com/someoneelse/repo/main/README.md')
-		).toThrow(/jedbjorn/);
-	});
-
-	it('rejects a different owner on github.com', () => {
-		expect(() =>
-			validateRemoteUrl('https://github.com/someoneelse/repo/blob/main/README.md')
-		).toThrow(/jedbjorn/);
-	});
-
 	it('rejects an unrelated host', () => {
 		expect(() => validateRemoteUrl('https://evil.example.com/jedbjorn/x.md')).toThrow();
 	});

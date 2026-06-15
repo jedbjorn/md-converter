@@ -7,24 +7,23 @@
 // server leg and no SSRF surface. It only works against CORS-permissive hosts:
 // raw.githubusercontent.com sends `Access-Control-Allow-Origin: *`.
 //
-// Allowlist: only this owner's public GitHub repos. Both URL shapes are
-// accepted and normalized to the raw host (the only one with permissive CORS):
-//   https://raw.githubusercontent.com/jedbjorn/<repo>/<ref>/<path>
-//   https://github.com/jedbjorn/<repo>/blob/<ref>/<path>   (→ converted to raw)
-// Anything else — another owner, another host, a non-https URL — is refused.
-// For docs outside the allowlist, upload the .md file in the Style sidebar.
+// Allowlist: any public GitHub repo. Both URL shapes are accepted and
+// normalized to the raw host (the only one with permissive CORS):
+//   https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path>
+//   https://github.com/<owner>/<repo>/blob/<ref>/<path>   (→ converted to raw)
+// Anything else — another host, a non-https URL, a repo page with no file — is
+// refused. For docs outside GitHub, upload the .md file in the Style sidebar.
 
 const PARAM = 'url';
-const ALLOWED_OWNER = 'jedbjorn';
 const RAW_HOST = 'raw.githubusercontent.com';
 const GH_HOSTS = new Set(['github.com', 'www.github.com']);
 
 /**
  * Validate + normalize a candidate remote-doc URL to a CORS-fetchable raw URL.
  *
- * Accepts only `https:` URLs under the allowed owner, on either
- * raw.githubusercontent.com (used as-is) or github.com (a `/blob/` or `/raw/`
- * link, rewritten to the raw host). Throws on anything else.
+ * Accepts any `https:` GitHub URL — on raw.githubusercontent.com (used as-is)
+ * or github.com (a `/blob/` or `/raw/` file link, rewritten to the raw host).
+ * Throws on a non-GitHub host, a non-https URL, or a repo page with no file.
  */
 export function validateRemoteUrl(raw: string): string {
 	let url: URL;
@@ -38,28 +37,21 @@ export function validateRemoteUrl(raw: string): string {
 	}
 
 	const segments = url.pathname.replace(/^\/+/, '').split('/');
-	const owner = segments[0];
 
 	if (url.hostname === RAW_HOST) {
-		if (owner !== ALLOWED_OWNER) {
-			throw new Error(`Only github.com/${ALLOWED_OWNER} documents are allowed`);
-		}
 		return url.toString();
 	}
 
 	if (GH_HOSTS.has(url.hostname)) {
 		// /<owner>/<repo>/(blob|raw)/<ref>/<path...>  →  raw.githubusercontent.com/<owner>/<repo>/<ref>/<path...>
-		const [ghOwner, repo, kind, ...rest] = segments;
-		if (ghOwner !== ALLOWED_OWNER) {
-			throw new Error(`Only github.com/${ALLOWED_OWNER} documents are allowed`);
-		}
-		if ((kind !== 'blob' && kind !== 'raw') || !repo || rest.length === 0) {
+		const [owner, repo, kind, ...rest] = segments;
+		if (!owner || !repo || (kind !== 'blob' && kind !== 'raw') || rest.length === 0) {
 			throw new Error('Link a file (a /blob/ or /raw/ URL), not a repo page');
 		}
-		return `https://${RAW_HOST}/${ghOwner}/${repo}/${rest.join('/')}`;
+		return `https://${RAW_HOST}/${owner}/${repo}/${rest.join('/')}`;
 	}
 
-	throw new Error(`Only github.com/${ALLOWED_OWNER} documents are allowed`);
+	throw new Error('Only GitHub (github.com / raw.githubusercontent.com) documents are allowed');
 }
 
 /** Read the `url` param from a query string, or null when absent. */

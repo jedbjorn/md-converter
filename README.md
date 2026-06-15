@@ -1,42 +1,75 @@
-# sv
+# md-converter
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+[![Open in md-converter](https://img.shields.io/badge/Open%20in-md--converter-6b46c1?style=flat-square)](https://md-converter.designs-os.com/?url=https://github.com/jedbjorn/md-converter/blob/main/README.md)
 
-## Creating a project
+A static web app that renders **themed Markdown** into styled, shareable HTML.
+Paste or upload a `.md` file, pick a theme, tweak the colors and type, then
+share it as a link or export self-contained HTML. No server, no account — the
+whole thing runs in the browser and deploys as static assets on Cloudflare.
 
-If you're seeing this, you've probably already done this step. Congrats!
+Live at **[md-converter.designs-os.com](https://md-converter.designs-os.com)**.
 
-```sh
-# create a new project
-npx sv create my-app
+> The badge above opens this very README inside the app — md-converter
+> rendering itself. Click it to see what your own docs would look like.
+
+## What it does
+
+- **Themed rendering** — nine built-in themes (editorial, risograph, bauhaus,
+  terminal, dossier, almanac, manuscript, neongrid, atelier), each a full
+  color + typography system you can override live from the Style sidebar.
+- **Themed-Markdown contract** — YAML frontmatter, H2 tabs, callouts, stat
+  cards, mermaid + linear diagrams, and `class1`–`class4` accents. See the
+  spec under [`docs/spec/`](docs/spec/), or download the authoring skill from
+  the in-app menu.
+- **Three ways in** — upload a `.md` file, ride a doc inline in the URL
+  (`?c=`, gzip + base64url), or point at a live document on GitHub (`?url=`).
+- **Export** — download standalone HTML or a shareable config.
+
+## Embed your own README with a badge
+
+Because the app reads any public GitHub document, you can drop a one-click
+"Open in md-converter" badge into your own project's README. Readers click it
+and your doc renders, themed, in the app:
+
+```markdown
+[![Open in md-converter](https://img.shields.io/badge/Open%20in-md--converter-6b46c1?style=flat-square)](https://md-converter.designs-os.com/?url=https://github.com/<owner>/<repo>/blob/main/README.md)
 ```
 
-To recreate this project with the same configuration:
+Swap `<owner>/<repo>` for your repository. That's the integration — no setup,
+no key, nothing to install.
 
-```sh
-# recreate this project
-npx sv@0.15.3 create --template minimal --types ts --add prettier sveltekit-adapter="adapter:static" --no-download-check --install npm .
+## The `?url=` deep link
+
+```
+https://md-converter.designs-os.com/?url=<github-document-url>
 ```
 
-## Developing
+The `url` param accepts **any public GitHub document**, in either shape:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+| Shape                       | Example                                                           |
+| --------------------------- | ----------------------------------------------------------------- |
+| `github.com` blob/raw link  | `https://github.com/<owner>/<repo>/blob/main/README.md`           |
+| `raw.githubusercontent.com` | `https://raw.githubusercontent.com/<owner>/<repo>/main/README.md` |
+
+A `github.com` `/blob/` or `/raw/` link is normalized to the raw host before
+fetching. The app is a static site, so the fetch runs in your browser against
+`raw.githubusercontent.com` (which is CORS-permissive) — there is no server
+leg and no SSRF surface. Non-GitHub hosts, non-`https` URLs, and bare repo
+pages (no file) are refused; for those, upload the `.md` directly in the
+Style sidebar.
+
+## Develop
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm install
+npm run dev        # dev server
+npm test           # vitest
+npm run build      # static build → ./build
+npm run preview    # preview the production build
 ```
 
-## Building
+Deploys as Cloudflare static assets — see [`docs/deploy.md`](docs/deploy.md).
 
-To create a production version of your app:
+## Stack
 
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+SvelteKit (static adapter) · markdown-it · mermaid · Cloudflare Workers assets.
