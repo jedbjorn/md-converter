@@ -56,7 +56,7 @@ body {
 }
 
 /* Embedded images: normalize to a consistent preview size across every theme.
-   Capped at 900px wide, natural aspect ratio (no crop, no upscaling of smaller
+   Capped at 950px wide, natural aspect ratio (no crop, no upscaling of smaller
    images), left-aligned with the text column. markdown-it renders images as
    `<p><img></p>` (no figure plugin is registered), so this targets the img
    directly within the rendered panel — scoped to `.tab-panel` so it never
@@ -64,7 +64,16 @@ body {
 .tab-panel img {
 	display: block;
 	width: auto;
-	max-width: min(100%, 900px);
+	max-width: min(100%, 950px);
 	height: auto;
 	margin-inline: 0;
+}
+
+/* Each theme caps body paragraphs at ~700px for readable line length, and a
+   markdown image is itself a paragraph (`<p><img></p>`) — which would otherwise
+   pin the image to 700px too. Lift the cap only on image-only paragraphs, so
+   block images can reach the 950px above while prose keeps its 700px measure.
+   Higher specificity than the themes' bare `p` rule, so it wins everywhere. */
+.tab-panel p:has(> img:only-child) {
+	max-width: none;
 }
