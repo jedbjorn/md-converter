@@ -93,11 +93,27 @@
 				currentSource = res.md;
 				sourceUrl = res.keepUrl ? getUrlParam(search) : null;
 				if (!res.keepUrl) {
-					history.replaceState(null, '', window.location.pathname + window.location.hash);
+					// Drop the (potentially huge) inline `?c=` blob but keep `?t=` so
+					// the active theme stays reflected in the address bar.
+					const url = new URL(window.location.href);
+					url.searchParams.delete('c');
+					history.replaceState(null, '', url);
 				}
 				showToast(sizeWarning(ir) ?? res.note);
 			})
 			.catch(() => showToast('Could not load the document from this link'));
+	});
+
+	// Reflect the active built-in theme in the address bar so swapping themes
+	// updates a live, shareable URL — not just the Copy-share-link button. Runs
+	// after the deep-link effect above, so an incoming `?t=` is read first.
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		const theme = activeTheme; // reactive dep
+		const url = new URL(window.location.href);
+		if (url.searchParams.get(THEME_PARAM) === theme) return;
+		url.searchParams.set(THEME_PARAM, theme);
+		history.replaceState(null, '', url);
 	});
 
 	// Persist on every change
