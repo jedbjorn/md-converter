@@ -14,6 +14,7 @@ Default for any structured doc (doc/spec/RFC/ADR/report/brief/plan/runbook/summa
 ## Contract
 
 Output:
+
 - starts with valid YAML frontmatter
 - uses only constructs below
 - applies `class1`–`class4` semantically (you pick which fits)
@@ -36,23 +37,23 @@ purpose: Brief description
 ---
 ```
 
-| Field | Status | Cap |
-|---|---|---|
-| `title` | req | ≤40 |
-| `tags` | req (list; `[]` ok) | — |
-| `date` | opt | `YYYY-MM-DD` |
-| `project` | opt | ≤40 |
-| `purpose` | opt | ≤40 |
+| Field     | Status              | Cap          |
+| --------- | ------------------- | ------------ |
+| `title`   | req                 | ≤40          |
+| `tags`    | req (list; `[]` ok) | —            |
+| `date`    | opt                 | `YYYY-MM-DD` |
+| `project` | opt                 | ≤40          |
+| `purpose` | opt                 | ≤40          |
 
 `date`/`project`/`purpose` → footer meta cards.
 
 ## 2 · Structure
 
-| Syntax | Role | Cap |
-|---|---|---|
-| `# Title` | doc title (opt; falls back to `frontmatter.title`) | — |
-| `## Section` | sidebar tab | ≤28 |
-| `### Heading` | subsection → `<h3>` | ≤80 |
+| Syntax        | Role                                               | Cap |
+| ------------- | -------------------------------------------------- | --- |
+| `# Title`     | doc title (opt; falls back to `frontmatter.title`) | —   |
+| `## Section`  | sidebar tab                                        | ≤28 |
+| `### Heading` | subsection → `<h3>`                                | ≤80 |
 
 H4–H6 ⛔.
 
@@ -130,11 +131,11 @@ label: App rating
 ```
 ````
 
-| Field | Status | Cap | Notes |
-|---|---|---|---|
-| `value` | req | ≤12 | Short token: `87%`, `1.2M`, `Editorial`. Not sentences. |
-| `label` | req | ≤28 | One short noun phrase. |
-| `description` | opt | one short line | Omit if no signal. |
+| Field         | Status | Cap            | Notes                                                   |
+| ------------- | ------ | -------------- | ------------------------------------------------------- |
+| `value`       | req    | ≤12            | Short token: `87%`, `1.2M`, `Editorial`. Not sentences. |
+| `label`       | req    | ≤28            | One short noun phrase.                                  |
+| `description` | opt    | one short line | Omit if no signal.                                      |
 
 Layout: 2 per row; trailing odd card spans the row.
 
@@ -171,11 +172,23 @@ Steps separated by `->`, optional class via `:::classN`. Steps render **vertical
 - Content between H1 and first H2 → silently dropped. Use an H2 ("Overview").
 - Comma-separated `tags` → must be a YAML list. `tags: [a, b]` or `tags: []`. Never `tags: a, b`.
 
+## 14 · Open-in-md-converter badge
+
+After writing the doc, emit a one-click badge that opens **this doc** in md-converter. Place it in the preamble — between `# Title` and the first `##` — so it shows on GitHub but is dropped from the rendered page (preamble rule), never cluttering the doc itself.
+
+```markdown
+[![Open in md-converter](https://img.shields.io/badge/Open%20in-md--converter-6b46c1?style=flat-square)](https://md-converter.designs-os.com/?url=https://github.com/<owner>/<repo>/blob/<branch>/<path>)
+```
+
+- Fill `<owner>/<repo>/<branch>/<path>` with the doc's GitHub location (`<path>` is the file at any subdirectory depth, e.g. `docs/specs/design.md`).
+- Destination unknown? Keep the placeholders and tell the user to fill them.
+- Public GitHub repos only — the badge fetches the raw file in the reader's browser (no server/auth).
+
 ---
 
 ## Minimal example
 
-```markdown
+````markdown
 ---
 title: Quarterly Review
 tags: [q1, summary]
@@ -185,6 +198,8 @@ purpose: One-page summary of Q1 outcomes
 ---
 
 # Quarterly Review
+
+[![Open in md-converter](https://img.shields.io/badge/Open%20in-md--converter-6b46c1?style=flat-square)](https://md-converter.designs-os.com/?url=https://github.com/<owner>/<repo>/blob/main/quarterly-review.md)
 
 ## Headline
 
@@ -220,4 +235,4 @@ Q2 plan :::class1 -> Hiring :::class2 -> Migration :::class3 -> Ship :::class4
 - [ ] Vendor renewal slipping
 - [x] Compliance audit completed
 - [ ] Hiring backfill
-```
+````
