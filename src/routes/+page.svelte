@@ -4,7 +4,7 @@
 	import '$lib/renderer/base.css';
 	import demoSource from '$lib/fixtures/demo.md?raw';
 	import skillSource from '../../docs/spec/themed-markdown.skill.md?raw';
-	import { applyTheme, preloadAllFonts, themes, type ThemeId } from '$lib/themes';
+	import { applyTheme, preloadAllFonts, themes, isThemeId, type ThemeId } from '$lib/themes';
 	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
 	import { StyleSidebar } from '$lib/sidebar';
 	import { renderMermaidAll } from '$lib/renderer/mermaid';
@@ -13,6 +13,9 @@
 	import { exportConfig, parseConfig, downloadFile, pickFile, exportHtml } from '$lib/export';
 
 	const STORAGE_KEY = 'md-converter-config-v1';
+	// Query param that carries a built-in theme id, so a shared link reproduces
+	// the sharer's style. Only built-in themes ride along — custom overrides don't.
+	const THEME_PARAM = 't';
 
 	let ir = $state(parse(demoSource));
 	let activeSlug = $state('');
@@ -72,6 +75,10 @@
 	$effect(() => {
 		if (typeof window === 'undefined') return;
 		const search = window.location.search;
+		// A shared link may pin a built-in theme via `?t=`. Apply it before the
+		// (async) doc load so it overrides the localStorage-restored theme above.
+		const themeParam = new URLSearchParams(search).get(THEME_PARAM);
+		if (isThemeId(themeParam)) activeTheme = themeParam;
 		(async () => {
 			const inline = await readInlineParam(search);
 			if (inline !== null) return { md: inline, note: 'Loaded from link', keepUrl: false };
@@ -229,9 +236,9 @@
 			const origin = window.location.origin;
 			let link: string;
 			if (sourceUrl) {
-				link = `${origin}/?url=${sourceUrl}`;
+				link = `${origin}/?url=${sourceUrl}&${THEME_PARAM}=${activeTheme}`;
 			} else {
-				link = `${origin}/?c=${await encodeInline(currentSource)}`;
+				link = `${origin}/?c=${await encodeInline(currentSource)}&${THEME_PARAM}=${activeTheme}`;
 				if (link.length > 16000) {
 					showToast(
 						'Doc too large for a copy link — host it on public GitHub and share the ?url= form.'
