@@ -19,6 +19,7 @@
 		onExportHtml: () => void;
 		onDownloadGuide: () => void;
 		onUploadMd: () => void;
+		onCopyShareLink: () => void;
 	}
 
 	let {
@@ -33,7 +34,8 @@
 		onImportConfig,
 		onExportHtml,
 		onDownloadGuide,
-		onUploadMd
+		onUploadMd,
+		onCopyShareLink
 	}: Props = $props();
 
 	const COLOR_FIELDS: { key: ColorKey; label: string }[] = [
@@ -122,14 +124,13 @@
 
 	<div class="ss-actions">
 		<button class="ss-btn ss-btn--primary" onclick={onUploadMd}>Upload markdown</button>
+		<button class="ss-btn" onclick={onCopyShareLink}>Copy share link</button>
 		<button class="ss-btn" onclick={onExportHtml}>Export HTML</button>
 		<div class="ss-btn-row">
 			<button class="ss-btn ss-btn--half" onclick={onExportConfig}>Export config</button>
 			<button class="ss-btn ss-btn--half" onclick={onImportConfig}>Import config</button>
 		</div>
-		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}>
-			Download Skill for AI
-		</button>
+		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}> Download Skill for AI </button>
 	</div>
 
 	<section class="ss-section">
@@ -175,8 +176,8 @@
 							class:ss-reset--shown={overridden}
 							onclick={() => clearColor(field.key)}
 							aria-label="Reset {field.label}"
-							title="Reset to theme default"
-						>↻</button>
+							title="Reset to theme default">↻</button
+						>
 					</div>
 				</div>
 			{/each}
@@ -211,8 +212,8 @@
 							class:ss-reset--shown={overridden}
 							onclick={() => clearFont(field.key)}
 							aria-label="Reset {field.label}"
-							title="Reset to theme default"
-						>↻</button>
+							title="Reset to theme default">↻</button
+						>
 					</div>
 					{#if custom}
 						<input
@@ -250,11 +251,18 @@
 		padding: 0.5rem 1rem;
 		border-radius: 3px;
 		cursor: pointer;
-		font: 500 0.8rem ui-sans-serif, system-ui, sans-serif;
+		font:
+			500 0.8rem ui-sans-serif,
+			system-ui,
+			sans-serif;
 		letter-spacing: 0.05em;
 	}
-	.ss-toggle--hidden { display: none; }
-	.ss-toggle:hover { background: rgba(0, 0, 0, 0.9); }
+	.ss-toggle--hidden {
+		display: none;
+	}
+	.ss-toggle:hover {
+		background: rgba(0, 0, 0, 0.9);
+	}
 
 	.ss-panel {
 		position: fixed;
@@ -266,7 +274,10 @@
 		z-index: 250;
 		background: #1a1a1f;
 		color: #e8e4d8;
-		font: 400 13px/1.5 ui-sans-serif, system-ui, sans-serif;
+		font:
+			400 13px/1.5 ui-sans-serif,
+			system-ui,
+			sans-serif;
 		border-left: 1px solid #303034;
 		box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
 		transform: translateX(100%);
@@ -275,7 +286,9 @@
 		display: flex;
 		flex-direction: column;
 	}
-	.ss-panel--open { transform: translateX(0); }
+	.ss-panel--open {
+		transform: translateX(0);
+	}
 
 	.ss-header {
 		position: sticky;
@@ -288,7 +301,14 @@
 		justify-content: space-between;
 		z-index: 1;
 	}
-	.ss-header h2 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #b0b0b8; }
+	.ss-header h2 {
+		margin: 0;
+		font-size: 14px;
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: #b0b0b8;
+	}
 	.ss-close {
 		background: none;
 		border: 0;
@@ -298,7 +318,9 @@
 		cursor: pointer;
 		padding: 0 0.25rem;
 	}
-	.ss-close:hover { color: #fff; }
+	.ss-close:hover {
+		color: #fff;
+	}
 
 	.ss-actions {
 		padding: 1rem 1.25rem 1.25rem;
@@ -308,10 +330,24 @@
 		gap: 0.5rem;
 	}
 
-	.ss-section { padding: 1rem 1.25rem 1.25rem; border-bottom: 1px solid #2a2a30; }
-	.ss-section h3 { margin: 0 0 0.75rem; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #6a6a76; }
+	.ss-section {
+		padding: 1rem 1.25rem 1.25rem;
+		border-bottom: 1px solid #2a2a30;
+	}
+	.ss-section h3 {
+		margin: 0 0 0.75rem;
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #6a6a76;
+	}
 
-	.ss-themes { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+	.ss-themes {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+	}
 	.ss-theme {
 		display: flex;
 		align-items: center;
@@ -325,8 +361,13 @@
 		font: inherit;
 		text-align: left;
 	}
-	.ss-theme:hover { background: #2a2a30; }
-	.ss-theme--active { border-color: #6a6a76; background: #2a2a30; }
+	.ss-theme:hover {
+		background: #2a2a30;
+	}
+	.ss-theme--active {
+		border-color: #6a6a76;
+		background: #2a2a30;
+	}
 	.ss-theme-swatch {
 		width: 24px;
 		height: 24px;
@@ -342,14 +383,39 @@
 		border-radius: 50%;
 		display: block;
 	}
-	.ss-theme-label { font-size: 12px; }
+	.ss-theme-label {
+		font-size: 12px;
+	}
 
-	.ss-fields { display: flex; flex-direction: column; gap: 0.5rem; }
-	.ss-row { display: flex; align-items: center; gap: 0.5rem; }
-	.ss-row--stack { flex-direction: column; align-items: stretch; gap: 0.35rem; }
-	.ss-label { flex: 1; font-size: 12px; color: #b0b0b8; }
-	.ss-input-group { display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0; }
-	.ss-row--stack .ss-input-group { width: 100%; }
+	.ss-fields {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.ss-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.ss-row--stack {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.35rem;
+	}
+	.ss-label {
+		flex: 1;
+		font-size: 12px;
+		color: #b0b0b8;
+	}
+	.ss-input-group {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		flex-shrink: 0;
+	}
+	.ss-row--stack .ss-input-group {
+		width: 100%;
+	}
 
 	input[type='color'] {
 		width: 28px;
@@ -362,7 +428,9 @@
 	}
 	.ss-hex {
 		width: 80px;
-		font: 400 11px ui-monospace, monospace;
+		font:
+			400 11px ui-monospace,
+			monospace;
 		padding: 0.25rem 0.4rem;
 		background: #232328;
 		color: inherit;
@@ -372,7 +440,10 @@
 	select {
 		flex: 1;
 		min-width: 0;
-		font: 400 12px ui-sans-serif, system-ui, sans-serif;
+		font:
+			400 12px ui-sans-serif,
+			system-ui,
+			sans-serif;
 		padding: 0.3rem 0.4rem;
 		background: #232328;
 		color: inherit;
@@ -381,7 +452,9 @@
 	}
 	.ss-font-custom {
 		width: 100%;
-		font: 400 12px ui-monospace, monospace;
+		font:
+			400 12px ui-monospace,
+			monospace;
 		padding: 0.3rem 0.4rem;
 		background: #232328;
 		color: inherit;
@@ -397,11 +470,24 @@
 		font-size: 14px;
 		padding: 0 0.25rem;
 	}
-	.ss-reset--shown { visibility: visible; }
-	.ss-reset:hover { color: #fff; }
+	.ss-reset--shown {
+		visibility: visible;
+	}
+	.ss-reset:hover {
+		color: #fff;
+	}
 
-	.ss-footer { padding: 1rem 1.25rem; margin-top: auto; display: flex; flex-direction: column; gap: 0.5rem; }
-	.ss-btn-row { display: flex; gap: 0.5rem; }
+	.ss-footer {
+		padding: 1rem 1.25rem;
+		margin-top: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+	.ss-btn-row {
+		display: flex;
+		gap: 0.5rem;
+	}
 	.ss-btn {
 		width: 100%;
 		background: #2a2a30;
@@ -410,24 +496,52 @@
 		padding: 0.5rem;
 		border-radius: 3px;
 		cursor: pointer;
-		font: 500 12px ui-sans-serif, system-ui, sans-serif;
+		font:
+			500 12px ui-sans-serif,
+			system-ui,
+			sans-serif;
 		letter-spacing: 0.05em;
 	}
-	.ss-btn:hover { background: #34343a; }
-	.ss-btn--half { flex: 1; }
-	.ss-btn--ghost { background: transparent; color: #6a6a76; }
-	.ss-btn--ghost:hover { background: #232328; color: #b0b0b8; }
+	.ss-btn:hover {
+		background: #34343a;
+	}
+	.ss-btn--half {
+		flex: 1;
+	}
+	.ss-btn--ghost {
+		background: transparent;
+		color: #6a6a76;
+	}
+	.ss-btn--ghost:hover {
+		background: #232328;
+		color: #b0b0b8;
+	}
 
 	.ss-legal {
 		display: flex;
 		justify-content: center;
 		gap: 0.4rem;
-		font: 11px ui-sans-serif, system-ui, sans-serif;
+		font:
+			11px ui-sans-serif,
+			system-ui,
+			sans-serif;
 		color: #5a5a64;
 		padding-top: 0.25rem;
 	}
-	.ss-legal a { color: #6a6a76; text-decoration: none; }
-	.ss-legal a:hover { color: #b0b0b8; text-decoration: underline; }
-	.ss-btn--primary { background: #4a6fa5; border-color: #5a7fb5; color: #fff; }
-	.ss-btn--primary:hover { background: #5a7fb5; }
+	.ss-legal a {
+		color: #6a6a76;
+		text-decoration: none;
+	}
+	.ss-legal a:hover {
+		color: #b0b0b8;
+		text-decoration: underline;
+	}
+	.ss-btn--primary {
+		background: #4a6fa5;
+		border-color: #5a7fb5;
+		color: #fff;
+	}
+	.ss-btn--primary:hover {
+		background: #5a7fb5;
+	}
 </style>

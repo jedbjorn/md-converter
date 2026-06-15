@@ -65,9 +65,11 @@ conforming doc must:
 | `tags`                         | required |
 | `date` / `project` / `purpose` | optional |
 
-**The skill writes it for you.** The full authoring contract ships as a
-downloadable _skill_ — a single instruction file you hand to an AI assistant
-(or follow yourself) so it emits docs that conform to the contract:
+**The skill writes it for you — doc and badge.** The full authoring contract
+ships as a downloadable _skill_ — a single instruction file you hand to an AI
+assistant (or follow yourself). It emits a doc that conforms to the contract
+**and the matching "Open in md-converter" badge** for that doc (skill §14), so
+you get both in one shot:
 
 - **[Download the themed-markdown skill](https://raw.githubusercontent.com/jedbjorn/md-converter/main/docs/spec/themed-markdown.skill.md)**
   (raw `.md`), or browse it [in the repo](docs/spec/themed-markdown.skill.md).
@@ -108,6 +110,21 @@ fetching. The app is a static site, so the fetch runs in your browser against
 and no SSRF surface. Non-GitHub hosts, non-`https` URLs, folder/repo pages, and
 documents that don't follow the themed-markdown syntax are refused; for the
 last case, rewrite the doc against the contract (download the skill above).
+
+## Share what you're viewing
+
+Every rendered doc has a shareable link — no account, no server, no auth.
+
+- **Embedded pages keep their link.** Open a doc via `?url=` and the address bar
+  stays that link — copy it from the bar or your browser's share button. Reload
+  re-fetches, so it always reflects the live source on GitHub.
+- **"Copy share link" works for any doc.** The button in the Style sidebar
+  copies a link to whatever is on screen. A GitHub-sourced doc copies as the
+  tidy `?url=` form; an uploaded or pasted doc is packed into a self-contained
+  `?c=` link (gzip + base64url) that carries the whole document in the URL — so
+  it opens for anyone, even a file that never left your machine. Very large docs
+  exceed a practical URL length; host those on public GitHub and share the
+  `?url=` form instead.
 
 ## Develop
 
