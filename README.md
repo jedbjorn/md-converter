@@ -23,6 +23,8 @@ as static assets on Cloudflare. Live at
 
 ## What it does
 
+![md-converter rendering a themed-markdown document in the dossier theme — H2 sections as tabs down the left rail, a numbered section heading, and a bulleted body](https://raw.githubusercontent.com/jedbjorn/md-converter/main/docs/images/what-it-does.png)
+
 - **Themed rendering** — nine built-in themes (editorial, risograph, bauhaus,
   terminal, dossier, almanac, manuscript, neongrid, atelier), each a full
   color + typography system you can override live from the Style sidebar.
