@@ -152,6 +152,17 @@ Class via `:::classN` on nodes. The app injects `classDef` — don't write `clas
 
 Node label cap: ≤24 (Mermaid auto-sizes nodes to fit; long labels balloon them).
 
+**Quote labels with special characters.** Unquoted node text is parsed as Mermaid grammar, not literal text. Any label containing `/`, `(`, `)`, `*`, `[`, `]`, `{`, `}`, `<`, `>`, `#`, `:`, `;`, or a quote **must** be wrapped in double quotes inside the brackets — otherwise the diagram throws _"Syntax error in text"_ and renders nothing. Notably `A[/text/]` is the parallelogram shape, so a literal path like `/lease/mail/*` breaks unless quoted.
+
+```
+GOOD:  AD["/admin/user-credentials/"]:::class3
+       N["count > 0"]:::class2
+BAD:   AD[/admin/user-credentials/]      (parsed as a parallelogram shape → error)
+       N[count > 0]                      (> is a grammar token → error)
+```
+
+Cylinder/stadium shapes are fine as-is — `DB[(secrets.db)]`, `X([ready])` — quote only the inner _text_, not the shape brackets.
+
 ## 12 · Linear
 
 ````
@@ -171,6 +182,7 @@ Steps separated by `->`, optional class via `:::classN`. Steps render **vertical
 - Color/font/size/theme/visual mentions
 - Content between H1 and first H2 → silently dropped. Use an H2 ("Overview").
 - Comma-separated `tags` → must be a YAML list. `tags: [a, b]` or `tags: []`. Never `tags: a, b`.
+- Unquoted Mermaid labels with special characters → wrap the label in double quotes (see §11).
 
 ## 14 · Open-in-md-converter badge
 
