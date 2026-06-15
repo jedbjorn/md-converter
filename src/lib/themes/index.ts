@@ -79,6 +79,14 @@ export const themes: Record<ThemeId, ThemeEntry> = {
 
 export const themeIds = Object.keys(themes) as ThemeId[];
 
+/**
+ * Narrow an untrusted string (e.g. a `?t=` URL param) to a built-in ThemeId.
+ * Only the bundled themes are shareable — custom color/font overrides aren't.
+ */
+export function isThemeId(value: string | null | undefined): value is ThemeId {
+	return value != null && Object.prototype.hasOwnProperty.call(themes, value);
+}
+
 const STYLE_ID = 'md-theme';
 
 /**
