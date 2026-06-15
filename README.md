@@ -73,3 +73,7 @@ Deploys as Cloudflare static assets — see [`docs/deploy.md`](docs/deploy.md).
 ## Stack
 
 SvelteKit (static adapter) · markdown-it · mermaid · Cloudflare Workers assets.
+
+## License
+
+[MIT](LICENSE) © 2026 jedbjorn.
