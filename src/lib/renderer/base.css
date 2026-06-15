@@ -54,3 +54,16 @@ body {
 .tab-panel.active {
 	display: block;
 }
+
+/* Embedded images: normalize to a consistent preview size across every theme.
+   Capped at 700px wide, natural aspect ratio (no crop, no upscaling of smaller
+   images), left-aligned with the text column. `.tab-panel figure img` outranks
+   each theme's bare `figure img` rule, so this wins under all nine without
+   editing theme files. */
+.tab-panel figure img {
+	display: block;
+	width: auto;
+	max-width: min(100%, 700px);
+	height: auto;
+	margin-inline: 0;
+}
