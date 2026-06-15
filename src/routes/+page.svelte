@@ -8,14 +8,20 @@
 	import type { ThemeColors, ThemeTypography } from '$lib/themes/types';
 	import { StyleSidebar } from '$lib/sidebar';
 	import { renderMermaidAll } from '$lib/renderer/mermaid';
-	import { readInlineParam } from '$lib/inline';
-	import { readUrlParam } from '$lib/remote';
+	import { readInlineParam, encodeInline } from '$lib/inline';
+	import { readUrlParam, getUrlParam } from '$lib/remote';
 	import { exportConfig, parseConfig, downloadFile, pickFile, exportHtml } from '$lib/export';
 
 	const STORAGE_KEY = 'md-converter-config-v1';
 
 	let ir = $state(parse(demoSource));
 	let activeSlug = $state('');
+
+	// Share-link state. `currentSource` is the raw markdown of whatever is loaded;
+	// `sourceUrl` is the original `?url=` value when the doc came from GitHub (so
+	// Copy link can hand back the tidy `?url=` form rather than re-embedding it).
+	let currentSource = $state(demoSource);
+	let sourceUrl = $state<string | null>(null);
 
 	let activeTheme = $state<ThemeId>('editorial');
 	let colorOverrides = $state<Partial<Record<keyof ThemeColors, string>>>({});
@@ -77,6 +83,8 @@
 			.then((res) => {
 				if (!res) return;
 				ir = parse(res.md);
+				currentSource = res.md;
+				sourceUrl = res.keepUrl ? getUrlParam(search) : null;
 				if (!res.keepUrl) {
 					history.replaceState(null, '', window.location.pathname + window.location.hash);
 				}
@@ -201,12 +209,40 @@
 		if (!text) return;
 		try {
 			ir = parse(text);
+			currentSource = text;
+			sourceUrl = null;
 			// A locally-uploaded doc no longer lives at the address-bar URL — clear any
 			// retained ?url= so the link can't be shared as if it points at this file.
 			history.replaceState(null, '', window.location.pathname + window.location.hash);
 			showToast(sizeWarning(ir) ?? 'Markdown loaded');
 		} catch (err) {
 			showToast(`Parse failed: ${(err as Error).message}`);
+		}
+	}
+
+	// Build a shareable link for the current doc and copy it — no server, DB, or
+	// auth. A GitHub-sourced doc shares as a tidy `?url=` link (reflects the live
+	// source); anything else (demo, upload, inline) is embedded in a `?c=` link so
+	// the doc rides entirely in the URL.
+	async function handleCopyShareLink() {
+		try {
+			const origin = window.location.origin;
+			let link: string;
+			if (sourceUrl) {
+				link = `${origin}/?url=${sourceUrl}`;
+			} else {
+				link = `${origin}/?c=${await encodeInline(currentSource)}`;
+				if (link.length > 16000) {
+					showToast(
+						'Doc too large for a copy link — host it on public GitHub and share the ?url= form.'
+					);
+					return;
+				}
+			}
+			await navigator.clipboard.writeText(link);
+			showToast('Share link copied');
+		} catch {
+			showToast('Could not copy the link');
 		}
 	}
 
@@ -252,6 +288,7 @@
 	onExportHtml={handleExportHtml}
 	onDownloadGuide={handleDownloadSkill}
 	onUploadMd={handleUploadMd}
+	onCopyShareLink={handleCopyShareLink}
 />
 
 {#if toast}
