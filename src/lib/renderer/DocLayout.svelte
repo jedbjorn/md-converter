@@ -20,7 +20,34 @@
 			activeSlug = ir.tabs[0]?.slug ?? '';
 		}
 	});
+
+	// Up/Down step through tabs (parity with the deck's Left/Right). Clamped — a
+	// document has a top and a bottom, unlike the deck's circular dial.
+	function move(delta: number) {
+		const i = ir.tabs.findIndex((t) => t.slug === activeSlug);
+		const cur = i < 0 ? 0 : i;
+		const next = Math.max(0, Math.min(ir.tabs.length - 1, cur + delta));
+		activeSlug = ir.tabs[next]?.slug ?? activeSlug;
+	}
+
+	function onKeydown(e: KeyboardEvent) {
+		const t = e.target as HTMLElement | null;
+		if (t && /^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName)) return;
+		if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+			move(1);
+			e.preventDefault();
+		} else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+			move(-1);
+			e.preventDefault();
+		} else if (e.key === 'Home') {
+			activeSlug = ir.tabs[0]?.slug ?? activeSlug;
+		} else if (e.key === 'End') {
+			activeSlug = ir.tabs[ir.tabs.length - 1]?.slug ?? activeSlug;
+		}
+	}
 </script>
+
+<svelte:window onkeydown={onKeydown} />
 
 <div class="layout">
 	<Sidebar title={ir.title} tabs={ir.tabs} {activeSlug} onSelect={(s) => (activeSlug = s)} />

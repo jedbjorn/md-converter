@@ -38,7 +38,8 @@ export type ThemeId =
 	| 'risograph'
 	| 'almanac'
 	| 'neongrid'
-	| 'manuscript';
+	| 'manuscript'
+	| 'expose';
 
 export interface ThemeEntry {
 	id: ThemeId;

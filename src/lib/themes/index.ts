@@ -7,6 +7,7 @@ import risographCss from '../../themes/risograph/styles.css?raw';
 import almanacCss from '../../themes/almanac/styles.css?raw';
 import neongridCss from '../../themes/neongrid/styles.css?raw';
 import manuscriptCss from '../../themes/manuscript/styles.css?raw';
+import exposeCss from '../../themes/expose/styles.css?raw';
 
 import editorialTokens from '../../themes/editorial/tokens.json';
 import bauhausTokens from '../../themes/bauhaus/tokens.json';
@@ -17,6 +18,7 @@ import risographTokens from '../../themes/risograph/tokens.json';
 import almanacTokens from '../../themes/almanac/tokens.json';
 import neongridTokens from '../../themes/neongrid/tokens.json';
 import manuscriptTokens from '../../themes/manuscript/tokens.json';
+import exposeTokens from '../../themes/expose/tokens.json';
 
 import type { ThemeEntry, ThemeId, ThemeTokens } from './types';
 
@@ -74,6 +76,12 @@ export const themes: Record<ThemeId, ThemeEntry> = {
 		label: 'Manuscript',
 		tokens: manuscriptTokens as ThemeTokens,
 		css: manuscriptCss
+	},
+	expose: {
+		id: 'expose',
+		label: 'Exposé',
+		tokens: exposeTokens as ThemeTokens,
+		css: exposeCss
 	}
 };
 
