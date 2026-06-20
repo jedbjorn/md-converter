@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { themes, themeIds, type ThemeId } from '../themes';
 	import type { ThemeColors, ThemeTypography } from '../themes/types';
+	import { layouts, type LayoutId } from '../layout';
 	import { FONT_OPTIONS, GROUP_LABELS, type FontOption } from './fonts';
 
 	type ColorKey = keyof ThemeColors;
@@ -8,10 +9,12 @@
 
 	interface Props {
 		themeId: ThemeId;
+		layout: LayoutId;
 		colorOverrides: Partial<Record<ColorKey, string>>;
 		fontOverrides: Partial<Record<FontKey, string>>;
 		open: boolean;
 		onThemeChange: (id: ThemeId) => void;
+		onLayoutChange: (id: LayoutId) => void;
 		onClose: () => void;
 		onReset: () => void;
 		onExportConfig: () => void;
@@ -24,10 +27,12 @@
 
 	let {
 		themeId = $bindable(),
+		layout = $bindable(),
 		colorOverrides = $bindable(),
 		fontOverrides = $bindable(),
 		open = $bindable(),
 		onThemeChange,
+		onLayoutChange,
 		onClose,
 		onReset,
 		onExportConfig,
@@ -132,6 +137,21 @@
 		</div>
 		<button class="ss-btn ss-btn--ghost" onclick={onDownloadGuide}> Download Skill for AI </button>
 	</div>
+
+	<section class="ss-section">
+		<h3>Layout</h3>
+		<div class="ss-layout">
+			{#each layouts as opt (opt.id)}
+				<button
+					class="ss-layout-btn"
+					class:ss-layout-btn--active={layout === opt.id}
+					onclick={() => onLayoutChange(opt.id)}
+				>
+					{opt.label}
+				</button>
+			{/each}
+		</div>
+	</section>
 
 	<section class="ss-section">
 		<h3>Theme</h3>
@@ -341,6 +361,33 @@
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
 		color: #6a6a76;
+	}
+
+	.ss-layout {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.5rem;
+	}
+	.ss-layout-btn {
+		background: #232328;
+		border: 1px solid #303034;
+		border-radius: 3px;
+		padding: 0.5rem;
+		cursor: pointer;
+		color: inherit;
+		font:
+			500 12px ui-sans-serif,
+			system-ui,
+			sans-serif;
+		letter-spacing: 0.05em;
+	}
+	.ss-layout-btn:hover {
+		background: #2a2a30;
+	}
+	.ss-layout-btn--active {
+		border-color: #6a6a76;
+		background: #2a2a30;
+		color: #fff;
 	}
 
 	.ss-themes {

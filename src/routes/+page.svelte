@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { parse } from '$lib/parser';
-	import { DocLayout } from '$lib/renderer';
+	import { DocLayout, DeckLayout } from '$lib/renderer';
 	import '$lib/renderer/base.css';
+	import '$lib/renderer/deck.css';
+	import { isLayoutId, DEFAULT_LAYOUT, type LayoutId } from '$lib/layout';
 	import demoSource from '$lib/fixtures/demo.md?raw';
 	import skillSource from '../../docs/spec/themed-markdown.skill.md?raw';
 	import { applyTheme, preloadAllFonts, themes, isThemeId, type ThemeId } from '$lib/themes';
@@ -16,9 +18,13 @@
 	// Query param that carries a built-in theme id, so a shared link reproduces
 	// the sharer's style. Only built-in themes ride along — custom overrides don't.
 	const THEME_PARAM = 't';
+	// Layout (doc | deck) rides in the URL like theme — see `?l=` handling below.
+	const LAYOUT_PARAM = 'l';
 
 	let ir = $state(parse(demoSource));
 	let activeSlug = $state('');
+	let layout = $state<LayoutId>(DEFAULT_LAYOUT);
+	let activeSlide = $state(0);
 
 	// Share-link state. `currentSource` is the raw markdown of whatever is loaded;
 	// `sourceUrl` is the original `?url=` value when the doc came from GitHub (so
@@ -77,8 +83,12 @@
 		const search = window.location.search;
 		// A shared link may pin a built-in theme via `?t=`. Apply it before the
 		// (async) doc load so it overrides the localStorage-restored theme above.
-		const themeParam = new URLSearchParams(search).get(THEME_PARAM);
+		const params = new URLSearchParams(search);
+		const themeParam = params.get(THEME_PARAM);
 		if (isThemeId(themeParam)) activeTheme = themeParam;
+		// A shared link may also pin the view via `?l=` (doc | deck).
+		const layoutParam = params.get(LAYOUT_PARAM);
+		if (isLayoutId(layoutParam)) layout = layoutParam;
 		(async () => {
 			const inline = await readInlineParam(search);
 			if (inline !== null) return { md: inline, note: 'Loaded from link', keepUrl: false };
@@ -113,6 +123,23 @@
 		const url = new URL(window.location.href);
 		if (url.searchParams.get(THEME_PARAM) === theme) return;
 		url.searchParams.set(THEME_PARAM, theme);
+		history.replaceState(null, '', url);
+	});
+
+	// Reflect the active layout in the address bar (same mechanism as theme). The
+	// default `doc` is left implicit — only `?l=deck` is written, and the param is
+	// dropped when returning to doc, so existing links stay clean.
+	$effect(() => {
+		if (typeof window === 'undefined') return;
+		const l = layout; // reactive dep
+		const url = new URL(window.location.href);
+		if (l === DEFAULT_LAYOUT) {
+			if (!url.searchParams.has(LAYOUT_PARAM)) return;
+			url.searchParams.delete(LAYOUT_PARAM);
+		} else {
+			if (url.searchParams.get(LAYOUT_PARAM) === l) return;
+			url.searchParams.set(LAYOUT_PARAM, l);
+		}
 		history.replaceState(null, '', url);
 	});
 
@@ -152,6 +179,8 @@
 	$effect(() => {
 		void ir;
 		void activeSlug;
+		void activeSlide;
+		void layout;
 		void activeTheme;
 		void colorOverrides.class1;
 		void colorOverrides.class2;
@@ -250,11 +279,14 @@
 	async function handleCopyShareLink() {
 		try {
 			const origin = window.location.origin;
+			// Carry the active layout too, so the link reproduces the view. Default
+			// `doc` is left implicit to keep links clean.
+			const layoutSuffix = layout === DEFAULT_LAYOUT ? '' : `&${LAYOUT_PARAM}=${layout}`;
 			let link: string;
 			if (sourceUrl) {
-				link = `${origin}/?url=${sourceUrl}&${THEME_PARAM}=${activeTheme}`;
+				link = `${origin}/?url=${sourceUrl}&${THEME_PARAM}=${activeTheme}${layoutSuffix}`;
 			} else {
-				link = `${origin}/?c=${await encodeInline(currentSource)}&${THEME_PARAM}=${activeTheme}`;
+				link = `${origin}/?c=${await encodeInline(currentSource)}&${THEME_PARAM}=${activeTheme}${layoutSuffix}`;
 				if (link.length > 16000) {
 					showToast(
 						'Doc too large for a copy link — host it on public GitHub and share the ?url= form.'
@@ -270,8 +302,8 @@
 	}
 
 	function handleExportHtml() {
-		const layout = document.querySelector('.layout');
-		if (!layout) {
+		const root = document.querySelector(layout === 'deck' ? '.deck-root' : '.layout');
+		if (!root) {
 			showToast('Nothing to export');
 			return;
 		}
@@ -280,7 +312,8 @@
 			themeId: activeTheme,
 			colorOverrides,
 			fontOverrides,
-			layoutHtml: layout.outerHTML
+			layoutHtml: root.outerHTML,
+			layout
 		});
 		const filename =
 			ir.title
@@ -296,10 +329,16 @@
 	<title>{ir.title}</title>
 </svelte:head>
 
-<DocLayout {ir} bind:activeSlug />
+{#if layout === 'deck'}
+	<DeckLayout {ir} bind:active={activeSlide} />
+{:else}
+	<DocLayout {ir} bind:activeSlug />
+{/if}
 
 <StyleSidebar
 	bind:themeId={activeTheme}
+	bind:layout
+	onLayoutChange={(l) => (layout = l)}
 	bind:colorOverrides
 	bind:fontOverrides
 	bind:open={sidebarOpen}
