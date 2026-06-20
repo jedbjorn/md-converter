@@ -273,7 +273,6 @@ h3::after {
 
 p {
   margin-bottom: 1.2em;
-  min-width: 500px;
   max-width: 700px;
   font-size: 14px;
 }
@@ -661,6 +660,30 @@ pre code {
 .meta-value {
   font-size: 12px;
   color: var(--text);
+}
+
+/* ─── scrollbars (themed) ───────────────────────────────
+   Square, blocky scrollbars in keeping with the terminal aesthetic. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border: 3px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 @media (max-width: 900px) {
