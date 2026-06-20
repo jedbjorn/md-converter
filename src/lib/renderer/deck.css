@@ -16,8 +16,8 @@
 	/* Vertical bands, top to bottom: a fixed title band, the body band (fills the
 	   rest), a footer gap, then the page-numbers dock pinned at the bottom. So the
 	   body band height is deterministic per viewport: 100vh − title − footer −
-	   dock (e.g. on a 1140px screen: 1140 − 400 − 40 − 74 ≈ 626px). */
-	--deck-title-h: 400px;
+	   dock (e.g. on a 1140px screen: 1140 − 200 − 40 − 74 ≈ 826px). */
+	--deck-title-h: 200px;
 	--deck-footer-pad: 40px;
 	--deck-dock-h: 74px; /* height of the visible page-number row at the bottom */
 
