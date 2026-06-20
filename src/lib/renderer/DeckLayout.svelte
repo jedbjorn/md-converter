@@ -70,6 +70,43 @@
 
 	const pct = $derived(slides.length ? ((active + 1) / slides.length) * 100 : 0);
 	const pad = (n: number) => String(n).padStart(2, '0');
+
+	// Column fit. CSS multicol decides column count from available width, not from
+	// whether content overflows — so to honour "one column until the text would
+	// scroll, then two" we measure each slide and toggle .cols-2 ourselves.
+	// Inactive slides are visibility:hidden but still laid out, so they measure
+	// fine; we fit them all up front, not just the active one. Re-run on resize
+	// and once web fonts settle (they shift line heights after first paint).
+	// (Mirrored by the fit() loop in DECK_NAV_JS in export/html-export.ts.)
+	let deckEl: HTMLElement | undefined = $state();
+
+	function fitColumns() {
+		if (!deckEl) return;
+		for (const inner of deckEl.querySelectorAll<HTMLElement>('.slide-inner')) {
+			inner.classList.remove('cols-2');
+			if (inner.scrollHeight > inner.clientHeight + 4) inner.classList.add('cols-2');
+		}
+	}
+
+	// Re-fit whenever the slides change; rAF lets layout settle before we measure.
+	$effect(() => {
+		slides;
+		const id = requestAnimationFrame(fitColumns);
+		return () => cancelAnimationFrame(id);
+	});
+
+	$effect(() => {
+		const onResize = () => fitColumns();
+		window.addEventListener('resize', onResize);
+		let live = true;
+		document.fonts?.ready.then(() => {
+			if (live) fitColumns();
+		});
+		return () => {
+			live = false;
+			window.removeEventListener('resize', onResize);
+		};
+	});
 </script>
 
 <svelte:window onkeydown={onKeydown} />
@@ -77,13 +114,13 @@
 <div class="deck-root">
 <div class="deck-progress" style:width="{pct}%"></div>
 
-<div class="deck">
+<div class="deck" bind:this={deckEl}>
 	{#each slides as slide, i (i)}
 		<section class="slide" class:active={i === active} data-slide={i}>
 			<div class="slide-inner">
 				{#if ir.title}<div class="deck-brand">{ir.title}</div>{/if}
 				{#if slide.heading}<h2 class="deck-heading">{slide.heading}</h2>{/if}
-				{@html slide.body}
+				<div class="deck-body">{@html slide.body}</div>
 			</div>
 		</section>
 	{/each}

@@ -73,6 +73,22 @@ const DECK_NAV_JS = `(function(){
 		if (counter) counter.textContent = pad(cur + 1) + ' / ' + pad(n);
 		place();
 	}
+	// Column fit: one column until a slide would overflow, then two balanced
+	// columns so it fits without a scrollbar. Mirrors fitColumns() in
+	// DeckLayout.svelte. Re-run on resize + once fonts settle, because the
+	// baked-in classes were measured at the authoring window size, not this one.
+	function fit(){
+		slides.forEach(function(s){
+			var inner = s.querySelector('.slide-inner');
+			if (!inner) return;
+			inner.classList.remove('cols-2');
+			if (inner.scrollHeight > inner.clientHeight + 4) inner.classList.add('cols-2');
+		});
+	}
+	fit();
+	window.addEventListener('resize', fit);
+	if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+
 	if (next) next.addEventListener('click', function(){ go(cur + 1); });
 	if (prev) prev.addEventListener('click', function(){ go(cur - 1); });
 	dots.forEach(function(d, k){ d.addEventListener('click', function(){ go(k); }); });
