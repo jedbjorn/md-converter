@@ -66,9 +66,31 @@ body::before {
 	overflow-y: auto;
 }
 
-.sidebar::-webkit-scrollbar { width: 6px; }
-.sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
+/* ─── scrollbars (themed) ───────────────────────────────
+	Every scroll surface (page, sidebar, deck body) draws from the theme's own
+	rule colour, accent on hover. No default browser scrollbars. */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--rule) transparent;
+}
+::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: var(--rule);
+	border-radius: 8px;
+	border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--accent);
+}
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
 
 /* ─── brand ───────────────────────────────────────────── */
 .brand {
@@ -179,7 +201,7 @@ body::before {
 }
 
 /* ─── prose ───────────────────────────────────────────── */
-p { margin: 0 0 16px; min-width: 500px; max-width: 700px; }
+p { margin: 0 0 16px; max-width: 700px; }
 p + p { margin-top: 0; }
 strong { color: var(--text); font-weight: 600; }
 em { color: var(--accent); font-style: italic; }

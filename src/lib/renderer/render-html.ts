@@ -41,6 +41,13 @@ md.renderer.rules.mermaid_block = (tokens, idx) => {
 	return `<div class="mermaid-wrap"><div class="mermaid">${esc(source)}</div></div>\n`;
 };
 
+// Wrap tables in a horizontal-scroll container so a wide table scrolls within
+// its own box instead of widening the whole page (which would force a page-level
+// horizontal scrollbar alongside the vertical one). The <table> keeps its normal
+// display:table + width:100%, so narrow tables look identical on desktop.
+md.renderer.rules.table_open = () => '<div class="table-scroll"><table>\n';
+md.renderer.rules.table_close = () => '</table></div>\n';
+
 // Task lists: when bullet_list_open carries meta.taskList, emit the templates'
 // span-based checkbox markup instead of the standard <ul>/<li>.
 md.renderer.rules.bullet_list_open = (tokens, idx, options, env, self) => {

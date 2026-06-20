@@ -47,8 +47,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	/* A scrollbar is the LAST resort — only appears if a slide overflows even
-	   two columns (that's an authoring problem: it wants a different layout). */
+	/* The body band (.deck-body) scrolls on overflow; this wrapper only scrolls
+	   in the rare case the title band itself is taller than the viewport. */
 	overflow-y: auto;
 	text-align: center;
 }
@@ -65,32 +65,21 @@
 }
 
 /* Body band: fills the space between the title band and the footer. Content is
-   top-aligned (sits directly under the title) and the band scrolls only as a
-   last resort. One left-aligned ~750px column by default; when the content
-   would overflow the band, the measure step (DeckLayout.svelte / the exported
-   deck JS) adds .cols-2 and it splits into two balanced 750px columns so the
-   band fits without a scrollbar. CSS multicol picks column count from available
-   width, not from overflow, so the count has to be decided in JS. */
+   top-aligned (sits directly under the title) in a single left-aligned ~750px
+   column. When a slide is taller than the band, the band scrolls (themed
+   scrollbar) rather than splitting into columns — one column always. */
 .deck .deck-body {
 	flex: 1 1 auto;
 	min-height: 0;
+	min-width: 0;
 	width: 100%;
 	max-width: 750px;
 	overflow-y: auto;
+	/* Long, unbreakable tokens wrap rather than widening the band; wide code
+	   blocks/tables scroll within their own boxes (pre overflow-x, .table-scroll)
+	   so the slide never grows a horizontal scrollbar. */
+	overflow-wrap: break-word;
 	text-align: left;
-}
-.deck .deck-body.cols-2 {
-	max-width: 1540px;
-	column-count: 2;
-	column-gap: 3rem;
-	column-fill: balance;
-}
-/* Don't fracture a structured block across the column gutter. */
-.deck .deck-body :is(.callout, .stats, .linear, .task-list, pre, table, blockquote, figure, img) {
-	break-inside: avoid;
-}
-.deck .deck-body :is(h3, h4) {
-	break-after: avoid;
 }
 
 /* Heading + brand. Body content keeps the theme's own element styling. */
@@ -266,4 +255,42 @@
 	font-family: var(--font-mono, monospace);
 	font-size: 0.8rem;
 	color: var(--text-soft);
+}
+
+/* ---- phone ---- */
+@media (max-width: 760px) {
+	.deck .slide {
+		/* Reclaim vertical room: a much shorter title band and a tighter dock
+		   so the body band gets most of a short screen. */
+		--deck-title-h: 110px;
+		--deck-dock-h: 60px;
+		padding: 0 clamp(1rem, 5vw, 2rem) calc(var(--deck-footer-pad) + var(--deck-dock-h));
+	}
+	.deck .deck-heading {
+		font-size: clamp(1.5rem, 7vw, 2.2rem);
+		margin-bottom: 1.1rem;
+	}
+	.deck .deck-brand {
+		font-size: 0.62rem;
+		margin-bottom: 0.8rem;
+	}
+	/* Edge arrows overlap content at phone width — the dock, keyboard, and
+	   scroll remain. Drop them. */
+	.deck-arrow {
+		display: none;
+	}
+	.deck-dock {
+		width: min(94vw, 420px);
+		height: 5rem;
+	}
+	.deck-dock-num {
+		width: 1.9rem;
+		height: 1.9rem;
+		font-size: 0.82rem;
+	}
+	.deck-counter {
+		bottom: 0.9rem;
+		right: 0.9rem;
+		font-size: 0.7rem;
+	}
 }
