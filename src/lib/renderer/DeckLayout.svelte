@@ -118,8 +118,10 @@
 	{#each slides as slide, i (i)}
 		<section class="slide" class:active={i === active} data-slide={i}>
 			<div class="slide-inner">
-				{#if ir.title}<div class="deck-brand">{ir.title}</div>{/if}
-				{#if slide.heading}<h2 class="deck-heading">{slide.heading}</h2>{/if}
+				<div class="deck-head">
+					{#if ir.title}<div class="deck-brand">{ir.title}</div>{/if}
+					{#if slide.heading}<h2 class="deck-heading">{slide.heading}</h2>{/if}
+				</div>
 				<div class="deck-body">{@html slide.body}</div>
 			</div>
 		</section>
