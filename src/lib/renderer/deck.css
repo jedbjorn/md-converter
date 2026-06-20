@@ -13,14 +13,21 @@
 
 /* ---- slides ---- */
 .deck .slide {
+	/* Vertical bands, top to bottom: a fixed title band, the body band (fills the
+	   rest), a footer gap, then the page-numbers dock pinned at the bottom. So the
+	   body band height is deterministic per viewport: 100vh − title − footer −
+	   dock (e.g. on a 1140px screen: 1140 − 400 − 40 − 74 ≈ 626px). */
+	--deck-title-h: 400px;
+	--deck-footer-pad: 40px;
+	--deck-dock-h: 74px; /* height of the visible page-number row at the bottom */
+
 	position: absolute;
 	inset: 0;
 	display: grid;
 	place-items: center;
-	/* No top padding: the title region measures its centring from the true top
-	   of the slide (= the window top), so the title lands equidistant between the
-	   top and the body. Bottom padding clears the nav dock. */
-	padding: 0 clamp(2rem, 6vw, 7rem) 9rem;
+	/* No top padding — the title band starts at the true top of the slide. The
+	   bottom padding is the footer gap plus the page-numbers dock. */
+	padding: 0 clamp(2rem, 6vw, 7rem) calc(var(--deck-footer-pad) + var(--deck-dock-h));
 	opacity: 0;
 	visibility: hidden;
 	transform: scale(0.985);
@@ -46,42 +53,33 @@
 	text-align: center;
 }
 
-/* Vertical rhythm: the title region grows to fill the space above the body and
-   centres the title within it, while a matching spacer below the body grows
-   the same amount. Net effect — the body sits vertically centred and the title
-   lands equidistant between the top of the slide and the body. When a slide is
-   packed (and flips to two columns), both flexible regions collapse to nothing
-   and the title sits snug above the body. */
+/* Title band: a fixed-height strip at the top with the title (brand + heading)
+   centred inside it. */
 .deck .deck-head {
-	flex: 1 1 0;
+	flex: 0 0 var(--deck-title-h);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	width: 100%;
 }
-.deck .deck-body {
-	flex: 0 0 auto;
-}
-.deck .slide-inner::after {
-	content: '';
-	flex: 1 1 0;
-}
 
-/* The title (brand + heading) stays centred above the body, full width. The
-   body is a left-aligned column region: one ~750px column by default. When the
-   content would overflow the slide vertically, the measure step (see
-   DeckLayout.svelte / the exported deck JS) adds .cols-2, splitting it into two
-   balanced 750px columns so the slide fits without a scrollbar. CSS multicol
-   picks column count from available width, not from overflow, so the count
-   has to be decided in JS — hence the class toggle rather than a media query. */
+/* Body band: fills the space between the title band and the footer. Content is
+   top-aligned (sits directly under the title) and the band scrolls only as a
+   last resort. One left-aligned ~750px column by default; when the content
+   would overflow the band, the measure step (DeckLayout.svelte / the exported
+   deck JS) adds .cols-2 and it splits into two balanced 750px columns so the
+   band fits without a scrollbar. CSS multicol picks column count from available
+   width, not from overflow, so the count has to be decided in JS. */
 .deck .deck-body {
+	flex: 1 1 auto;
+	min-height: 0;
 	width: 100%;
 	max-width: 750px;
-	margin-inline: auto;
+	overflow-y: auto;
 	text-align: left;
 }
-.deck .slide-inner.cols-2 .deck-body {
+.deck .deck-body.cols-2 {
 	max-width: 1540px;
 	column-count: 2;
 	column-gap: 3rem;

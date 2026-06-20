@@ -79,10 +79,10 @@ const DECK_NAV_JS = `(function(){
 	// baked-in classes were measured at the authoring window size, not this one.
 	function fit(){
 		slides.forEach(function(s){
-			var inner = s.querySelector('.slide-inner');
-			if (!inner) return;
-			inner.classList.remove('cols-2');
-			if (inner.scrollHeight > inner.clientHeight + 4) inner.classList.add('cols-2');
+			var body = s.querySelector('.deck-body');
+			if (!body) return;
+			body.classList.remove('cols-2');
+			if (body.scrollHeight > body.clientHeight + 4) body.classList.add('cols-2');
 		});
 	}
 	fit();

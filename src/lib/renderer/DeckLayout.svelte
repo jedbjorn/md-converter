@@ -82,9 +82,9 @@
 
 	function fitColumns() {
 		if (!deckEl) return;
-		for (const inner of deckEl.querySelectorAll<HTMLElement>('.slide-inner')) {
-			inner.classList.remove('cols-2');
-			if (inner.scrollHeight > inner.clientHeight + 4) inner.classList.add('cols-2');
+		for (const body of deckEl.querySelectorAll<HTMLElement>('.deck-body')) {
+			body.classList.remove('cols-2');
+			if (body.scrollHeight > body.clientHeight + 4) body.classList.add('cols-2');
 		}
 	}
 
