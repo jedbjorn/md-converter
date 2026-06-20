@@ -46,6 +46,24 @@ body {
 
 .main {
 	padding: 2rem 3rem;
+	/* A grid item defaults to min-width:auto, so a wide atomic child (a <pre>, a
+	   long URL) would stretch this column past 1fr and force a page-level
+	   horizontal scrollbar. min-width:0 lets the column shrink and pushes the
+	   overflow handling down to the child (which scrolls or wraps internally). */
+	min-width: 0;
+}
+
+/* Long, unbreakable tokens (URLs, long inline code) wrap instead of widening
+   the column. Scoped to rendered content so it never touches nav/layout. */
+.tab-panel {
+	overflow-wrap: break-word;
+}
+
+/* Wide tables scroll within this box (themed scrollbar) instead of widening the
+   page. The wrapper is emitted around every <table> by render-html.ts. */
+.table-scroll {
+	max-width: 100%;
+	overflow-x: auto;
 }
 
 .tab-panel {
@@ -76,4 +94,50 @@ body {
    Higher specificity than the themes' bare `p` rule, so it wins everywhere. */
 .tab-panel p:has(> img:only-child) {
 	max-width: none;
+}
+
+/* ---- phone: the doc sidebar becomes a sticky top bar ----
+   Structural only (no colors) — themes supply the bar's background/borders via
+   their own .sidebar/.brand rules. Selectors are .layout-scoped so they win
+   over each theme's single-class desktop rules, which are injected after this
+   file. Below the breakpoint the fixed-width grid collapses to a vertical
+   stack: a sticky top bar (brand + horizontally-scrollable tab strip) over the
+   content, so the content is reachable without scrolling past the whole nav. */
+@media (max-width: 900px) {
+	.layout {
+		display: flex;
+		flex-direction: column;
+	}
+	.layout > .sidebar {
+		position: sticky;
+		top: 0;
+		height: auto;
+		z-index: 10;
+		border-right: none;
+		border-bottom: 1px solid currentColor;
+		padding: 0;
+		overflow: visible;
+	}
+	.layout > .sidebar .brand {
+		padding: 0.7rem 1rem;
+	}
+	/* Tabs become one horizontal row that scrolls sideways; its own scrollbar is
+	   hidden (the row is the affordance), distinct from the themed content
+	   scrollbars elsewhere. */
+	.layout > .sidebar .tab-nav {
+		display: flex;
+		overflow-x: auto;
+		scrollbar-width: none;
+	}
+	.layout > .sidebar .tab-nav::-webkit-scrollbar {
+		display: none;
+	}
+	.layout > .sidebar .tab-nav li {
+		flex: 0 0 auto;
+	}
+	.layout > .sidebar .tab-nav button {
+		width: auto;
+		white-space: nowrap;
+		padding: 0.8rem 1rem;
+	}
 }

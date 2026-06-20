@@ -192,7 +192,7 @@ h3 {
   border-bottom: 2px solid var(--rule);
 }
 
-p { margin-bottom: 0.9em; min-width: 500px; max-width: 700px; }
+p { margin-bottom: 0.9em; max-width: 700px; }
 p strong { font-family: var(--font-display); font-weight: 600; }
 p em { font-style: italic; }
 p del { color: var(--text-soft); }
@@ -459,6 +459,32 @@ pre code { background: none; color: inherit; padding: 0; }
   font-weight: 600;
   font-style: italic;
   font-size: 18px;
+}
+
+/* ─── scrollbars (themed) ───────────────────────────────
+   Every scroll surface (page, sidebar, deck body) draws from the theme's own
+   rule colour, accent on hover. No default browser scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 8px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 @media (max-width: 900px) {
