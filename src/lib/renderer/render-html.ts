@@ -41,6 +41,15 @@ md.renderer.rules.mermaid_block = (tokens, idx) => {
 	return `<div class="mermaid-wrap"><div class="mermaid">${esc(source)}</div></div>\n`;
 };
 
+md.renderer.rules.video_block = (tokens, idx) => {
+	const src = (tokens[idx].meta as { src: string }).src;
+	// GitHub user-attachments URLs carry no extension; the browser sniffs the
+	// content-type from the response, so `src` on the element is enough (a typed
+	// <source> would force us to guess). controls + playsinline + metadata preload
+	// match how the source README renders on GitHub.
+	return `<div class="video-wrap"><video class="md-video" src="${esc(src)}" controls playsinline preload="metadata"></video></div>\n`;
+};
+
 // Wrap tables in a horizontal-scroll container so a wide table scrolls within
 // its own box instead of widening the whole page (which would force a page-level
 // horizontal scrollbar alongside the vertical one). The <table> keeps its normal
