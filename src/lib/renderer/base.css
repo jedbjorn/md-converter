@@ -87,6 +87,20 @@ body {
 	margin-inline: 0;
 }
 
+/* Inline video: same preview envelope as block images (capped 950px, natural
+   aspect, left-aligned with the text column). The .video-wrap is its own block
+   so it isn't bound by the themes' ~700px paragraph measure. */
+.tab-panel .video-wrap {
+	margin-block: 1rem;
+}
+.tab-panel .md-video {
+	display: block;
+	width: auto;
+	max-width: min(100%, 950px);
+	height: auto;
+	margin-inline: 0;
+}
+
 /* Each theme caps body paragraphs at ~700px for readable line length, and a
    markdown image is itself a paragraph (`<p><img></p>`) — which would otherwise
    pin the image to 700px too. Lift the cap only on image-only paragraphs, so
