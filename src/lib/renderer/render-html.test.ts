@@ -111,3 +111,38 @@ describe('renderTokens: task lists', () => {
 		expect(html).toContain('<li>alpha</li>');
 	});
 });
+
+describe('renderTokens: inline video', () => {
+	const GH = 'https://github.com/user-attachments/assets/7ac96408-d531-4930-a1ad-446b2994739c';
+
+	it('renders a bare GitHub user-attachments URL as a video player', () => {
+		const html = renderTab0(`## S\n\n${GH}\n`);
+		expect(html).toContain('<div class="video-wrap">');
+		expect(html).toContain(`<video class="md-video" src="${GH}" controls playsinline preload="metadata">`);
+		// Not rendered as a paragraph link
+		expect(html).not.toContain(`<a href="${GH}"`);
+	});
+
+	it('renders a bare URL with a video extension as a video player', () => {
+		const html = renderTab0('## S\n\nhttps://cdn.example.com/clip.mp4\n');
+		expect(html).toContain('<video class="md-video" src="https://cdn.example.com/clip.mp4"');
+	});
+
+	it('leaves a normal link alone', () => {
+		const html = renderTab0(`## S\n\nSee [the clip](${GH}) here.\n`);
+		expect(html).not.toContain('video-wrap');
+		expect(html).toContain('<a href=');
+	});
+
+	it('leaves an image (markdown image syntax) alone', () => {
+		const html = renderTab0(`## S\n\n![shot](${GH})\n`);
+		expect(html).not.toContain('video-wrap');
+		expect(html).toContain('<img');
+	});
+
+	it('does not treat a non-video bare URL as a video', () => {
+		const html = renderTab0('## S\n\nhttps://example.com/page\n');
+		expect(html).not.toContain('video-wrap');
+		expect(html).toContain('<a href="https://example.com/page"');
+	});
+});
