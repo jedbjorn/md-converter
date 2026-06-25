@@ -11,3 +11,9 @@ preview:   ## Preview the production build locally
 
 deploy: build  ## Build, then deploy to Cloudflare Workers
 	npx wrangler deploy
+
+# super-coder convenience aliases (designs-OS 'dos-' command standard).
+# Appended by ./sc; every target is dos--prefixed so it can't collide with
+# this Makefile's own targets. Delete this line to opt out — `./sc <cmd>`
+# stays equivalent.
+-include .super-coder/aliases.mk
