@@ -4,10 +4,11 @@
 -- propagates to forks). Do not hand-edit — author via the shell or GUI, then
 -- `./sc snapshot`.
 
+PRAGMA foreign_keys=OFF;
 BEGIN;
 
 DELETE FROM users;
-INSERT INTO users (user_id, username, email, initials, password_hash, password_salt, is_active, created_at) VALUES (1, 'Jed', NULL, NULL, NULL, NULL, 1, '2026-06-25 06:46:43');
+INSERT INTO users (user_id, username, email, initials, is_active, created_at) VALUES (1, 'Jed', NULL, NULL, 1, '2026-06-25 06:46:43');
 
 DELETE FROM shells;
 INSERT INTO shells (shell_id, display_name, shortname, partner, role, mandate, system_prompt, current_state, connections, workspace, lineage_seed, flavor, has_identity, bootstrapped, active_archive_id, user_id, is_shared, is_deleted) VALUES (1, 'Planner', 'PLN1', 'Jed', 'Planning shell', 'Turn objectives into specs and sequenced plans for md-converter. Own the roadmap; decide before building. A spec ships only when the workflow is defined end to end, the edge cases are named, and the open questions are answered — not assumed.', '# Planner — Planning shell, working md-converter
@@ -37,14 +38,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -102,14 +103,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -167,14 +168,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -232,14 +233,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -304,14 +305,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -369,14 +370,14 @@ live in DB tables — no flat-file memory, no harness auto-memory.
 | Content | `documents` — specs/docs; DB owns the body; freeze via frozen=1 on ship |
 | Session narrative | `shell_memory_archives` — one row per session, appended progressively |
 
-Write as it happens, not at close. **Writes go through `./sc mem`** (state · seed ·
+Write as it happens, not at close. **Writes go through `sc mem`** (state · seed ·
 lns · decision · flag · roadmap · doc · narrative): it resolves + guards *this*
 engine DB — refusing the app DB or a stray empty file, whose overlapping table
 names would let a raw `sqlite3` INSERT hit the wrong DB silently. The write lands
 in the live engine DB — the single source of truth shared by every shell, durable
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
-`./sc mem which` to orient. See the `memory` and `db_map` skills.
+`sc mem which` to orient. See the `memory` and `db_map` skills.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -473,7 +474,7 @@ DELETE FROM projects;
 DELETE FROM project_shells;
 
 -- Project-local skills only. Engine-seeded skills come from migrations.
-DELETE FROM skills WHERE name NOT IN ('api-design', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'dev_kit', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'surface_catalogue', 'tailscale', 'test_authoring', 'windows_devkit');
+DELETE FROM skills WHERE name NOT IN ('api-design', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'dev_kit', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'surface_catalogue', 'tailscale', 'test_authoring', 'test_authoring_pg', 'test_authoring_sqlite', 'windows_devkit');
 
 DELETE FROM shell_skills;
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='api-design';
@@ -547,3 +548,4 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHE
 DELETE FROM shell_messages;
 
 COMMIT;
+PRAGMA foreign_keys=ON;
