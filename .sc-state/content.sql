@@ -47,6 +47,12 @@ and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
 
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
+
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
 `./sc render`. They are derived artifacts: a photograph of a DB row, not the row.
@@ -111,6 +117,12 @@ in the live engine DB — the single source of truth shared by every shell, dura
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
+
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -177,6 +189,12 @@ and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
 
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
+
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
 `./sc render`. They are derived artifacts: a photograph of a DB row, not the row.
@@ -241,6 +259,12 @@ in the live engine DB — the single source of truth shared by every shell, dura
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
+
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -314,6 +338,12 @@ and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
 
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
+
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
 `./sc render`. They are derived artifacts: a photograph of a DB row, not the row.
@@ -378,6 +408,12 @@ in the live engine DB — the single source of truth shared by every shell, dura
 and visible to all at once. That is the whole write: **you don''t snapshot or
 render** — persisting to git is an admin/GUI step. Raw `sqlite3` is for SELECT only;
 `sc mem which` to orient. See the `memory` and `db_map` skills.
+
+**Read before you decide.** Settled choices constrain new work — before any
+architectural or approach decision, lazy-load the log: `sc mem get decisions`
+(index of active decisions; `sc mem get decisions <id>` for the full row with
+rationale). Honor a prior decision or supersede it explicitly (`--parent`) —
+never silently re-litigate.
 
 **Flat files are renders, not sources.** Every local `.md` and git-tracked file
 — docs, specs, skills, this `CLAUDE.md`/`AGENTS.md` — is rendered from the DB by
@@ -474,7 +510,98 @@ DELETE FROM projects;
 DELETE FROM project_shells;
 
 -- Project-local skills only. Engine-seeded skills come from migrations.
-DELETE FROM skills WHERE name NOT IN ('api-design', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'dev_kit', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'issue_reporting', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'surface_catalogue', 'tailscale', 'test_authoring', 'test_authoring_pg', 'test_authoring_sqlite', 'windows_devkit');
+DELETE FROM skills WHERE name NOT IN ('api-design', 'app_deploy_setup', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'issue_reporting', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'pm2', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'surface_catalogue', 'tailscale', 'test_authoring', 'test_authoring_pg', 'test_authoring_sqlite', 'windows_devkit', 'windows_vm_gui');
+INSERT INTO skills (name, description, category, content, command, common, is_deleted) VALUES ('dev_kit', 'What the sandbox dev kit provides + how to drive it — ./sc deps, ./sc test, ./sc lint, ./sc typecheck, the .venv tools, rg/sqlite3, the baked browser, the container/host app boundary, and the optional app-only Postgres sidecar (DATABASE_URL). Use when building or testing in a fork.', 'substrate', '# dev_kit — the sandbox dev kit
+
+What you have to build, test, and inspect a fork — and the one boundary that
+trips shells up.
+
+## You are in a container
+
+You run **inside the sandbox container**; the repo is bind-mounted at its host
+path. The app the FnB watches in their browser is a **separate instance** — the
+host-supervised stack (pm2 / `make`), outside your container. To *see* the app
+yourself, run a dev server **inside** the sandbox on `0.0.0.0:$SC_DEV_PORT`; the
+FnB reaches that instance at `http://127.0.0.1:$SC_DEV_PORT`. (See the boot
+doc''s `RUNNING THE APP` section.)
+
+## Install + run
+
+- `./sc deps` — install the fork''s deps into the bind-mount: a repo-root `.venv`
+  from every `requirements*.txt` (fork pins win) + `npm ci`/`install` per
+  `package.json`. Persists across image rebuilds. **Run this first.**
+- `./sc test` — backend (`.venv` pytest honoring the fork''s `pytest.ini`, else
+  the engine''s stdlib unittest) + UI (`npm run test` / vitest where a `test`
+  script is declared). Non-zero if any suite fails.
+
+## The `.venv` dev kit
+
+`./sc deps` layers these onto the fork''s own deps with `--upgrade-strategy
+only-if-needed`, so a fork''s pins and its `[tool.ruff]`/`[tool.mypy]` config
+always win. **Available, not enforced** — opt in per fork.
+
+- `./sc lint [paths]` → `.venv/bin/ruff check` — lint + format-check.
+  (`.venv/bin/ruff format` to apply formatting.)
+- `./sc typecheck [paths]` → `.venv/bin/mypy` — Python type-check.
+- `.venv/bin/pytest` / `coverage` / `httpx` — test + HTTP client (also via `./sc test`).
+- `.venv/bin/datasette <db.sqlite>` — browse a SQLite DB in a web GUI when the
+  `sqlite3` CLI isn''t enough. Bind `0.0.0.0:$SC_DEV_PORT` to view it from the host.
+
+> The `.venv` baseline only materializes when the fork declares Python (a
+> `requirements*.txt`). A pure-frontend fork gets node only.
+
+## Baked into the image
+
+Always present, no `./sc deps` needed:
+
+- `rg` (ripgrep), `sqlite3` CLI, `curl`, `node` 22 / `npm`.
+- **Playwright + Chromium** at `PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright`
+  (world-readable). The fork''s `@playwright/test` / `playwright` runner resolves
+  it automatically — E2E drives the *running* app over HTTP, so start a dev
+  server first.
+
+## Frontend checks
+
+`svelte-check`, `tsc`, vitest come from the fork''s own `package.json` devDeps —
+installed by `./sc deps`'' `npm ci`, run via the fork''s npm scripts (or `./sc test`).
+
+## Postgres sidecar (app-only)
+
+When a fork sets `"pg": {}` in `.super-coder/instance.json` (`./sc pg-init` adds
+it), `./sc launch` starts a `postgres:17` sidecar (`sc-pg-<fork>` on `SC_NET`) and
+forwards `DATABASE_URL` into the sandbox — so you can develop + test the fork''s
+**app** against real Postgres. This is for the *app only*: the engine DB is always
+SQLite and the engine never reads `DATABASE_URL`, so the sidecar can''t point the
+review GUI at the wrong DB.
+
+- `DATABASE_URL=postgresql://sc:sc@sc-pg-<fork>:5432/sc` is in the sandbox env,
+  reachable by **container name** on `SC_NET` — *not* `127.0.0.1`, which inside
+  the sandbox is its own loopback. Override with `SC_DATABASE_URL` on the host.
+- Data persists in a named Docker volume across restarts + image rebuilds.
+- The **Postgres driver is the fork''s own dependency**, not the engine dev kit:
+  declare `psycopg[binary]` (psycopg 3) in the fork''s `requirements*.txt` so
+  `./sc deps` installs it. Then the app + `pytest` connect with no extra steps.
+
+Verify with `echo $DATABASE_URL`. *Unset* → the fork has no `pg` block; run
+`./sc pg-init && ./sc restart` on the host.
+
+**Empty ≠ unavailable.** A configured sidecar (`DATABASE_URL` *set*) whose schema
+is empty is a **provision-me** signal — not "no DB / out of scope / blocked." It
+is the fork''s real app DB, waiting to be migrated. Provision it the way the app
+does — the fork''s own schema migrations + bootstrap (e.g. its `make migrate` /
+`make bootstrap`, or whatever migration runner the repo map points to) — then
+verify against it. Never hand-roll a separate throwaway DB, and never write the
+task off as "no DB available." You have one.
+
+## Stance
+
+`./sc deps` before anything else in a fresh sandbox — qwen''s "node missing" was
+just deps-not-installed. Lint/type-check are there when you want them, never
+forced; respect the fork''s config. To see the app, run a dev server in the
+container — never restart the FnB''s host stack. Before calling an app-DB task
+blocked on a missing/empty DB: check `DATABASE_URL`; if it''s set but empty,
+provision the sidecar with the fork''s own migrations. In a sandbox the DB is
+never the blocker.', NULL, 0, 0) ON CONFLICT(name) DO UPDATE SET description=excluded.description, category=excluded.category, content=excluded.content, command=excluded.command, common=excluded.common, is_deleted=excluded.is_deleted;
 
 DELETE FROM shell_skills;
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='api-design';
@@ -552,6 +679,26 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHERE name='surface_catalogue';
 
 DELETE FROM shell_messages;
+
+DELETE FROM flavor_defaults;
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'codex', 'gpt-5.5', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'claude', 'opus', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'opencode', 'ollama-cloud/qwen3-coder-next', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'codex', 'gpt-5.4', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'claude', 'sonnet', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'opencode', 'ollama-cloud/glm-5.2', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'codex', 'gpt-5.5', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'claude', 'opus', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'opencode', 'ollama-cloud/deepseek-v4-pro', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'codex', 'gpt-5.5', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'claude', 'opus', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'opencode', 'ollama-cloud/glm-5.2', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'codex', 'gpt-5.5', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'claude', 'sonnet', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'opencode', 'ollama-cloud/deepseek-v4-pro', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('devops', 'codex', 'gpt-5.5', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('devops', 'claude', 'sonnet', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('devops', 'opencode', 'ollama/qwen3-coder:480b-cloud', 0);
 
 COMMIT;
 PRAGMA foreign_keys=ON;
