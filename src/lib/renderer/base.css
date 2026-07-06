@@ -73,12 +73,22 @@ body {
 	display: block;
 }
 
+/* Block images: render-html.ts wraps image-only paragraphs (plain or linked)
+   in <figure class="md-figure">, which activates each theme's figure/figcaption
+   framing. fit-content makes the themed frame hug the image instead of
+   stretching across the column, and — figure not being a <p> — the frame
+   escapes the themes' ~700px paragraph measure. */
+.md-figure {
+	width: fit-content;
+	max-width: 100%;
+}
+
 /* Embedded images: normalize to a consistent preview size across every theme.
    Capped at 950px wide, natural aspect ratio (no crop, no upscaling of smaller
-   images), left-aligned with the text column. markdown-it renders images as
-   `<p><img></p>` (no figure plugin is registered), so this targets the img
-   directly within the rendered panel — scoped to `.tab-panel` so it never
-   touches sidebar/nav imagery. */
+   images), left-aligned with the text column. Higher specificity than the
+   themes' `figure img { width: 100% }`, so natural-size-capped wins — scoped
+   to `.tab-panel` so it never touches sidebar/nav imagery. (Deck images are
+   sized by deck.css against the slide's body band instead.) */
 .tab-panel img {
 	display: block;
 	width: auto;
@@ -99,15 +109,6 @@ body {
 	max-width: min(100%, 950px);
 	height: auto;
 	margin-inline: 0;
-}
-
-/* Each theme caps body paragraphs at ~700px for readable line length, and a
-   markdown image is itself a paragraph (`<p><img></p>`) — which would otherwise
-   pin the image to 700px too. Lift the cap only on image-only paragraphs, so
-   block images can reach the 950px above while prose keeps its 700px measure.
-   Higher specificity than the themes' bare `p` rule, so it wins everywhere. */
-.tab-panel p:has(> img:only-child) {
-	max-width: none;
 }
 
 /* ---- phone: the doc sidebar becomes a sticky top bar ----
