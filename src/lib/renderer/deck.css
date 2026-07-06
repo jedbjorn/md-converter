@@ -220,6 +220,14 @@
 	will-change: transform, opacity;
 	padding: 0 0.15rem;
 }
+/* Invisible hit-area expansion: the visible dock number is ~30px (scaled down
+   further for neighbours), well under the ~44px touch minimum. Items sit 60px
+   apart, so ±12px horizontal growth never overlaps the next item's target. */
+.deck-dock-item::after {
+	content: '';
+	position: absolute;
+	inset: -12px;
+}
 .deck-dock-num {
 	width: 2.2rem;
 	height: 2.2rem;
@@ -290,10 +298,29 @@
 		font-size: 0.62rem;
 		margin-bottom: 0.8rem;
 	}
-	/* Edge arrows overlap content at phone width — the dock, keyboard, and
-	   scroll remain. Drop them. */
+	/* On touch there's no keyboard and the dock dots are small, so the edge
+	   arrows become the primary nav: compact translucent chevron pills at the
+	   vertical centre, 44px (2.75rem) tap targets. Content scrolls under them —
+	   the pill background keeps them legible over text. */
 	.deck-arrow {
-		display: none;
+		width: 2.75rem;
+		height: 2.75rem;
+		padding: 0;
+		display: grid;
+		place-items: center;
+		font-size: 1.5rem;
+		opacity: 0.85;
+		color: var(--text);
+		background: color-mix(in srgb, var(--bg-3) 80%, transparent);
+		border: 1px solid var(--rule-soft);
+		border-radius: 999px;
+		backdrop-filter: blur(4px);
+	}
+	.deck-arrow.prev {
+		left: 0.4rem;
+	}
+	.deck-arrow.next {
+		right: 0.4rem;
 	}
 	.deck-dock {
 		width: min(94vw, 420px);
