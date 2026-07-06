@@ -119,7 +119,14 @@ body {
    stack: a sticky top bar (brand + horizontally-scrollable tab strip) over the
    content, so the content is reachable without scrolling past the whole nav. */
 @media (max-width: 900px) {
-	.layout {
+	/* Doubled class: theme CSS is injected AFTER this file and every theme
+	   re-declares `.layout { display: grid }` at (0,1,0) — at equal specificity
+	   the theme's desktop rule would win by order and silently disable this
+	   whole phone block (the layout stays grid, the tab strip never contains,
+	   and the page overflows sideways). (0,2,0) outranks the themes without
+	   depending on injection order. The `.layout > .sidebar` rules below are
+	   already (0,2,0)+. */
+	.layout.layout {
 		display: flex;
 		flex-direction: column;
 	}
