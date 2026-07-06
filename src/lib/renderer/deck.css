@@ -82,24 +82,26 @@
 	text-align: left;
 }
 
-/* Media fits the body band. Width is bounded by the ~1050px column; height by
-   the band itself — 100vh minus the title band, footer gap, and dock (the same
-   bands the .slide padding carves out; the --deck-* vars inherit from .slide,
-   so the phone overrides apply here too), with 5rem slack for the themed
-   figure frame + caption. Natural aspect ratio, no crop, no upscale. Higher
-   specificity than the themes' `figure img { width: 100% }`. */
-.deck .deck-body img,
-.deck .deck-body .md-video {
+/* Block media fills the band width — small screenshots scale UP to the column,
+   big ones scale down, so every slide's imagery lands at the same width (the
+   sizing the themes' own `figure img { width: 100% }` was designed for). Height
+   follows the aspect ratio; a taller-than-band image scrolls with the band
+   (deck-body overflow) rather than being shrunk to fit. The figure must span
+   the band (width:auto block) — base.css's fit-content would pin it to the
+   image's natural width and stop the upscale. */
+.deck .deck-body .md-figure {
 	width: auto;
+}
+.deck .deck-body .md-figure img,
+.deck .deck-body .md-video {
+	width: 100%;
 	height: auto;
+}
+/* Images outside a block figure (inline icons, badge rows) keep their natural
+   size — just never wider than the band. */
+.deck .deck-body img {
 	max-width: 100%;
-	/* dvh tracks mobile browsers' collapsing URL bar; vh is the fallback. */
-	max-height: calc(
-		100vh - var(--deck-title-h) - var(--deck-footer-pad) - var(--deck-dock-h) - 5rem
-	);
-	max-height: calc(
-		100dvh - var(--deck-title-h) - var(--deck-footer-pad) - var(--deck-dock-h) - 5rem
-	);
+	height: auto;
 }
 
 /* Heading + brand. Body content keeps the theme's own element styling. */
