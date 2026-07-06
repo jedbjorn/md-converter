@@ -305,29 +305,10 @@
 		font-size: 0.62rem;
 		margin-bottom: 0.8rem;
 	}
-	/* On touch there's no keyboard and the dock dots are small, so the edge
-	   arrows become the primary nav: compact translucent chevron pills at the
-	   vertical centre, 44px (2.75rem) tap targets. Content scrolls under them —
-	   the pill background keeps them legible over text. */
+	/* Edge arrows obscure the viewing window at phone width — the dock numbers
+	   (with their expanded tap targets) are the nav. Drop them. */
 	.deck-arrow {
-		width: 2.75rem;
-		height: 2.75rem;
-		padding: 0;
-		display: grid;
-		place-items: center;
-		font-size: 1.5rem;
-		opacity: 0.85;
-		color: var(--text);
-		background: color-mix(in srgb, var(--bg-3) 80%, transparent);
-		border: 1px solid var(--rule-soft);
-		border-radius: 999px;
-		backdrop-filter: blur(4px);
-	}
-	.deck-arrow.prev {
-		left: 0.4rem;
-	}
-	.deck-arrow.next {
-		right: 0.4rem;
+		display: none;
 	}
 	.deck-dock {
 		width: min(94vw, 420px);
