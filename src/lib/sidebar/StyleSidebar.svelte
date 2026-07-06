@@ -121,6 +121,12 @@
 	Style
 </button>
 
+{#if open}
+	<!-- Phone-only scrim (display:none on desktop, where the page stays
+	     interactive for live style preview). Tap = close, replacing Esc. -->
+	<button class="ss-scrim" aria-label="Close style panel" onclick={onClose}></button>
+{/if}
+
 <aside class="ss-panel" class:ss-panel--open={open} aria-hidden={!open}>
 	<header class="ss-header">
 		<h2>Style</h2>
@@ -284,13 +290,19 @@
 		background: rgba(0, 0, 0, 0.9);
 	}
 
+	.ss-scrim {
+		display: none;
+	}
+
 	.ss-panel {
 		position: fixed;
 		top: 0;
 		right: 0;
 		width: 340px;
 		max-width: 100vw;
+		/* dvh tracks mobile browsers' collapsing URL bar; vh is the fallback. */
 		height: 100vh;
+		height: 100dvh;
 		z-index: 250;
 		background: #1a1a1f;
 		color: #e8e4d8;
@@ -590,5 +602,31 @@
 	}
 	.ss-btn--primary:hover {
 		background: #5a7fb5;
+	}
+
+	/* ---- phone ---- */
+	@media (max-width: 760px) {
+		/* Tap-outside closes the panel — Esc doesn't exist on touch. */
+		.ss-scrim {
+			display: block;
+			position: fixed;
+			inset: 0;
+			z-index: 240;
+			background: rgba(0, 0, 0, 0.35);
+			border: 0;
+			padding: 0;
+			cursor: pointer;
+		}
+		/* iOS Safari zooms the page into any focused input under 16px — keep
+		   every text-entry control at 16px on phones so focus never zooms. */
+		.ss-hex,
+		.ss-font-custom,
+		select {
+			font-size: 16px;
+		}
+		/* Keep the footer clear of the iPhone home indicator. */
+		.ss-footer {
+			padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+		}
 	}
 </style>
