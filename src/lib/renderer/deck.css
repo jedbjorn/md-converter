@@ -65,15 +65,15 @@
 }
 
 /* Body band: fills the space between the title band and the footer. Content is
-   top-aligned (sits directly under the title) in a single left-aligned ~750px
-   column. When a slide is taller than the band, the band scrolls (themed
+   top-aligned (sits directly under the title) in a single left-aligned column,
+   max 1050px. When a slide is taller than the band, the band scrolls (themed
    scrollbar) rather than splitting into columns — one column always. */
 .deck .deck-body {
 	flex: 1 1 auto;
 	min-height: 0;
 	min-width: 0;
 	width: 100%;
-	max-width: 750px;
+	max-width: 1050px;
 	overflow-y: auto;
 	/* Long, unbreakable tokens wrap rather than widening the band; wide code
 	   blocks/tables scroll within their own boxes (pre overflow-x, .table-scroll)
@@ -82,7 +82,7 @@
 	text-align: left;
 }
 
-/* Media fits the body band. Width is bounded by the ~750px column; height by
+/* Media fits the body band. Width is bounded by the ~1050px column; height by
    the band itself — 100vh minus the title band, footer gap, and dock (the same
    bands the .slide padding carves out; the --deck-* vars inherit from .slide,
    so the phone overrides apply here too), with 5rem slack for the themed
