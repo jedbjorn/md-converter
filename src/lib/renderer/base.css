@@ -6,6 +6,13 @@
 	box-sizing: border-box;
 }
 
+html {
+	/* Mobile browsers inflate text on pages they judge desktop-formatted;
+	   rendered docs size type deliberately, so opt out. */
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
 body {
 	margin: 0;
 }

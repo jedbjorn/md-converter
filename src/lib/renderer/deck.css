@@ -93,8 +93,12 @@
 	width: auto;
 	height: auto;
 	max-width: 100%;
+	/* dvh tracks mobile browsers' collapsing URL bar; vh is the fallback. */
 	max-height: calc(
 		100vh - var(--deck-title-h) - var(--deck-footer-pad) - var(--deck-dock-h) - 5rem
+	);
+	max-height: calc(
+		100dvh - var(--deck-title-h) - var(--deck-footer-pad) - var(--deck-dock-h) - 5rem
 	);
 }
 
@@ -169,7 +173,8 @@
 	position: fixed;
 	left: 0;
 	right: 0;
-	bottom: 0.8rem;
+	/* Clear the iPhone home indicator (0 everywhere else). */
+	bottom: calc(0.8rem + env(safe-area-inset-bottom, 0px));
 	z-index: 18;
 	display: flex;
 	justify-content: center;
@@ -273,7 +278,7 @@
 /* ---- slide counter ---- */
 .deck-counter {
 	position: fixed;
-	bottom: 1.5rem;
+	bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
 	right: 1.5rem;
 	z-index: 18;
 	font-family: var(--font-mono, monospace);
@@ -332,7 +337,7 @@
 		font-size: 0.82rem;
 	}
 	.deck-counter {
-		bottom: 0.9rem;
+		bottom: calc(0.9rem + env(safe-area-inset-bottom, 0px));
 		right: 0.9rem;
 		font-size: 0.7rem;
 	}
