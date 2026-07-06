@@ -137,7 +137,7 @@ export function exportHtml(opts: ExportOptions): string {
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>${escapeHtml(opts.title)}</title>
 ${fontsLink}
 <style>
