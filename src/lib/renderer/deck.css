@@ -82,6 +82,22 @@
 	text-align: left;
 }
 
+/* Media fits the body band. Width is bounded by the ~750px column; height by
+   the band itself — 100vh minus the title band, footer gap, and dock (the same
+   bands the .slide padding carves out; the --deck-* vars inherit from .slide,
+   so the phone overrides apply here too), with 5rem slack for the themed
+   figure frame + caption. Natural aspect ratio, no crop, no upscale. Higher
+   specificity than the themes' `figure img { width: 100% }`. */
+.deck .deck-body img,
+.deck .deck-body .md-video {
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: calc(
+		100vh - var(--deck-title-h) - var(--deck-footer-pad) - var(--deck-dock-h) - 5rem
+	);
+}
+
 /* Heading + brand. Body content keeps the theme's own element styling. */
 .deck .deck-brand {
 	font-family: var(--font-mono, monospace);

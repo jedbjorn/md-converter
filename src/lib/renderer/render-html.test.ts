@@ -59,8 +59,7 @@ describe('renderTokens: stats', () => {
 		expect(html).toContain('<div class="stat-desc">Up</div>');
 		expect(html).toContain('<div class="stat-card class3">');
 		// Card without description should not emit empty stat-desc
-		const card2 =
-			html.match(/<div class="stat-card class3">[\s\S]*?<\/div><\/div>/) ?? [''];
+		const card2 = html.match(/<div class="stat-card class3">[\s\S]*?<\/div><\/div>/) ?? [''];
 		expect(card2[0]).not.toContain('stat-desc');
 	});
 
@@ -72,9 +71,7 @@ describe('renderTokens: stats', () => {
 
 describe('renderTokens: linear', () => {
 	it('emits .linear with optionally-classed .linear-step children', () => {
-		const html = renderTab0(
-			'## S\n\n```linear\nA :::class1 -> B :::class4 -> C\n```\n'
-		);
+		const html = renderTab0('## S\n\n```linear\nA :::class1 -> B :::class4 -> C\n```\n');
 		expect(html).toContain('<div class="linear">');
 		expect(html).toContain('<div class="linear-step class1">A</div>');
 		expect(html).toContain('<div class="linear-step class4">B</div>');
@@ -92,15 +89,15 @@ describe('renderTokens: mermaid', () => {
 
 describe('renderTokens: task lists', () => {
 	it('emits .task-list with span-based checkbox markup', () => {
-		const html = renderTab0(
-			'## S\n\n- [ ] First\n- [x] Second\n- [ ] Third\n'
-		);
+		const html = renderTab0('## S\n\n- [ ] First\n- [x] Second\n- [ ] Third\n');
 		expect(html).toContain('<ul class="task-list">');
 		// Incomplete
 		expect(html).toContain('<li><span class="task-checkbox"></span><span>');
 		expect(html).toContain('First');
 		// Complete
-		expect(html).toContain('<li class="done"><span class="task-checkbox done"></span><span class="done">');
+		expect(html).toContain(
+			'<li class="done"><span class="task-checkbox done"></span><span class="done">'
+		);
 		expect(html).toContain('Second');
 	});
 
@@ -112,13 +109,57 @@ describe('renderTokens: task lists', () => {
 	});
 });
 
+describe('renderTokens: block images', () => {
+	it('wraps an image-only paragraph in a figure', () => {
+		const html = renderTab0('## S\n\n![shot](https://x.com/a.png)\n');
+		expect(html).toContain(
+			'<figure class="md-figure"><img src="https://x.com/a.png" alt="shot"></figure>'
+		);
+		expect(html).not.toContain('<p><img');
+	});
+
+	it('emits the image title as a figcaption', () => {
+		const html = renderTab0('## S\n\n![shot](https://x.com/a.png "The caption")\n');
+		expect(html).toContain('<figcaption>The caption</figcaption></figure>');
+	});
+
+	it('wraps a lone linked image in a figure, keeping the link', () => {
+		const html = renderTab0('## S\n\n[![shot](https://x.com/a.png)](https://x.com/page)\n');
+		expect(html).toMatch(
+			/<figure class="md-figure"><a href="https:\/\/x\.com\/page"><img src="https:\/\/x\.com\/a\.png" alt="shot"><\/a><\/figure>/
+		);
+	});
+
+	it('leaves a paragraph mixing text and an image as a paragraph', () => {
+		const html = renderTab0('## S\n\nSee ![icon](https://x.com/i.png) inline.\n');
+		expect(html).not.toContain('figure');
+		expect(html).toContain('<p>See <img');
+	});
+
+	it('leaves a badge row (multiple linked images) as a paragraph', () => {
+		const html = renderTab0(
+			'## S\n\n[![a](https://x.com/a.svg)](https://x.com/1) [![b](https://x.com/b.svg)](https://x.com/2)\n'
+		);
+		expect(html).not.toContain('figure');
+		expect(html).toContain('<p>');
+	});
+
+	it('leaves an image in a tight list item as a bare img', () => {
+		const html = renderTab0('## S\n\n- ![shot](https://x.com/a.png)\n- beta\n');
+		expect(html).not.toContain('figure');
+		expect(html).toContain('<li><img');
+	});
+});
+
 describe('renderTokens: inline video', () => {
 	const GH = 'https://github.com/user-attachments/assets/7ac96408-d531-4930-a1ad-446b2994739c';
 
 	it('renders a bare GitHub user-attachments URL as a video player', () => {
 		const html = renderTab0(`## S\n\n${GH}\n`);
 		expect(html).toContain('<div class="video-wrap">');
-		expect(html).toContain(`<video class="md-video" src="${GH}" controls playsinline preload="metadata">`);
+		expect(html).toContain(
+			`<video class="md-video" src="${GH}" controls playsinline preload="metadata">`
+		);
 		// Not rendered as a paragraph link
 		expect(html).not.toContain(`<a href="${GH}"`);
 	});

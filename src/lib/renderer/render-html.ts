@@ -25,10 +25,7 @@ md.renderer.rules.stats_block = (tokens, idx) => {
 md.renderer.rules.linear_block = (tokens, idx) => {
 	const steps = (tokens[idx].meta as { steps: LinearStep[] }).steps;
 	const inner = steps
-		.map(
-			(s) =>
-				`<div class="linear-step${s.cls ? ' ' + s.cls : ''}">${esc(s.text)}</div>`
-		)
+		.map((s) => `<div class="linear-step${s.cls ? ' ' + s.cls : ''}">${esc(s.text)}</div>`)
 		.join('');
 	return `<div class="linear">${inner}</div>\n`;
 };
@@ -48,6 +45,48 @@ md.renderer.rules.video_block = (tokens, idx) => {
 	// <source> would force us to guess). controls + playsinline + metadata preload
 	// match how the source README renders on GitHub.
 	return `<div class="video-wrap"><video class="md-video" src="${esc(src)}" controls playsinline preload="metadata"></video></div>\n`;
+};
+
+// Block images become figures. markdown-it emits an image-only paragraph as
+// `<p><img></p>`, but every theme ships `figure` / `figure img` / `figcaption`
+// styling (frames, borders, filters, captions) that expects `<figure>`. Wrap
+// the two block-image shapes — a lone image, and a lone linked image (GitHub's
+// clickable-screenshot idiom) — and emit the image's title (`![alt](src
+// "title")`) as its caption. Paragraphs mixing images with text stay
+// paragraphs, so badge rows and inline icons are untouched.
+function soleImage(inline: Token | undefined): Token | null {
+	if (inline?.type !== 'inline' || !inline.children) return null;
+	const kids = inline.children.filter((c) => !(c.type === 'text' && c.content.trim() === ''));
+	if (kids.length === 1 && kids[0].type === 'image') return kids[0];
+	if (
+		kids.length === 3 &&
+		kids[0].type === 'link_open' &&
+		kids[1].type === 'image' &&
+		kids[2].type === 'link_close'
+	) {
+		return kids[1];
+	}
+	return null;
+}
+
+md.renderer.rules.paragraph_open = (tokens, idx, options, env, self) => {
+	// hidden = tight-list paragraph, which renders no wrapper at all — an image
+	// inside a tight list item stays a bare <img> in its <li>.
+	if (!tokens[idx].hidden && soleImage(tokens[idx + 1])) {
+		return '<figure class="md-figure">';
+	}
+	return self.renderToken(tokens, idx, options);
+};
+
+md.renderer.rules.paragraph_close = (tokens, idx, options, env, self) => {
+	if (!tokens[idx].hidden) {
+		const img = soleImage(tokens[idx - 1]);
+		if (img) {
+			const title = img.attrGet('title');
+			return `${title ? `<figcaption>${esc(title)}</figcaption>` : ''}</figure>\n`;
+		}
+	}
+	return self.renderToken(tokens, idx, options);
 };
 
 // Wrap tables in a horizontal-scroll container so a wide table scrolls within
