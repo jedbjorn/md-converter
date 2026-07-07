@@ -89,8 +89,14 @@
    stays centred via the deck-body text-align above. */
 .deck .deck-body > * {
 	width: fit-content;
-	max-width: 100%;
 	margin-inline: auto;
+}
+/* Band clamp at zero specificity: a theme's own measure cap (p { max-width:
+   700px }, .stats { max-width: 68ch }, …) must keep winning, so long text keeps
+   its readable measure — as a centred box — instead of stretching to the full
+   band. Elements no theme caps still can't overflow the band. */
+:where(.deck .deck-body > *) {
+	max-width: 100%;
 }
 /* Exceptions that must keep the full band width: an <hr> carries no content, so
    fit-content would collapse it to zero; a wide table relies on its own scroll
