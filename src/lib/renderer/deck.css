@@ -65,7 +65,7 @@
 }
 
 /* Body band: fills the space between the title band and the footer. Content is
-   top-aligned (sits directly under the title) in a single left-aligned column,
+   top-aligned (sits directly under the title) in a single centred column,
    max 1050px. When a slide is taller than the band, the band scrolls (themed
    scrollbar) rather than splitting into columns — one column always. */
 .deck .deck-body {
@@ -79,7 +79,7 @@
 	   blocks/tables scroll within their own boxes (pre overflow-x, .table-scroll)
 	   so the slide never grows a horizontal scrollbar. */
 	overflow-wrap: break-word;
-	text-align: left;
+	text-align: center;
 }
 
 /* Block media fills the band width — small screenshots scale UP to the column,
