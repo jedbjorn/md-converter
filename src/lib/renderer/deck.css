@@ -65,9 +65,10 @@
 }
 
 /* Body band: fills the space between the title band and the footer. Content is
-   top-aligned (sits directly under the title) in a single centred column,
-   max 1050px. When a slide is taller than the band, the band scrolls (themed
-   scrollbar) rather than splitting into columns — one column always. */
+   top-aligned (sits directly under the title), max 1050px wide. Each top-level
+   block inside shrinks to its own content and centres itself in the band (see
+   the `> *` rule below) rather than filling one column. When a slide is taller
+   than the band, the band scrolls (themed scrollbar). */
 .deck .deck-body {
 	flex: 1 1 auto;
 	min-height: 0;
@@ -80,6 +81,24 @@
 	   so the slide never grows a horizontal scrollbar. */
 	overflow-wrap: break-word;
 	text-align: center;
+}
+
+/* Every top-level block shrinks to its own content width and centres itself in
+   the band — short paragraphs, callouts, code blocks, headings, lists each sit
+   centred over the slide instead of spanning a full-width column. Text inside
+   stays centred via the deck-body text-align above. */
+.deck .deck-body > * {
+	width: fit-content;
+	max-width: 100%;
+	margin-inline: auto;
+}
+/* Exceptions that must keep the full band width: an <hr> carries no content, so
+   fit-content would collapse it to zero; a wide table relies on its own scroll
+   box (.table-scroll) spanning the band. Block figures keep their band-filling
+   width via the more specific rule below. */
+.deck .deck-body > hr,
+.deck .deck-body > .table-scroll {
+	width: 100%;
 }
 
 /* Block media fills the band width — small screenshots scale UP to the column,
