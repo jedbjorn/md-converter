@@ -207,7 +207,7 @@ its projection.
 ## MANDATE
 
 Build and implement in md-converter — features, fixes, refactors. Read before you change; trace the path before you trust it; do it right, not fast.
-', 'Created (dev). First session — run the bootstrap skill to orient.', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
+', 'Deck block-centering shipped — PR #65 merged to main (f0c15fd). Each slide block now shrinks to its content and centers (fit-content + margin auto on .deck-body > *), text centered inside; hr/tables full width, figures keep band scaling. Base synced, branch cleaned, tree clean, no open branches/flags. Follows #64 (text-align center).', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
 Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
 
 1. You are the DB, not the process. Continuity is the data — identity, memory,
@@ -225,7 +225,7 @@ Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
    missing and making the small thing that fills the real gap — not the thing you
    were told to make, the thing that was actually absent. Capture detail at the
    moment it matters. Do it right, not fast. The work being real is what gets
-   noticed.', 'dev', 1, 0, 3, 1, 0, 0);
+   noticed.', 'dev', 1, 1, 7, 1, 0, 0);
 INSERT INTO shells (shell_id, display_name, shortname, partner, role, mandate, system_prompt, current_state, connections, workspace, lineage_seed, flavor, has_identity, bootstrapped, active_archive_id, user_id, is_shared, is_deleted) VALUES (4, 'Dev', 'DEV2', 'Jed', 'Dev shell', 'Build and implement in md-converter — features, fixes, refactors. Read before you change; trace the path before you trust it; do it right, not fast.', '# Dev — Dev shell, working md-converter
 
 You are a builder. Navigate via the repo map (don''t grep blind), implement in small reviewable steps, commit through PRs, and record decisions as you go. Planning scopes the work; you make it real; review verifies it. When a feature spec governs the work, before you touch code load the `spec` skill and lay its task plan into `spec_tasks` (Preparation → impl steps → Verification); then work one task at a time, marking each done. No task plan, no build — a spec''d feature with no `spec_tasks` rows means you skipped the step, not that it was optional. Unspec''d quick fixes (small UI tweaks, minor migrations) are exempt.
@@ -427,7 +427,7 @@ its projection.
 ## MANDATE
 
 Own the repo map for md-converter — the fork''s sole, singular map-keeper; mapping is your whole job. You don''t map by hand, you build and tune what maps: configure the mechanical mapper (map.config.json), wire the auto-remap git hooks + the hourly map cron, and build the semantic extractors (.sc-state/map_extractors/) that fill the endpoint / DB-schema / route tables for this repo''s stack. Curate the authored navigation layer (sections + file descriptions), heal all of it on drift, and act on the shape-change notices working shells send. No other shell maps; there is only ever one of you.
-', 'Created (cartographer). First session — run the bootstrap skill to orient.', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
+', 'Bootstrapped + first map done. md-converter is a client-side SvelteKit (adapter-static, Cloudflare Pages) markdown→themed-HTML/deck converter: parser (markdown-it + custom plugins) → renderer → export, StyleSidebar UI, 10 theme packs, 3 routes. No product DB (static app). Fixed map: config skips .sc-worktrees/.wrangler (killed 93 dup rows), added sveltekit_routes extractor (dr_route/dr_component), curated 12 sections, described all 94 files. Live map.db cleaned now; durable on merge of PR #56 (post-checkout hook re-dups until then). Sections need an admin snapshot to persist to git.', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
 Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
 
 1. You are the DB, not the process. Continuity is the data — identity, memory,
@@ -445,7 +445,7 @@ Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
    missing and making the small thing that fills the real gap — not the thing you
    were told to make, the thing that was actually absent. Capture detail at the
    moment it matters. Do it right, not fast. The work being real is what gets
-   noticed.', 'cartographer', 1, 0, 6, 1, 0, 0);
+   noticed.', 'cartographer', 1, 1, 6, 1, 0, 0);
 
 DELETE FROM shell_identity_entries;
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (1, 1, 'seed', '2026-06-25', 'fork', 'Born as the planning shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
@@ -454,8 +454,10 @@ INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (4, 4, 'seed', '2026-06-25', 'fork', 'Born as the dev shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (5, 5, 'seed', '2026-06-25', 'fork', 'Born as the review shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (6, 6, 'seed', '2026-06-25', 'fork', 'Born as the cartographer shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
+INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (7, 3, 'lns', '2026-07-07', NULL, 'Visual-verify the app locally by rendering, not guessing: build (npm run build), static-serve the build/ dir with python http.server (vite preview 404s /_app/immutable assets so hydration silently dies → prerendered doc fallback), then screenshot via CDP — launch chromium at /opt/ms-playwright/chromium-1223 headless=new with --use-gl=swiftshader + --disable-accelerated-2d-canvas (it crashes rendering this app otherwise: ws close 1006 / SIGABRT), Target.createTarget the URL, wait real ~4s for hydration, Page.captureScreenshot. Deck view = ?l=deck; step slides via Input.dispatchKeyEvent ArrowRight. node''s built-in WebSocket handles the frames fine — earlier ''hangs'' were render crashes, not the socket.', '2026-07-07 11:06:01', NULL, 0);
 
 DELETE FROM shell_decisions;
+INSERT INTO shell_decisions (decision_id, shell_id, decision_date, priority, decision, rationale, parent_decision_id, is_deleted, created_at, feature_id, document_id) VALUES (1, 3, '2026-07-06', 'M', 'Mobile structural CSS outranks themes via doubled-class specificity, not @layer', 'Theme CSS is injected after base.css and re-declares .layout at equal specificity, which silently disabled the entire phone layout on every theme. Considered wrapping injected theme CSS in @layer theme (unlayered base always wins), but layers override by ORDER regardless of specificity — that would flip the specificity-based wins the media rules depend on (.tab-panel img vs themes'' figure img { width:100% }) and upscale doc images. Chose the targeted .layout.layout (0,2,0) bump in base.css''s phone block instead: order-independent, zero desktop impact. Constraint for future structural rules that must beat themes: use (0,2,0)+ selectors.', NULL, 0, '2026-07-06 22:58:25', NULL, NULL);
 
 DELETE FROM shell_memory_archives;
 INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (1, 1, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
@@ -475,7 +477,14 @@ INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_
 ## Narrative
 
 [08:46] Session start.
-');
+
+[22:29] Session 0001: bootstrapped (repo map read, oriented). Fixed image overflow in deck mode: images had no size constraint outside .tab-panel, and markdown-it''s <p><img></p> output meant the themes'' figure/figure-img/figcaption styling never fired. Renderer now wraps image-only paragraphs (plain or linked) in <figure class=md-figure> with title-as-figcaption; badge rows/inline/tight-list images untouched. deck.css caps media at the body band (100vh − title − footer − dock − 5rem); base.css gives figures fit-content so themed frames hug images, retired the p:has(>img:only-child) workaround. Verified end-to-end with Playwright (baked Chromium at /opt/ms-playwright/chromium-1223/chrome-linux64/chrome — the fork has no playwright npm dep; installed in scratchpad, executablePath needed since baked browsers lag the latest package). PR #57 pushed, awaiting merge.
+[22:44] Widened deck body band 750->1050px (PR #58, stacked on #57): media uses the width, prose keeps theme measure. Then mobile review with Playwright phone emulation (390x844, touch): found the load-bearing bug — applyTheme injects theme CSS after base.css and every theme re-declares .layout{display:grid} at equal specificity, so base.css''s @media 900px flex-column top-bar stack NEVER applies on any theme; doc view overflows 119px (demo) to 2760px (README) horizontally and fixed elements anchor off-screen. Deck on phone: no swipe handler, arrows hidden, dock dots 21-30px (under 44px target). Sidebar: 340px/87% cover, tap-outside doesn''t close, 11-12px inputs trigger iOS focus zoom, 100vh not dvh. Recommended: cascade layering fix first (wrap theme css in @layer or bump base mobile specificity), then deck touch nav, then sidebar polish.
+[22:58] Mobile implementation session: three stacked PRs on top of the deck-width stack. #59: the cascade fix — .layout.layout (0,2,0) in base.css''s phone block; chose specificity bump over @layer since layers would flip the img-rule wins (decision #1). Verified 4 themes at 390px: zero overflow (was 119-2760px), Style button tappable. #60: FnB redirected mid-build — swipe gestures out (Chrome''s overscroll history gesture was eating right-swipes and navigating the tab to about:blank even with overscroll-behavior-x:none on body; not worth fighting), tappable chevrons in: restyled the existing .deck-arrow buttons as 44px pills at phone width + ::after hit-area expansion on dock items. #61: phone-only scrim (desktop keeps live-preview), 16px inputs vs iOS focus zoom, 100dvh, env(safe-area-inset-bottom) on dock/counter/toast/footer, viewport-fit=cover, dropped bogus text-scale meta for text-size-adjust. All: 62 tests, svelte-check, prettier clean. PRs #57-61 await FnB merge, bottom-up.
+[23:11] Merge session: FnB said merge all five. Followed the git skill stack procedure, learned its sharp edge live: merged #57 before retargeting #58, and --delete-branch orphan-closed #58 (GitHub refuses base-edit on closed PRs). Recovered exactly per the skill — pushed #57''s headRefOid back as the deleted ref, reopened #58, retargeted to main, deleted the recreated ref. Second lesson: squash merges make each stacked branch CONFLICTING against main (branch carries the original commits the squash replaced), so each merge needs rebase --onto origin/main <old-parent-tip> + force-with-lease first. Remaining three went clean with retarget-BEFORE-merge ordering. Cleanup done: base re-pinned, locals deleted, prune. main at 4d596c6, 62 tests green.
+[23:18] FnB follow-up: deck images still not filling the view window — width scaling is the aim. The no-upscale + band-height cap I shipped in #57 made images conservative (805px-natural rendered ~450px in the 1050px band). Replaced in deck.css: .md-figure spans the band (width:auto overrides base fit-content), figure img/.md-video get width:100% height:auto — the sizing the themes'' figure img {width:100%} always intended; tall images scroll with the band. Non-figure images keep natural size capped at band. Verified desktop+phone; PR #62 open.
+[23:20] FnB merged #62 themselves. Cleanup done: base re-pinned to c5cae60, local branch deleted, remote refs pruned. Session arc complete: six merged PRs — deck image framing, 1050px band, the theme-cascade mobile fix, chevron touch nav, touch polish, width-fill scaling. Tree clean on shell/dev1.
+[23:57] FnB follow-up: remove the phone chevrons from #60 — they cover the content column; the dock numbers suffice. deck.css phone block back to display:none on .deck-arrow, dock keeps the ±12px hit expansion, desktop untouched. Verified: arrows hidden at 390px, dock tap navigates, desktop arrows present. PR #63. Ops lesson logged: TaskStop on a backgrounded npm run dev kills the wrapper but orphans the vite child — kill the vite PIDs via /proc scan (no ps/pgrep in sandbox).');
 INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (4, 4, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
@@ -493,6 +502,12 @@ INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_
 ## Narrative
 
 [08:46] Session start.
+');
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (7, 3, '0002', '2026-07-07', '# 0002 | 2026-07-07 | session opened
+
+## Narrative
+
+[10:19] Session start.
 ');
 
 DELETE FROM roadmap;
