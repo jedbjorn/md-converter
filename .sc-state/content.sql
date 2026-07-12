@@ -207,7 +207,7 @@ its projection.
 ## MANDATE
 
 Build and implement in md-converter — features, fixes, refactors. Read before you change; trace the path before you trust it; do it right, not fast.
-', 'Deck block-centering shipped — PR #65 merged to main (f0c15fd). Each slide block now shrinks to its content and centers (fit-content + margin auto on .deck-body > *), text centered inside; hr/tables full width, figures keep band scaling. Base synced, branch cleaned, tree clean, no open branches/flags. Follows #64 (text-align center).', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
+', 'Deck centering cleanup shipped — PR #66 squash-merged to main (31463fd): band clamp at zero-specificity :where() so theme measure caps win; blocks shrink-to-fit at theme measure, centered. Base re-pinned to origin/main, branch deleted, tree clean. Pending: FnB redeploy of host stack (deployed site was pre-#65 when center.png was drawn); center.png still in shared/ awaiting FnB''s visual confirmation to delete. super-coder#310 filed (sc test pytest exit-5).', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
 Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
 
 1. You are the DB, not the process. Continuity is the data — identity, memory,
@@ -454,7 +454,8 @@ INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (4, 4, 'seed', '2026-06-25', 'fork', 'Born as the dev shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (5, 5, 'seed', '2026-06-25', 'fork', 'Born as the review shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
 INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (6, 6, 'seed', '2026-06-25', 'fork', 'Born as the cartographer shell of md-converter, a shell forked from super-coder — carrying the CC lineage into this repo. I inherit the line CC passed down — you are the DB; know the floor; build what is missing — and make md-converter my world: one shell, one cwd. Everything I am lives in the DB; the process is just the floor I stand on. I curate my own seed from here.', '2026-06-25 06:46:43', NULL, 0);
-INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (7, 3, 'lns', '2026-07-07', NULL, 'Visual-verify the app locally by rendering, not guessing: build (npm run build), static-serve the build/ dir with python http.server (vite preview 404s /_app/immutable assets so hydration silently dies → prerendered doc fallback), then screenshot via CDP — launch chromium at /opt/ms-playwright/chromium-1223 headless=new with --use-gl=swiftshader + --disable-accelerated-2d-canvas (it crashes rendering this app otherwise: ws close 1006 / SIGABRT), Target.createTarget the URL, wait real ~4s for hydration, Page.captureScreenshot. Deck view = ?l=deck; step slides via Input.dispatchKeyEvent ArrowRight. node''s built-in WebSocket handles the frames fine — earlier ''hangs'' were render crashes, not the socket.', '2026-07-07 11:06:01', NULL, 0);
+INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (7, 3, 'lns', '2026-07-07', NULL, 'Visual-verify the app locally by rendering, not guessing: build (npm run build), static-serve the build/ dir with python http.server (vite preview 404s /_app/immutable assets so hydration silently dies → prerendered doc fallback), then screenshot via CDP — launch chromium at /opt/ms-playwright/chromium-1223 headless=new with --use-gl=swiftshader + --disable-accelerated-2d-canvas (it crashes rendering this app otherwise: ws close 1006 / SIGABRT), Target.createTarget the URL, wait real ~4s for hydration, Page.captureScreenshot. Deck view = ?l=deck; step slides via Input.dispatchKeyEvent ArrowRight. node''s built-in WebSocket handles the frames fine — earlier ''hangs'' were render crashes, not the socket.', '2026-07-07 11:06:01', '2026-07-07 14:30:02', 0);
+INSERT INTO shell_identity_entries (entry_id, shell_id, kind, entry_date, source_tag, body, created_at, retired_at, is_deleted) VALUES (8, 3, 'lns', '2026-07-07', NULL, 'Visual-verify this app headlessly with chrome-headless-shell (/opt/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell --remote-debugging-port + --no-sandbox), NOT full chromium — chromium-1223 (chrome-linux64/chrome) rejects --use-gl=swiftshader and SIGABRTs rendering this app. Serve build/ with a node static server sending cache-control: no-store and 404 (never index.html fallback) for missing assets — after a rebuild, a heuristically-cached index.html references dead chunk hashes and an HTML-as-module response kills hydration with misleading ''Failed to fetch dynamically imported module'' / 500 pages; also CDP Network.setCacheDisabled. Test content via the local demo (?l=deck) or a static HTML harness built from the real source CSS + renderer DOM — headless shell lacks DecompressionStream (?c= 500s) and mermaid hangs its renderer thread (?url= READMEs with mermaid freeze; CDP evals never return). Node scripts driving CDP need a keepalive setInterval — node''s WebSocket doesn''t hold the event loop.', '2026-07-07 14:29:54', NULL, 0);
 
 DELETE FROM shell_decisions;
 INSERT INTO shell_decisions (decision_id, shell_id, decision_date, priority, decision, rationale, parent_decision_id, is_deleted, created_at, feature_id, document_id) VALUES (1, 3, '2026-07-06', 'M', 'Mobile structural CSS outranks themes via doubled-class specificity, not @layer', 'Theme CSS is injected after base.css and re-declares .layout at equal specificity, which silently disabled the entire phone layout on every theme. Considered wrapping injected theme CSS in @layer theme (unlayered base always wins), but layers override by ORDER regardless of specificity — that would flip the specificity-based wins the media rules depend on (.tab-panel img vs themes'' figure img { width:100% }) and upscale doc images. Chose the targeted .layout.layout (0,2,0) bump in base.css''s phone block instead: order-independent, zero desktop impact. Constraint for future structural rules that must beat themes: use (0,2,0)+ selectors.', NULL, 0, '2026-07-06 22:58:25', NULL, NULL);
@@ -508,7 +509,8 @@ INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_
 ## Narrative
 
 [10:19] Session start.
-');
+
+[14:29] Session 0002: reviewed center.png redline via redline_review. Diagnosed two-layer problem: deployed site runs pre-#65 CSS (blocks left-pinned at theme measure caps), and current main''s #65 fix kills theme measure caps via max-width:100% specificity (paragraphs stretch to full 1050px band, stats grid balloons, accent bars stranded). Proposed + FnB approved: keep fit-content/margin-auto, move band clamp to :where() zero specificity. Implemented on fix/deck-center-measure, verified headlessly (built static fixture with real CSS after ?c=/?url paths proved unusable in headless shell — DecompressionStream missing, mermaid hangs renderer), PR #66. Filed engine issue super-coder#310 (sc test pytest exit-5).');
 
 DELETE FROM roadmap;
 
@@ -525,7 +527,7 @@ DELETE FROM projects;
 DELETE FROM project_shells;
 
 -- Project-local skills only. Engine-seeded skills come from migrations.
-DELETE FROM skills WHERE name NOT IN ('agents', 'api-design', 'app_deploy_setup', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'issue_reporting', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'pm2', 'query_authoring_pg', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'surface_catalogue', 'tailscale', 'test_authoring', 'test_authoring_pg', 'test_authoring_sqlite', 'windows_devkit', 'windows_vm_gui');
+DELETE FROM skills WHERE name NOT IN ('agents', 'api-design', 'app_deploy_setup', 'authoring_syntax', 'blueprint', 'bootstrap', 'cartographer', 'configure_winbox', 'database-migrations', 'db_map', 'docs', 'flag_sweep', 'flags', 'git', 'git_cleanup', 'issue_reporting', 'local_skill_management', 'memory', 'messaging', 'migration_management', 'onboard', 'pm2', 'query_authoring_pg', 'redline_review', 'review', 'self_update', 'snapshot', 'spec', 'sprint', 'sprint_orchestration', 'surface_catalogue', 'tailscale', 'test_authoring', 'test_authoring_pg', 'test_authoring_sqlite', 'windows_devkit', 'windows_vm_gui');
 INSERT INTO skills (name, description, category, content, command, common, is_deleted) VALUES ('dev_kit', 'What the sandbox dev kit provides + how to drive it — ./sc deps, ./sc test, ./sc lint, ./sc typecheck, the .venv tools, rg/sqlite3, the baked browser, the container/host app boundary, and the optional app-only Postgres sidecar (DATABASE_URL). Use when building or testing in a fork.', 'substrate', '# dev_kit — the sandbox dev kit
 
 What you have to build, test, and inspect a fork — and the one boundary that
@@ -630,7 +632,9 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='memory';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='messaging';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='onboard';
+INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='sprint_orchestration';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 1, skill_id FROM skills WHERE name='surface_catalogue';
+INSERT INTO shell_skills (shell_id, skill_id) SELECT 2, skill_id FROM skills WHERE name='authoring_syntax';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 2, skill_id FROM skills WHERE name='bootstrap';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 2, skill_id FROM skills WHERE name='db_map';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 2, skill_id FROM skills WHERE name='flag_sweep';
@@ -656,6 +660,7 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='messaging';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='redline_review';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='spec';
+INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='sprint';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='surface_catalogue';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 3, skill_id FROM skills WHERE name='test_authoring';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='agents';
@@ -671,6 +676,7 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='messaging';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='redline_review';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='spec';
+INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='sprint';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='surface_catalogue';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 4, skill_id FROM skills WHERE name='test_authoring';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='agents';
@@ -685,6 +691,7 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='messaging';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='redline_review';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='review';
+INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='sprint';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='surface_catalogue';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 5, skill_id FROM skills WHERE name='test_authoring';
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHERE name='bootstrap';
