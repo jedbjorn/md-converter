@@ -45,6 +45,11 @@ SC_NET="${SC_NET:-sc-net}"
 # against real Postgres inside the sandbox, isolated from any host PG.
 PGNAME="sc-pg-$(basename "$here")"
 PGVOL="sc-pg-$(basename "$here")-data"
+# /dev/shm for the sidecar. Docker's 64MB default is too small for postgres's
+# posix DSM (parallel-query segments) — concurrent suites exhaust it and trip a
+# postmaster crash-reinit that kills every connection (#298). tmpfs, allocated
+# on use, so a generous cap is cheap. Override with SC_PG_SHM.
+SC_PG_SHM="${SC_PG_SHM:-1g}"
 
 # Fail fast with the fix if the docker daemon isn't reachable, instead of a
 # cryptic build/run error. Host setup is one-time and lives in `./sc doctor` /
@@ -547,6 +552,7 @@ sc_pg_up() {
   docker volume create "$PGVOL" >/dev/null
   docker run -d --name "$PGNAME" --restart unless-stopped \
     --network "$SC_NET" \
+    --shm-size "$SC_PG_SHM" \
     -e POSTGRES_USER=sc \
     -e POSTGRES_PASSWORD=sc \
     -e POSTGRES_DB=sc \
@@ -578,6 +584,32 @@ print('-> pg: added to $f')
     echo "→ pg: created $f with pg block"
   fi
   echo "  next: ./sc pg-up   (or ./sc launch — pg starts automatically)"
+}
+
+
+# WAL-safe DB backup via sqlite3's online-backup API — a plain file copy of a
+# live WAL database misses un-checkpointed pages (they live in the -wal
+# sidecar). Same dir + naming + keep-5 pruning as rebuild.py/rollback.py.
+sc_db_backup() {
+  "$PY" - "$DB" "$(basename "$ROOT")" "${1:-manual}" <<'EOF'
+import sqlite3, sys, time
+from pathlib import Path
+db, repo, prefix = sys.argv[1:4]
+if not Path(db).exists():
+    print("→ no DB yet — nothing to back up"); raise SystemExit(0)
+bdir = Path.home() / "db_backups" / repo
+bdir.mkdir(parents=True, exist_ok=True)
+dst = bdir / f"shell_db.{prefix}.{time.strftime('%Y%m%d_%H%M%S')}.db"
+src = sqlite3.connect(db); out = sqlite3.connect(dst)
+try:
+    with out:
+        src.backup(out)
+finally:
+    out.close(); src.close()
+for old in sorted(bdir.glob(f"shell_db.{prefix}.*.db"))[:-5]:
+    old.unlink()
+print(f"→ DB backed up -> {dst}")
+EOF
 }
 
 
@@ -776,7 +808,26 @@ case "$cmd" in
                 sc_ts_broker_down
                 sc_pm2_broker_down
                 sc_pg_down ;;
-  restart)      "$0" down; exec "$0" launch "$@" ;;
+  # restart is a hard bounce — down runs `docker rm -f`, which SIGKILLs every
+  # live session inside the sandbox along with whatever those sessions had not
+  # yet written to the DB. Too easy to reach by accident (dos-r sits next to
+  # dos-e), so: typed confirmation (only YES / Yes / yes proceed — anything
+  # else, including a closed stdin, aborts) + a WAL-safe DB backup BEFORE
+  # anything is torn down. --yes/-y skips the prompt for scripted callers.
+  restart)
+    case "${1:-}" in
+      -y|--yes) shift ;;
+      *)
+        echo "restart recreates the sandbox — live sessions inside it are killed."
+        printf "ARE YOU SURE YOU WANT TO RESTART? (YES/no): "
+        ans=""; read -r ans || true
+        case "$ans" in
+          YES|Yes|yes) ;;
+          *) echo "→ restart aborted (nothing touched)"; exit 1 ;;
+        esac ;;
+    esac
+    sc_db_backup prerestart
+    "$0" down; exec "$0" launch "$@" ;;
   build)        dcheck; dbuild ;;
   logs)         exec docker logs -f "$CNAME" ;;
   verify)
@@ -826,7 +877,7 @@ super-coder — forkable shell substrate
                              harness: --harness <name> or HARNESS=<name> forces it; else when
                              >1 harness is on PATH you're prompted (per-launch, not persisted)
   ./sc down                stop + remove the sandbox container
-  ./sc restart             down + launch — recreate the sandbox fresh
+  ./sc restart             confirm (YES) + DB backup, then down + launch — recreate fresh (--yes skips the prompt)
   ./sc build               (re)build the sandbox image
   ./sc logs                tail the sandbox server logs
 
@@ -883,6 +934,7 @@ super-coder — forkable shell substrate
   ./sc pg-init             add the "pg" key to instance.json (enables the sidecar)
   ./sc pg-up               start the postgres:17 container; self-skips if unconfigured/already up
   ./sc pg-down             stop + remove the container (data volume retained)
+                             (recreate via pg-down→pg-up to change --shm-size / SC_PG_SHM)
 
   ./sc verify              rebuild + flat render + render-only boot (headless proof)
   ./sc health              curl the review layer's /api/health
