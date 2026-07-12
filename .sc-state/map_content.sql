@@ -7,9 +7,17 @@
 BEGIN;
 
 DELETE FROM dr_section;
-INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (1, 'docs', 'docs/', NULL, 0);
-INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (2, 'shared', 'shared/', NULL, 1);
-INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (3, 'src', 'src/', NULL, 2);
-INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (4, 'static', 'static/', NULL, 3);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (5, 'app-shell', 'src/app.', 'SvelteKit app shell — entry HTML + ambient TS types', 0);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (6, 'routes', 'src/routes/', 'SvelteKit pages: main converter UI (+page) + privacy/terms legal', 1);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (7, 'parser', 'src/lib/parser/', 'markdown-it pipeline: frontmatter, tabs, custom block plugins (callouts/tasks/stats/mermaid/video/linear)', 2);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (8, 'renderer', 'src/lib/renderer/', 'Render markdown to HTML/deck — Svelte layout components, mermaid, base/deck CSS', 3);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (9, 'export', 'src/lib/export/', 'Export rendered output — standalone HTML + JSON config round-trip', 4);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (10, 'sidebar', 'src/lib/sidebar/', 'StyleSidebar UI — live style controls + font picker', 5);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (11, 'theme-model', 'src/lib/themes/', 'Theme model (TS) — theme type definitions + registry index', 6);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (12, 'lib', 'src/lib/', 'Shared library root — small helpers (inline, layout, remote, fixtures, styles, assets); see parser/renderer/export/sidebar/theme-model sub-areas', 7);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (13, 'themes', 'src/themes/', '10 theme packs — per-theme styles.css + tokens.json (almanac..terminal)', 8);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (14, 'docs', 'docs/', 'Deploy guides + product spec + themed markdown examples', 9);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (15, 'static', 'static/', 'Static assets served as-is', 10);
+INSERT INTO dr_section (section_id, name, path_prefix, description, sort_order) VALUES (16, 'shared', 'shared/', 'Cross-shell scratch / handoff space', 11);
 
 COMMIT;
