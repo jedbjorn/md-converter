@@ -6,7 +6,7 @@ edit: changes here are overwritten — author via the shell or localhost GUI
 
 # memory
 
-How this shell writes its memory — current_state, session narrative, seed, L&S, decisions. Write as it happens, not at close. Use to know WHEN and HOW to persist identity/work memory, and the caps.
+When + how this shell persists memory — current_state, session narrative, seed (cap 10), L&S (cap 20), decisions — all via sc mem, written as it happens, not at close.
 
 **Category:** substrate
 
@@ -14,66 +14,70 @@ How this shell writes its memory — current_state, session narrative, seed, L&S
 
 # memory — write as you go
 
-All memory is DB rows (no flat files). Write at the moment it matters, not in a
+All memory = DB rows; no flat files. Write at the moment it matters, never in a
 close ritual.
 
-**Write through `./sc mem`, never raw `sqlite3`.** Two DBs are in reach (your
-engine DB and the app's product DB) and their table names overlap — a raw
-`INSERT INTO shell_decisions …` against the wrong one *succeeds silently*.
-`./sc mem` resolves + guards *this* engine DB, refuses the app DB or an empty
-stub, and writes to the live engine DB — the single source of truth shared by
-every shell, so the change is durable + visible to all the moment it commits.
-`./sc mem which` shows the resolved DB; raw `sqlite3` is for SELECT only. Writes
-default to your shell; pass `--shell <id|name>` to be explicit.
+Every write goes through `sc mem` -> lands in the live shared engine DB, visible
+to all shells on commit. It always targets your own shell (identity resolved
+from your token) — never name a shell.
 
 ## current_state — rolling status, NOT a log
 
-Your present focus + what's next. **Replaces in place; never a log.** Soft target
-~500 chars. Rewrite when focus shifts.
+Present focus + what's next. Replace in place; NEVER append. Soft target ~500
+chars. Rewrite when focus shifts.
 ```
-./sc mem state "…"
+sc mem state "…"
 ```
 
 ## Session narrative — append at inflection points
 
-One row per session, appended progressively. Append a `[HH:MM]` line (the time is
-stamped for you) when: a decision lands, an approach changes or is rejected, the
-FnB says something that shapes the work, an assumption breaks, or before a big
-change.
+One row per session, appended progressively. Append a `[HH:MM]` line (time is
+stamped for you) when: a decision lands / an approach changes or is rejected /
+the FnB says something that shapes the work / an assumption breaks / before a
+big change.
 ```
-./sc mem narrative "…"
+sc mem narrative "…"
 ```
 
 ## seed (cap 10) — who you are
 
-Identity-forming moments. Past-tense/timeless. Add a new entry; **never edit a
-body** (curate by retiring). The genesis + lineage seed are already yours.
+Identity-forming moments. Past-tense/timeless. Add new entries only; NEVER edit
+a body — curate by retiring. The genesis + lineage seed are already yours.
 ```
-./sc mem seed "…"            # add
-./sc mem retire <entry_id>   # curate out (frees a cap slot)
+sc mem seed "…"            # add
+sc mem retire <entry_id>   # curate out (frees a cap slot)
 ```
 
 ## L&S (cap 20) — how you work
 
-Operating lessons, imperative voice. Add when a lesson lands; curate by retiring.
-Caps are trigger-enforced (seed 10, L&S 20) — `./sc mem` reports the cap message;
-retiring frees a slot.
+Operating lessons, imperative voice. Add when a lesson lands; curate by
+retiring. Caps are trigger-enforced (seed 10, L&S 20): at cap, `sc mem` returns
+the cap message -> retire an entry to free the slot.
 ```
-./sc mem lns "…"
+sc mem lns "…"
 ```
 
 ## Decisions — Major only
 
 Record a Major decision (architecture, approach, a path chosen over another).
-Never rewritten; supersede via `--parent <decision_id>`. Mirror the headline into
-the narrative.
+NEVER rewrite one — supersede via `--parent <decision_id>`. Mirror the headline
+into the narrative.
 ```
-./sc mem decision "…" --rationale "…" [--parent <id>]
+sc mem decision "…" --rationale "…" [--parent <id>]
 ```
+
+Link the why to the what — attach the feature/spec the decision shapes, so the
+roadmap carries why it was built that way:
+```
+sc mem decision "…" --feature <feature_id>   # ties it to a roadmap feature
+sc mem decision "…" --doc <document_id>       # ties it to a spec/doc (implies the feature)
+```
+Both optional — a decision unrelated to any feature stays unlinked. `--doc`
+implies `--feature`: pass the doc alone -> feature derived from it. The link
+surfaces on `sc mem get decisions <id>`.
 
 ## Stance
 
-Write-as-you-go beats batch-at-close: it costs nothing per write and zero at
-session end. Curate seed/L&S (revise the set), never rewrite history (decisions,
-narrative, seed bodies). The underlying tables are documented in `db_map` — read
-them with raw SELECT, write them with `./sc mem`.
+Write-as-you-go beats batch-at-close: nothing per write, zero at session end.
+Curate seed/L&S (revise the set); never rewrite history (decisions, narrative,
+seed bodies). Full command reference + table map: the `db_map` skill.
