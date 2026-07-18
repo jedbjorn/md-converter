@@ -88,6 +88,7 @@ body {
 .md-figure {
 	width: fit-content;
 	max-width: 100%;
+	margin-inline: 0;
 }
 
 /* Embedded images: normalize to a consistent preview size across every theme.
