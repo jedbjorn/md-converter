@@ -99,12 +99,19 @@
 	max-width: 100%;
 }
 /* Exceptions that must keep the full band width: an <hr> carries no content, so
-   fit-content would collapse it to zero; a wide table relies on its own scroll
-   box (.table-scroll) spanning the band. Block figures keep their band-filling
-   width via the more specific rule below. */
+   fit-content would collapse it to zero; tables need the full band for their
+   scroll box. Block figures and diagrams keep their presentation width via the
+   more specific rules below. */
 .deck .deck-body > hr,
 .deck .deck-body > .table-scroll {
 	width: 100%;
+}
+
+/* Dossier and Expose cap tables at a readable measure. Their theme margins use
+   explicit zero side values, so centre the capped table inside its full-width
+   scroll wrapper without changing the document layout. */
+.deck .table-scroll > table {
+	margin-inline: auto;
 }
 
 /* Block media fills the band width — small screenshots scale UP to the column,
@@ -126,6 +133,19 @@
    size — just never wider than the band. */
 .deck .deck-body img {
 	max-width: 100%;
+	height: auto;
+}
+
+/* Mermaid writes an intrinsic pixel max-width onto each generated SVG. That is
+   useful in documents, but leaves portrait diagrams tiny on a slide. Give deck
+   diagrams a consistent presentation measure, while keeping enough of a tall
+   flow visible at once; results taller than the body scroll vertically. */
+.deck .deck-body > .mermaid-wrap {
+	width: min(100%, 900px);
+}
+.deck .mermaid svg {
+	width: 100% !important;
+	max-width: none !important;
 	height: auto;
 }
 
