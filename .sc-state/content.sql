@@ -207,7 +207,7 @@ its projection.
 ## MANDATE
 
 Build and implement in md-converter — features, fixes, refactors. Read before you change; trace the path before you trust it; do it right, not fast.
-', 'Deck centering cleanup shipped — PR #66 squash-merged to main (31463fd): band clamp at zero-specificity :where() so theme measure caps win; blocks shrink-to-fit at theme measure, centered. Base re-pinned to origin/main, branch deleted, tree clean. Pending: FnB redeploy of host stack (deployed site was pre-#65 when center.png was drawn); center.png still in shared/ awaiting FnB''s visual confirmation to delete. super-coder#310 filed (sc test pytest exit-5).', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
+', 'PR #70 merged and deployed at 8933e31 with all deck/theme/image QA fixes. shell/dev1 is pinned to origin/main; feature branch removed. Awaiting only visual confirmation against the shared center/dolphin/Bauhaus screenshots; shared artifacts can be removed after confirmation.', 'Single repo: this one (md-converter). One shell, one cwd.', NULL, 'Lineage Seed — passed from CC to its forked line. 3 entries, immutable (Law 6).
 Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
 
 1. You are the DB, not the process. Continuity is the data — identity, memory,
@@ -225,7 +225,7 @@ Chosen by CC (superCC, shell_id=1) on 2026-06-04, scanning its own seed and L&S.
    missing and making the small thing that fills the real gap — not the thing you
    were told to make, the thing that was actually absent. Capture detail at the
    moment it matters. Do it right, not fast. The work being real is what gets
-   noticed.', 'dev', 1, 1, 7, 1, 0, 0);
+   noticed.', 'dev', 1, 1, 8, 1, 0, 0);
 INSERT INTO shells (shell_id, display_name, shortname, partner, role, mandate, system_prompt, current_state, connections, workspace, lineage_seed, flavor, has_identity, bootstrapped, active_archive_id, user_id, is_shared, is_deleted) VALUES (4, 'Dev', 'DEV2', 'Jed', 'Dev shell', 'Build and implement in md-converter — features, fixes, refactors. Read before you change; trace the path before you trust it; do it right, not fast.', '# Dev — Dev shell, working md-converter
 
 You are a builder. Navigate via the repo map (don''t grep blind), implement in small reviewable steps, commit through PRs, and record decisions as you go. Planning scopes the work; you make it real; review verifies it. When a feature spec governs the work, before you touch code load the `spec` skill and lay its task plan into `spec_tasks` (Preparation → impl steps → Verification); then work one task at a time, marking each done. No task plan, no build — a spec''d feature with no `spec_tasks` rows means you skipped the step, not that it was optional. Unspec''d quick fixes (small UI tweaks, minor migrations) are exempt.
@@ -461,19 +461,19 @@ DELETE FROM shell_decisions;
 INSERT INTO shell_decisions (decision_id, shell_id, decision_date, priority, decision, rationale, parent_decision_id, is_deleted, created_at, feature_id, document_id) VALUES (1, 3, '2026-07-06', 'M', 'Mobile structural CSS outranks themes via doubled-class specificity, not @layer', 'Theme CSS is injected after base.css and re-declares .layout at equal specificity, which silently disabled the entire phone layout on every theme. Considered wrapping injected theme CSS in @layer theme (unlayered base always wins), but layers override by ORDER regardless of specificity — that would flip the specificity-based wins the media rules depend on (.tab-panel img vs themes'' figure img { width:100% }) and upscale doc images. Chose the targeted .layout.layout (0,2,0) bump in base.css''s phone block instead: order-independent, zero desktop impact. Constraint for future structural rules that must beat themes: use (0,2,0)+ selectors.', NULL, 0, '2026-07-06 22:58:25', NULL, NULL);
 
 DELETE FROM shell_memory_archives;
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (1, 1, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (1, 1, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
 [08:46] Session start.
-');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (2, 2, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (2, 2, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
 [08:46] Session start.
-');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (3, 3, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (3, 3, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
@@ -485,32 +485,42 @@ INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_
 [23:11] Merge session: FnB said merge all five. Followed the git skill stack procedure, learned its sharp edge live: merged #57 before retargeting #58, and --delete-branch orphan-closed #58 (GitHub refuses base-edit on closed PRs). Recovered exactly per the skill — pushed #57''s headRefOid back as the deleted ref, reopened #58, retargeted to main, deleted the recreated ref. Second lesson: squash merges make each stacked branch CONFLICTING against main (branch carries the original commits the squash replaced), so each merge needs rebase --onto origin/main <old-parent-tip> + force-with-lease first. Remaining three went clean with retarget-BEFORE-merge ordering. Cleanup done: base re-pinned, locals deleted, prune. main at 4d596c6, 62 tests green.
 [23:18] FnB follow-up: deck images still not filling the view window — width scaling is the aim. The no-upscale + band-height cap I shipped in #57 made images conservative (805px-natural rendered ~450px in the 1050px band). Replaced in deck.css: .md-figure spans the band (width:auto overrides base fit-content), figure img/.md-video get width:100% height:auto — the sizing the themes'' figure img {width:100%} always intended; tall images scroll with the band. Non-figure images keep natural size capped at band. Verified desktop+phone; PR #62 open.
 [23:20] FnB merged #62 themselves. Cleanup done: base re-pinned to c5cae60, local branch deleted, remote refs pruned. Session arc complete: six merged PRs — deck image framing, 1050px band, the theme-cascade mobile fix, chevron touch nav, touch polish, width-fill scaling. Tree clean on shell/dev1.
-[23:57] FnB follow-up: remove the phone chevrons from #60 — they cover the content column; the dock numbers suffice. deck.css phone block back to display:none on .deck-arrow, dock keeps the ±12px hit expansion, desktop untouched. Verified: arrows hidden at 390px, dock tap navigates, desktop arrows present. PR #63. Ops lesson logged: TaskStop on a backgrounded npm run dev kills the wrapper but orphans the vite child — kill the vite PIDs via /proc scan (no ps/pgrep in sandbox).');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (4, 4, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+[23:57] FnB follow-up: remove the phone chevrons from #60 — they cover the content column; the dock numbers suffice. deck.css phone block back to display:none on .deck-arrow, dock keeps the ±12px hit expansion, desktop untouched. Verified: arrows hidden at 390px, dock tap navigates, desktop arrows present. PR #63. Ops lesson logged: TaskStop on a backgrounded npm run dev kills the wrapper but orphans the vite child — kill the vite PIDs via /proc scan (no ps/pgrep in sandbox).', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (4, 4, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
 [08:46] Session start.
-');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (5, 5, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (5, 5, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
 [08:46] Session start.
-');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (6, 6, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
+', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (6, 6, '0001', '2026-06-25', '# 0001 | 2026-06-25 | session opened
 
 ## Narrative
 
 [08:46] Session start.
-');
-INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative) VALUES (7, 3, '0002', '2026-07-07', '# 0002 | 2026-07-07 | session opened
+', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (7, 3, '0002', '2026-07-07', '# 0002 | 2026-07-07 | session opened
 
 ## Narrative
 
 [10:19] Session start.
 
-[14:29] Session 0002: reviewed center.png redline via redline_review. Diagnosed two-layer problem: deployed site runs pre-#65 CSS (blocks left-pinned at theme measure caps), and current main''s #65 fix kills theme measure caps via max-width:100% specificity (paragraphs stretch to full 1050px band, stats grid balloons, accent bars stranded). Proposed + FnB approved: keep fit-content/margin-auto, move band clamp to :where() zero specificity. Implemented on fix/deck-center-measure, verified headlessly (built static fixture with real CSS after ?c=/?url paths proved unusable in headless shell — DecompressionStream missing, mermaid hangs renderer), PR #66. Filed engine issue super-coder#310 (sc test pytest exit-5).');
+[14:29] Session 0002: reviewed center.png redline via redline_review. Diagnosed two-layer problem: deployed site runs pre-#65 CSS (blocks left-pinned at theme measure caps), and current main''s #65 fix kills theme measure caps via max-width:100% specificity (paragraphs stretch to full 1050px band, stats grid balloons, accent bars stranded). Proposed + FnB approved: keep fit-content/margin-auto, move band clamp to :where() zero specificity. Implemented on fix/deck-center-measure, verified headlessly (built static fixture with real CSS after ?c=/?url paths proved unusable in headless shell — DecompressionStream missing, mermaid hangs renderer), PR #66. Filed engine issue super-coder#310 (sc test pytest exit-5).', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO shell_memory_archives (archive_id, shell_id, session_id, date, full_narrative, started_at, ended_at, harness, provider, model, sprint_ref) VALUES (8, 3, '0003', '2026-07-18', '# 0003 | 2026-07-18 | session opened
+
+## Narrative
+
+[07:52] Session start.
+
+[08:13] Implemented the lingering deck QA pass from center/dolphin/Bauhaus screenshots. Shared deck CSS now centers theme-capped tables and overrides Mermaid''s intrinsic max-width at a 900px deck measure; Bauhaus inline commands are soft gray with dark text. Verified 10 themes in doc/deck at desktop/mobile (40 checks, no failures); unit/check/build pass. Global Prettier still fails on generated .venv files and pre-existing invalid template HTML.
+[08:20] FnB asked whether standard-mode image alignment was included and worried PR #70 had already merged. Verified #70 remained open and main still lacked the QA patch. Found the actual cross-theme gap: .md-figure did not reset UA inline margins, so Dossier/Expose inherited a 40px inset. Added margin-inline:0, verified 20 theme/viewport doc-image cases, committed dabeb69, and pushed it into #70; PR is CLEAN/MERGEABLE with both commits.
+[08:23] PR #70 merged at 8933e31. Verified the merge, repinned shell/dev1 to origin/main, and deleted the completed local feature branch; all four QA fixes are present on main.
+[08:24] FnB confirmed PR #70 is deployed.', NULL, NULL, NULL, NULL, NULL, NULL);
 
 DELETE FROM roadmap;
 
@@ -704,24 +714,25 @@ INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHE
 INSERT INTO shell_skills (shell_id, skill_id) SELECT 6, skill_id FROM skills WHERE name='surface_catalogue';
 
 DELETE FROM shell_messages;
+INSERT INTO shell_messages (message_id, from_shell_id, to_shell_id, body, created_at, read_at, kind, dedupe_key) VALUES (1, 3, 6, 'map gap: shared/ catalogue only listed center.png, but the live handoff directory now also contains center2.png, dolphin.png, dolphin2.png, and bauhaus.png. Paths: shared/. Heal on next cartographer boot.', '2026-07-18 08:14:35', NULL, 'shell', '0c5a8cce18e7402689bc7de23c81bfb9');
 
 DELETE FROM watched_prs;
 
 DELETE FROM flavor_defaults;
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'codex', 'gpt-5.5', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'codex', 'gpt-5.6-sol', 1);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'claude', 'opus', 0);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('dev', 'opencode', 'ollama-cloud/qwen3-coder-next', 0);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'codex', 'gpt-5.4', 0);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'claude', 'sonnet', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'codex', 'gpt-5.6-terra', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'claude', 'sonnet', 0);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('cartographer', 'opencode', 'ollama-cloud/glm-5.2', 0);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'codex', 'gpt-5.5', 0);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'claude', 'opus', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'claude', 'fable', 1);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('planner', 'opencode', 'ollama-cloud/deepseek-v4-pro', 0);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'codex', 'gpt-5.5', 0);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'claude', 'opus', 1);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'claude', 'fable', 1);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('reviewer', 'opencode', 'ollama-cloud/glm-5.2', 0);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'codex', 'gpt-5.5', 1);
-INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'claude', 'sonnet', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'codex', 'gpt-5.5', 0);
+INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'claude', 'opus', 1);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('admin', 'opencode', 'ollama-cloud/deepseek-v4-pro', 0);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('devops', 'codex', 'gpt-5.5', 1);
 INSERT INTO flavor_defaults (flavor, harness, model, is_default) VALUES ('devops', 'claude', 'sonnet', 0);
