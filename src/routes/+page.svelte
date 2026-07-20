@@ -12,6 +12,7 @@
 	import { renderMermaidAll } from '$lib/renderer/mermaid';
 	import { readInlineParam, encodeInline } from '$lib/inline';
 	import { readUrlParam, getUrlParam } from '$lib/remote';
+	import { rewriteRelativeLinks } from '$lib/remote/links';
 	import { exportConfig, parseConfig, downloadFile, pickFile, exportHtml } from '$lib/export';
 
 	const STORAGE_KEY = 'md-converter-config-v1';
@@ -99,9 +100,14 @@
 		})()
 			.then((res) => {
 				if (!res) return;
-				ir = parse(res.md);
+				const parsed = parse(res.md);
+				const src = res.keepUrl ? getUrlParam(search) : null;
+				// A remote doc's relative links were authored against its repo tree —
+				// resolve them against the source URL before render (see remote/links).
+				if (src) rewriteRelativeLinks(parsed, src);
+				ir = parsed;
 				currentSource = res.md;
-				sourceUrl = res.keepUrl ? getUrlParam(search) : null;
+				sourceUrl = src;
 				if (!res.keepUrl) {
 					// Drop the (potentially huge) inline `?c=` blob but keep `?t=` so
 					// the active theme stays reflected in the address bar.
