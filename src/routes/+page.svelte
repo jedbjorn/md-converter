@@ -32,6 +32,7 @@
 	// Copy link can hand back the tidy `?url=` form rather than re-embedding it).
 	let currentSource = $state(demoSource);
 	let sourceUrl = $state<string | null>(null);
+	let sourceLoadComplete = $state(false);
 
 	let activeTheme = $state<ThemeId>('editorial');
 	let colorOverrides = $state<Partial<Record<keyof ThemeColors, string>>>({});
@@ -117,7 +118,47 @@
 				}
 				showToast(sizeWarning(ir) ?? res.note);
 			})
-			.catch(() => showToast('Could not load the document from this link'));
+			.catch(() => showToast('Could not load the document from this link'))
+			.finally(() => (sourceLoadComplete = true));
+	});
+
+	function hashSlug(): string {
+		try {
+			return decodeURIComponent(window.location.hash.slice(1));
+		} catch {
+			return window.location.hash.slice(1);
+		}
+	}
+
+	function writeActiveHash() {
+		if (!activeSlug || !ir.tabs.some((tab) => tab.slug === activeSlug)) return;
+		if (hashSlug() === activeSlug) return;
+		const url = new URL(window.location.href);
+		url.hash = activeSlug;
+		history.replaceState(null, '', url);
+	}
+
+	// Keep tab navigation and the URL fragment in sync. Wait for the async
+	// ?c= / ?url= load to settle so a deep-link hash is matched against the
+	// requested document rather than being replaced while the demo is visible.
+	$effect(() => {
+		if (typeof window === 'undefined' || !sourceLoadComplete) return;
+		const tabs = ir.tabs;
+		const activateHash = () => {
+			const slug = hashSlug();
+			if (tabs.some((tab) => tab.slug === slug)) activeSlug = slug;
+			else writeActiveHash();
+		};
+		activateHash();
+		window.addEventListener('hashchange', activateHash);
+		return () => window.removeEventListener('hashchange', activateHash);
+	});
+
+	$effect(() => {
+		if (typeof window === 'undefined' || !sourceLoadComplete) return;
+		void activeSlug;
+		void ir;
+		writeActiveHash();
 	});
 
 	// Reflect the active built-in theme in the address bar so swapping themes
