@@ -11,6 +11,19 @@ md.renderer.rules.callout_open = (tokens, idx) => {
 };
 md.renderer.rules.callout_close = () => '</div>';
 
+// Open rendered-document links in a separate tab by default. Fragment-only
+// links stay in the current tab because the app uses the hash to select the
+// matching document section.
+md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+	const token = tokens[idx];
+	const href = token.attrGet('href') ?? '';
+	if (href && !href.startsWith('#')) {
+		token.attrSet('target', '_blank');
+		token.attrSet('rel', 'noopener noreferrer');
+	}
+	return self.renderToken(tokens, idx, options);
+};
+
 md.renderer.rules.stats_block = (tokens, idx) => {
 	const cards = (tokens[idx].meta as { cards: StatCard[] }).cards;
 	const inner = cards

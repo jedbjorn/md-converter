@@ -15,7 +15,16 @@ describe('renderTokens: standard markdown', () => {
 		expect(html).toContain('<strong>bold</strong>');
 		expect(html).toContain('<em>em</em>');
 		expect(html).toContain('<code>code</code>');
-		expect(html).toContain('<a href="https://x.com">link</a>');
+		expect(html).toContain(
+			'<a href="https://x.com" target="_blank" rel="noopener noreferrer">link</a>'
+		);
+	});
+
+	it('keeps fragment links in the current tab', () => {
+		const html = renderTab0('## S\n\n[Go to another section](#another-section).');
+		expect(html).toContain('<a href="#another-section">Go to another section</a>');
+		expect(html).not.toContain('target="_blank"');
+		expect(html).not.toContain('rel="noopener noreferrer"');
 	});
 
 	it('renders H3 (H2 is consumed as tab heading)', () => {
@@ -126,7 +135,7 @@ describe('renderTokens: block images', () => {
 	it('wraps a lone linked image in a figure, keeping the link', () => {
 		const html = renderTab0('## S\n\n[![shot](https://x.com/a.png)](https://x.com/page)\n');
 		expect(html).toMatch(
-			/<figure class="md-figure"><a href="https:\/\/x\.com\/page"><img src="https:\/\/x\.com\/a\.png" alt="shot"><\/a><\/figure>/
+			/<figure class="md-figure"><a href="https:\/\/x\.com\/page" target="_blank" rel="noopener noreferrer"><img src="https:\/\/x\.com\/a\.png" alt="shot"><\/a><\/figure>/
 		);
 	});
 
