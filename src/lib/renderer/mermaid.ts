@@ -44,18 +44,32 @@ export function buildClassDefs(colors: ThemeColors, textColor: string): string {
 }
 
 /**
- * Insert classDef lines into a mermaid source AFTER the diagram-type
- * declaration (first non-empty line). Mermaid requires classDef to live
- * inside a diagram context — leading-position classDefs break the
- * `flowchart`/`graph` parser in v11.x.
+ * Diagram declarations whose grammar has a `classDef` statement. Every other
+ * grammar (sequence, gantt, pie, …) rejects the line and mermaid draws its
+ * error diagram instead, so those sources pass through untouched.
  */
-function injectClassDefs(source: string, classDefs: string): string {
-	const trimmed = source.trim();
-	const nl = trimmed.indexOf('\n');
-	if (nl === -1) return `${trimmed}\n${classDefs}`;
-	const header = trimmed.slice(0, nl);
-	const rest = trimmed.slice(nl + 1);
-	return `${header}\n${classDefs}\n${rest}`;
+const CLASSDEF_GRAMMAR = /^(flowchart|graph|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram)\b/;
+
+/**
+ * Insert classDef lines into a mermaid source AFTER the diagram-type
+ * declaration. Mermaid requires classDef to live inside a diagram context —
+ * leading-position classDefs break the `flowchart`/`graph` parser in v11.x.
+ * The declaration is the first line after mermaid's own `---` frontmatter and
+ * any `%%` comment or directive lines; a grammar without `classDef` is
+ * returned unchanged.
+ */
+export function injectClassDefs(source: string, classDefs: string): string {
+	const lines = source.trim().split('\n');
+	let i = 0;
+	if (lines[0].trim() === '---') {
+		const end = lines.findIndex((line, j) => j > 0 && line.trim() === '---');
+		if (end === -1) return lines.join('\n');
+		i = end + 1;
+	}
+	while (i < lines.length && (lines[i].trim() === '' || lines[i].trim().startsWith('%%'))) i++;
+	if (i === lines.length || !CLASSDEF_GRAMMAR.test(lines[i].trim())) return lines.join('\n');
+	lines.splice(i + 1, 0, classDefs);
+	return lines.join('\n');
 }
 
 /**
