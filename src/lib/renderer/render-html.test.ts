@@ -26,7 +26,6 @@ describe('renderTokens: standard markdown', () => {
 		expect(html).not.toContain('target="_blank"');
 		expect(html).not.toContain('rel="noopener noreferrer"');
 	});
-
 	it('renders H3 (H2 is consumed as tab heading)', () => {
 		const html = renderTab0('## S\n\n### Subsection\n\nbody');
 		expect(html).toContain('<h3>Subsection</h3>');
@@ -194,5 +193,66 @@ describe('renderTokens: inline video', () => {
 		const html = renderTab0('## S\n\nhttps://example.com/page\n');
 		expect(html).not.toContain('video-wrap');
 		expect(html).toContain('<a href="https://example.com/page"');
+	});
+});
+
+describe('renderTokens: link targets (internal current tab, external new tab)', () => {
+	const ORIGIN = 'https://app.example.com';
+	const NEW_TAB = 'target="_blank" rel="noopener noreferrer"';
+
+	function render(src: string, origin?: string | null): string {
+		const ir = parse(fm + '## S\n\n' + src);
+		return renderTokens(ir.tabs[0].tokens, origin === undefined ? {} : { origin });
+	}
+
+	it.each(['/documents/12', './x.md', 'notes/y', '?q=1', '../up'])(
+		'keeps relative link %s in the current tab',
+		(href) => {
+			const html = render(`[l](${href})`, ORIGIN);
+			expect(html).toContain(`<a href="${href}">l</a>`);
+			expect(html).not.toContain('target=');
+		}
+	);
+
+	it('keeps same-origin absolute links in the current tab', () => {
+		const html = render(`[l](${ORIGIN}/documents/12?x=1#s)`, ORIGIN);
+		expect(html).toContain(`<a href="${ORIGIN}/documents/12?x=1#s">l</a>`);
+		expect(html).not.toContain('target=');
+	});
+
+	it('opens cross-origin absolute links in a new tab', () => {
+		for (const href of [
+			'https://other.example.com/a',
+			'http://app.example.com/a',
+			'//cdn.example.org/x'
+		]) {
+			expect(render(`[l](${href})`, ORIGIN)).toContain(`<a href="${href}" ${NEW_TAB}>l</a>`);
+		}
+	});
+
+	it('opens mailto links in a new tab', () => {
+		expect(render('[mail](mailto:a@b.co)', ORIGIN)).toContain(
+			`<a href="mailto:a@b.co" ${NEW_TAB}>mail</a>`
+		);
+	});
+
+	it('keeps #anchor links in the current tab', () => {
+		const html = render('[s](#another-section)', ORIGIN);
+		expect(html).toContain('<a href="#another-section">s</a>');
+		expect(html).not.toContain('target=');
+	});
+
+	it('without a page origin, only relative links are internal', () => {
+		expect(render('[l](/documents/12)', null)).toContain('<a href="/documents/12">l</a>');
+		expect(render(`[l](${ORIGIN}/documents/12)`, null)).toContain(NEW_TAB);
+		// Default (node test env has no window) behaves the same.
+		expect(render(`[l](${ORIGIN}/documents/12)`)).toContain(NEW_TAB);
+		expect(render('[l](/documents/12)')).not.toContain('target=');
+	});
+
+	it('does not leak a decision into the cached token stream across renders', () => {
+		const ir = parse(fm + `## S\n\n[l](${ORIGIN}/a)`);
+		expect(renderTokens(ir.tabs[0].tokens, { origin: null })).toContain(NEW_TAB);
+		expect(renderTokens(ir.tabs[0].tokens, { origin: ORIGIN })).not.toContain('target=');
 	});
 });
