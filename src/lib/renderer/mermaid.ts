@@ -48,14 +48,15 @@ export function buildClassDefs(colors: ThemeColors, textColor: string): string {
  * grammar (sequence, gantt, pie, …) rejects the line and mermaid draws its
  * error diagram instead, so those sources pass through untouched.
  */
-const CLASSDEF_GRAMMAR = /^(flowchart|graph|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram)\b/;
+const CLASSDEF_GRAMMAR =
+	/^(flowchart|graph|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram|block(-beta)?|requirementDiagram|treemap(-beta)?)\b/;
 
 /**
  * Insert classDef lines into a mermaid source AFTER the diagram-type
  * declaration. Mermaid requires classDef to live inside a diagram context —
  * leading-position classDefs break the `flowchart`/`graph` parser in v11.x.
  * The declaration is the first line after mermaid's own `---` frontmatter and
- * any `%%` comment or directive lines; a grammar without `classDef` is
+ * any `%%` comment or (possibly multi-line) directive lines; a grammar without `classDef` is
  * returned unchanged.
  */
 export function injectClassDefs(source: string, classDefs: string): string {
@@ -66,7 +67,13 @@ export function injectClassDefs(source: string, classDefs: string): string {
 		if (end === -1) return lines.join('\n');
 		i = end + 1;
 	}
-	while (i < lines.length && (lines[i].trim() === '' || lines[i].trim().startsWith('%%'))) i++;
+	while (i < lines.length && (lines[i].trim() === '' || lines[i].trim().startsWith('%%'))) {
+		// A `%%{ … }%%` directive may span lines; skip through its closing `}%%`.
+		if (lines[i].trim().startsWith('%%{') && !lines[i].includes('}%%')) {
+			while (i < lines.length && !lines[i].includes('}%%')) i++;
+		}
+		i++;
+	}
 	if (i === lines.length || !CLASSDEF_GRAMMAR.test(lines[i].trim())) return lines.join('\n');
 	lines.splice(i + 1, 0, classDefs);
 	return lines.join('\n');

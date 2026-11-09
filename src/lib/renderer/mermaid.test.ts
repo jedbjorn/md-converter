@@ -9,7 +9,12 @@ describe('injectClassDefs', () => {
 		['flowchart TD\n  A --> B'],
 		['classDiagram\n  class Doc'],
 		['stateDiagram-v2\n  [*] --> Draft'],
-		['erDiagram\n  A ||--o{ B : has']
+		['erDiagram\n  A ||--o{ B : has'],
+		['block\n  columns 2\n  a b'],
+		['block-beta\n  columns 2\n  a b'],
+		['requirementDiagram\n  requirement r1 {\n  id: 1\n  }'],
+		['treemap\n  "Root"\n    "Leaf": 10'],
+		['treemap-beta\n  "Root"\n    "Leaf": 10']
 	])('injects after the declaration of a classDef grammar: %s', (source) => {
 		const [declaration, ...rest] = source.split('\n');
 		expect(injectClassDefs(source, DEFS)).toBe([declaration, DEFS, ...rest].join('\n'));
@@ -32,6 +37,15 @@ describe('injectClassDefs', () => {
 				DEFS +
 				'\n  A --> B'
 		);
+	});
+
+	it('skips the continuation lines of a multi-line directive', () => {
+		const directive = '%%{init: {\n  "theme": "base",\n  "flowchart": {"curve": "basis"}\n}}%%';
+		expect(injectClassDefs(`${directive}\ngraph LR\n  A --> B`, DEFS)).toBe(
+			`${directive}\ngraph LR\n${DEFS}\n  A --> B`
+		);
+		const pieSource = `%%{init: {\n  "pie": {"textPosition": 0.5}\n}}%%\npie\n  "a" : 1`;
+		expect(injectClassDefs(pieSource, DEFS)).toBe(pieSource);
 	});
 
 	it('does not mistake a frontmatter title for the declaration', () => {
