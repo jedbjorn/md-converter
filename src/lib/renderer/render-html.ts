@@ -1,6 +1,12 @@
 import MarkdownIt from 'markdown-it';
 import type Token from 'markdown-it/lib/token.mjs';
 import type { ClassName, LinearStep, StatCard } from '../parser/types';
+import { currentOrigin, opensInNewTab } from './link-target';
+
+/** Render options. `origin` overrides the page origin used to classify links (null = none). */
+export interface RenderEnv {
+	origin?: string | null;
+}
 
 const md = new MarkdownIt({ html: false, linkify: true });
 const esc = md.utils.escapeHtml;
@@ -11,17 +17,23 @@ md.renderer.rules.callout_open = (tokens, idx) => {
 };
 md.renderer.rules.callout_close = () => '</div>';
 
-// Open rendered-document links in a separate tab by default. Fragment-only
-// links stay in the current tab because the app uses the hash to select the
-// matching document section.
-md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+// Decision per link (see link-target.ts): external links (another origin, or a
+// non-http scheme such as mailto:) open in a new tab; relative and same-origin
+// links stay in the current tab, as do fragment-only links, which the app uses
+// to select the matching document section.
+md.renderer.rules.link_open = (tokens, idx, options, env: RenderEnv, self) => {
 	const token = tokens[idx];
 	const href = token.attrGet('href') ?? '';
-	if (href && !href.startsWith('#')) {
-		token.attrSet('target', '_blank');
-		token.attrSet('rel', 'noopener noreferrer');
-	}
-	return self.renderToken(tokens, idx, options);
+	const origin = env && env.origin !== undefined ? env.origin : currentOrigin();
+	if (!opensInNewTab(href, origin)) return self.renderToken(tokens, idx, options);
+	// Add the attributes for this render only: the token stream is cached and
+	// re-rendered (doc and deck views), so it must not keep a stale decision.
+	const saved = token.attrs ? token.attrs.slice() : null;
+	token.attrSet('target', '_blank');
+	token.attrSet('rel', 'noopener noreferrer');
+	const html = self.renderToken(tokens, idx, options);
+	token.attrs = saved;
+	return html;
 };
 
 md.renderer.rules.stats_block = (tokens, idx) => {
@@ -150,6 +162,6 @@ md.renderer.rules.list_item_close = (tokens, idx, options, env, self) => {
  * Render a sub-stream of markdown-it tokens to HTML, applying our custom
  * rules. Used per-tab on the IR's token arrays.
  */
-export function renderTokens(tokens: Token[]): string {
-	return md.renderer.render(tokens, md.options, {});
+export function renderTokens(tokens: Token[], env: RenderEnv = {}): string {
+	return md.renderer.render(tokens, md.options, { ...env });
 }
