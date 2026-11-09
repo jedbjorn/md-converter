@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { injectClassDefs } from './mermaid';
+import { injectClassDefs, isGantt, tickLabelsToKeep } from './mermaid';
 
 const DEFS = 'classDef class1 fill:#fff;';
 
@@ -55,5 +55,85 @@ describe('injectClassDefs', () => {
 
 	it('appends to a declaration-only source', () => {
 		expect(injectClassDefs('  graph LR  ', DEFS)).toBe(`graph LR\n${DEFS}`);
+	});
+});
+
+describe('isGantt', () => {
+	it.each([
+		['gantt\n  dateFormat YYYY-MM-DD'],
+		['  gantt  '],
+		['---\ntitle: Plan\n---\n%%{init: {"gantt": {"barHeight": 20}}}%%\ngantt\n  section A'],
+		['%%{init: {\n  "gantt": {"topAxis": true}\n}}%%\ngantt\n  section A']
+	])('recognises a gantt declaration: %s', (source) => {
+		expect(isGantt(source)).toBe(true);
+	});
+
+	it.each([
+		['graph LR\n  A --> B'],
+		['---\ntitle: gantt of work\n---\npie\n  "a" : 1'],
+		['%% gantt\nsequenceDiagram\n  A->>B: hi'],
+		['ganttish\n  x'],
+		['---\ntitle: never closed\ngantt']
+	])('rejects a non-gantt source: %s', (source) => {
+		expect(isGantt(source)).toBe(false);
+	});
+});
+
+describe('tickLabelsToKeep', () => {
+	// Labels 50px wide, one every `step` px from 0.
+	const axis = (texts: string[], step: number) =>
+		texts.map((text, k) => ({ left: k * step, right: k * step + 50, text }));
+	const days = (n: number) =>
+		Array.from({ length: n }, (_, k) => `2026-11-${String(k + 1).padStart(2, '0')}`);
+
+	it('keeps every label when they already clear each other', () => {
+		expect(tickLabelsToKeep(axis(days(5), 60))).toEqual([true, true, true, true, true]);
+	});
+
+	it('keeps the smallest even stride of labels that clears the gap', () => {
+		// 30px apart: every 2nd label is 60px apart, clear of the 50px label + 4px gap.
+		expect(tickLabelsToKeep(axis(days(7), 30))).toEqual([
+			true,
+			false,
+			true,
+			false,
+			true,
+			false,
+			true
+		]);
+		// 20px apart: every 2nd (40px) still collides; every 3rd (60px) clears.
+		expect(tickLabelsToKeep(axis(days(7), 20))).toEqual([
+			true,
+			false,
+			false,
+			true,
+			false,
+			false,
+			true
+		]);
+	});
+
+	it('drops a label that repeats the previous one before choosing the stride', () => {
+		const halfDays = ['2026-11-01', '2026-11-01', '2026-11-02', '2026-11-02', '2026-11-03'];
+		expect(tickLabelsToKeep(axis(halfDays, 60))).toEqual([true, false, true, false, true]);
+	});
+
+	it('leaves kept neighbours at least the gap apart', () => {
+		const labels = axis(days(12), 13);
+		const keep = tickLabelsToKeep(labels);
+		const kept = labels.filter((_, k) => keep[k]);
+		expect(kept.length).toBeGreaterThan(1);
+		for (let j = 1; j < kept.length; j++) {
+			expect(kept[j].left).toBeGreaterThanOrEqual(kept[j - 1].right + 4);
+		}
+	});
+
+	it('keeps only the first label when no two fit, and handles an empty axis', () => {
+		const crowded = [
+			{ left: 0, right: 50, text: 'a' },
+			{ left: 10, right: 60, text: 'b' }
+		];
+		expect(tickLabelsToKeep(crowded)).toEqual([true, false]);
+		expect(tickLabelsToKeep([])).toEqual([]);
 	});
 });

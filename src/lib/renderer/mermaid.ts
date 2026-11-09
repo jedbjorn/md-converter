@@ -11,7 +11,12 @@ import type { ThemeColors } from '../themes/types';
  * mid-tone in light themes (legible against the bg) and a mid-tone in dark
  * themes (the previous "edges disappear into the bg" failure mode).
  */
-function configure(colors: ThemeColors, textColor: string, themeMode: 'light' | 'dark') {
+function configure(
+	colors: ThemeColors,
+	textColor: string,
+	themeMode: 'light' | 'dark',
+	ganttWidth?: number
+) {
 	mermaid.initialize({
 		startOnLoad: false,
 		theme: themeMode === 'dark' ? 'dark' : 'base',
@@ -23,7 +28,8 @@ function configure(colors: ThemeColors, textColor: string, themeMode: 'light' | 
 			mainBkg: colors.bg,
 			edgeLabelBackground: colors.bg,
 			fontSize: '15px'
-		}
+		},
+		...(ganttWidth ? { gantt: { useWidth: ganttWidth } } : {})
 	});
 }
 
@@ -52,19 +58,15 @@ const CLASSDEF_GRAMMAR =
 	/^(flowchart|graph|classDiagram(-v2)?|stateDiagram(-v2)?|erDiagram|block(-beta)?|requirementDiagram|treemap(-beta)?)\b/;
 
 /**
- * Insert classDef lines into a mermaid source AFTER the diagram-type
- * declaration. Mermaid requires classDef to live inside a diagram context —
- * leading-position classDefs break the `flowchart`/`graph` parser in v11.x.
- * The declaration is the first line after mermaid's own `---` frontmatter and
- * any `%%` comment or (possibly multi-line) directive lines; a grammar without `classDef` is
- * returned unchanged.
+ * Index of the diagram-type declaration line: the first line after mermaid's
+ * own `---` frontmatter and any `%%` comment or (possibly multi-line)
+ * directive lines. -1 when there is none (or the frontmatter never closes).
  */
-export function injectClassDefs(source: string, classDefs: string): string {
-	const lines = source.trim().split('\n');
+function declarationIndex(lines: string[]): number {
 	let i = 0;
 	if (lines[0].trim() === '---') {
 		const end = lines.findIndex((line, j) => j > 0 && line.trim() === '---');
-		if (end === -1) return lines.join('\n');
+		if (end === -1) return -1;
 		i = end + 1;
 	}
 	while (i < lines.length && (lines[i].trim() === '' || lines[i].trim().startsWith('%%'))) {
@@ -74,9 +76,102 @@ export function injectClassDefs(source: string, classDefs: string): string {
 		}
 		i++;
 	}
-	if (i === lines.length || !CLASSDEF_GRAMMAR.test(lines[i].trim())) return lines.join('\n');
+	return i === lines.length ? -1 : i;
+}
+
+/**
+ * Insert classDef lines into a mermaid source AFTER the diagram-type
+ * declaration. Mermaid requires classDef to live inside a diagram context —
+ * leading-position classDefs break the `flowchart`/`graph` parser in v11.x.
+ * A grammar without `classDef` is returned unchanged.
+ */
+export function injectClassDefs(source: string, classDefs: string): string {
+	const lines = source.trim().split('\n');
+	const i = declarationIndex(lines);
+	if (i === -1 || !CLASSDEF_GRAMMAR.test(lines[i].trim())) return lines.join('\n');
 	lines.splice(i + 1, 0, classDefs);
 	return lines.join('\n');
+}
+
+/** True when the source declares a gantt chart (past frontmatter and `%%` lines). */
+export function isGantt(source: string): boolean {
+	const lines = source.trim().split('\n');
+	const i = declarationIndex(lines);
+	return i !== -1 && /^gantt\b/.test(lines[i].trim());
+}
+
+export interface TickLabel {
+	left: number;
+	right: number;
+	text: string;
+}
+
+/**
+ * Which axis tick labels (ordered left to right) to keep. Mermaid's gantt axis
+ * lets d3 choose ~10 ticks however narrow the chart is (and honours an
+ * author's `tickInterval` however dense), so in a narrow pane its date labels
+ * run into each other; sub-day ticks under a day-resolution format also repeat
+ * the same date. A label that repeats the one before it is dropped, then every
+ * `stride`-th remaining label is kept, with the smallest stride that leaves at
+ * least `gap` px between neighbours — so the labels that stay are evenly
+ * spaced. Only labels are dropped; ticks and grid lines stay where the axis
+ * put them.
+ */
+export function tickLabelsToKeep(labels: TickLabel[], gap = 4): boolean[] {
+	const distinct = labels
+		.map((_, k) => k)
+		.filter((k) => k === 0 || labels[k].text !== labels[k - 1].text);
+	let kept = distinct.slice(0, 1);
+	for (let stride = 1; stride <= distinct.length; stride++) {
+		const candidate = distinct.filter((_, j) => j % stride === 0);
+		const clear = candidate.every(
+			(k, j) => j === 0 || labels[k].left >= labels[candidate[j - 1]].right + gap
+		);
+		if (clear) {
+			kept = candidate;
+			break;
+		}
+	}
+	return labels.map((_, k) => kept.includes(k));
+}
+
+/**
+ * Hide the gantt axis labels `tickLabelsToKeep` drops. Measures the laid-out
+ * labels, so an axis inside a hidden panel (all boxes empty) is left alone;
+ * the pages re-render when that panel is shown.
+ */
+function thinGanttAxisLabels(root: ParentNode) {
+	const axes = root.querySelectorAll('svg[aria-roledescription="gantt"] g.grid');
+	for (const axis of axes) {
+		const texts = [...axis.querySelectorAll<SVGTextElement>('.tick text')];
+		const labels = texts.map((t) => {
+			const box = t.getBoundingClientRect();
+			return { left: box.left, right: box.right, text: t.textContent ?? '' };
+		});
+		if (labels.every((l) => l.right - l.left === 0)) continue;
+		tickLabelsToKeep(labels).forEach((keep, k) => {
+			if (!keep) texts[k].setAttribute('visibility', 'hidden');
+		});
+	}
+}
+
+/**
+ * Width available to a diagram inside its `.mermaid` node, or undefined when
+ * the node is not laid out (a hidden tab or slide).
+ */
+function contentWidth(node: HTMLElement): number | undefined {
+	const style = getComputedStyle(node);
+	const width =
+		node.clientWidth - parseFloat(style.paddingLeft || '0') - parseFloat(style.paddingRight || '0');
+	return width > 0 ? Math.floor(width) : undefined;
+}
+
+async function runMermaid(nodes: HTMLElement[]) {
+	try {
+		await mermaid.run({ nodes });
+	} catch (err) {
+		console.warn('mermaid render failed', err);
+	}
 }
 
 /**
@@ -92,13 +187,14 @@ export async function renderMermaidAll(
 	if (typeof document === 'undefined') return;
 	configure(colors, textColor, themeMode);
 
-	const nodes = document.querySelectorAll<HTMLElement>('.mermaid');
+	const nodes = [...document.querySelectorAll<HTMLElement>('.mermaid')];
 	const classDefs = buildClassDefs(colors, textColor);
+	const gantts: HTMLElement[] = [];
 
 	for (const node of nodes) {
-		const original =
-			node.dataset.original ?? (node.textContent || '').trim();
+		const original = node.dataset.original ?? (node.textContent || '').trim();
 		if (!node.dataset.original) node.dataset.original = original;
+		if (isGantt(original)) gantts.push(node);
 
 		// Reset to source form so mermaid can re-process
 		node.innerHTML = '';
@@ -106,12 +202,22 @@ export async function renderMermaidAll(
 		node.textContent = injectClassDefs(original, classDefs);
 	}
 
-	if (nodes.length > 0) {
-		try {
-			await mermaid.run({ querySelector: '.mermaid' });
-		} catch (err) {
-			console.warn('mermaid render failed', err);
-		}
+	const others = nodes.filter((node) => !gantts.includes(node));
+	if (others.length > 0) await runMermaid(others);
+
+	// Gantt lays its time axis across the width of the svg's parent at draw
+	// time. Every theme centres `.mermaid` as a flex box, which makes that
+	// parent a shrink-to-fit flex item measuring 300px whatever the page width,
+	// so the whole axis was squeezed into 300px and its labels overlapped. Hand
+	// each gantt the width its `.mermaid` node actually has instead, one run per
+	// chart since the width is site config.
+	for (const node of gantts) {
+		configure(colors, textColor, themeMode, contentWidth(node));
+		await runMermaid([node]);
+	}
+	if (gantts.length > 0) {
+		configure(colors, textColor, themeMode);
+		thinGanttAxisLabels(document);
 	}
 }
 
