@@ -121,5 +121,7 @@
 		<a href="/privacy">Privacy Policy</a>
 		·
 		<a href="/">Back to app</a>
+		·
+		<a href="https://designs-os.com/">Designs/OS</a>
 	</footer>
 </main>
