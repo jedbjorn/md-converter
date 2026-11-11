@@ -261,6 +261,8 @@
 			<a href="/privacy">Privacy</a>
 			<span aria-hidden="true">·</span>
 			<a href="/terms">Terms</a>
+			<span aria-hidden="true">·</span>
+			<a href="https://designs-os.com/">Designs/OS</a>
 		</nav>
 	</footer>
 </aside>

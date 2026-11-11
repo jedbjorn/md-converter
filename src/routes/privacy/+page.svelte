@@ -149,5 +149,7 @@
 		<a href="/terms">Terms of Service</a>
 		·
 		<a href="/">Back to app</a>
+		·
+		<a href="https://designs-os.com/">Designs/OS</a>
 	</footer>
 </main>
