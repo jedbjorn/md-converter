@@ -11,14 +11,14 @@
 	<header>
 		<a href="/" class="back">← Back to app</a>
 		<h1>Privacy Policy</h1>
-		<p class="meta">Effective date: 26 May 2026 · Last reviewed: 26 May 2026</p>
+		<p class="meta">Effective date: 26 May 2026 · Last reviewed: 11 November 2026</p>
 	</header>
 
 	<section>
-		<h2>1. Controller</h2>
+		<h2>1. Operator</h2>
 		<p>
 			This site (<code>md-converter.designs-os.com</code>) is operated by
-			<strong>Designs-OS</strong> ("we", "us"). Privacy queries and data-subject requests
+			<strong>Designs-OS</strong> ("we", "us"). Privacy queries and requests
 			can be sent via the project issue tracker at
 			<a href="https://github.com/jedbjorn/md-converter/issues" rel="noopener">
 				github.com/jedbjorn/md-converter/issues</a>.
@@ -50,9 +50,7 @@
 			We persist a single key, <code>md-converter-config-v1</code>, in your browser's
 			<code>localStorage</code>. It holds the active theme and your colour/font overrides
 			so that they survive a page refresh. No personal data, no identifier, no tracking
-			value. You can delete it at any time via your browser's site-data controls. Under
-			the ePrivacy Directive this is classed as strictly necessary for the functionality
-			you requested and does not require prior consent.
+			value. You can delete it at any time via your browser's site-data controls.
 		</p>
 
 		<h3>3.3 Hosting and access logs (Cloudflare)</h3>
@@ -65,8 +63,6 @@
 			<a href="https://www.cloudflare.com/privacypolicy/" rel="noopener">Privacy Policy</a>
 			and
 			<a href="https://www.cloudflare.com/cloudflare-customer-dpa/" rel="noopener">Data Processing Addendum</a>.
-			Legal basis: legitimate interest in operating a secure, available service
-			(GDPR Art. 6(1)(f)).
 		</p>
 
 		<h3>3.4 Third-party fonts (Google Fonts)</h3>
@@ -75,8 +71,7 @@
 			<code>fonts.gstatic.com</code>). Loading these files causes your browser to send
 			your IP address and user-agent to Google LLC (United States), as covered by
 			<a href="https://policies.google.com/privacy" rel="noopener">Google's Privacy Policy</a>.
-			Legal basis: legitimate interest in presenting the chosen visual theme as designed
-			(GDPR Art. 6(1)(f)). If you would prefer not to load fonts from Google, your browser
+			If you would prefer not to load fonts from Google, your browser
 			or a browser extension can block requests to those domains; the app remains
 			functional, with system fonts as the fallback.
 		</p>
@@ -96,10 +91,8 @@
 	<section>
 		<h2>5. International transfers</h2>
 		<p>
-			Cloudflare and Google may process traffic on infrastructure located outside the
-			European Economic Area, including the United States. Transfers rely on the
-			European Commission's Standard Contractual Clauses and, where applicable, the
-			EU–US Data Privacy Framework.
+			Cloudflare and Google may process traffic on infrastructure located in other
+			countries, including the United States.
 		</p>
 	</section>
 
@@ -114,16 +107,13 @@
 	</section>
 
 	<section>
-		<h2>7. Your rights under the GDPR</h2>
+		<h2>7. Your rights</h2>
 		<p>
-			Where Designs-OS acts as a controller, you have the right to: access, rectify,
-			erase, restrict processing of, port, and object to the processing of, your
-			personal data. As we hold no personal data about you ourselves, in practice these
-			rights are exercised against the processors named above (Cloudflare, Google) under
-			their own policies. You are also entitled to lodge a complaint with the French
-			data-protection authority,
-			<a href="https://www.cnil.fr/" rel="noopener">CNIL</a>, or with the supervisory
-			authority of your EU/EEA member state.
+			Where Designs-OS holds personal data about you, you have the right to: access,
+			rectify, erase, restrict processing of, port, and object to the processing of,
+			your personal data. As we hold no personal data about you ourselves, in practice
+			these rights are exercised against the providers named above (Cloudflare, Google)
+			under their own policies.
 		</p>
 	</section>
 

@@ -11,7 +11,7 @@
 	<header>
 		<a href="/" class="back">← Back to app</a>
 		<h1>Terms of Service</h1>
-		<p class="meta">Effective date: 26 May 2026 · Last reviewed: 26 May 2026</p>
+		<p class="meta">Effective date: 26 May 2026 · Last reviewed: 11 November 2026</p>
 	</header>
 
 	<section>
@@ -98,18 +98,7 @@
 	</section>
 
 	<section>
-		<h2>9. Governing law and jurisdiction</h2>
-		<p>
-			These Terms are governed by the laws of <strong>France</strong>, without regard
-			to its conflict-of-laws principles. Subject to any mandatory consumer-protection
-			rights you have in your country of residence, the courts of <strong>Paris,
-			France</strong> shall have exclusive jurisdiction over any dispute arising out of
-			or in connection with these Terms or the Service.
-		</p>
-	</section>
-
-	<section>
-		<h2>10. Contact</h2>
+		<h2>9. Contact</h2>
 		<p>
 			Questions about these Terms can be raised via the project issue tracker at
 			<a href="https://github.com/jedbjorn/md-converter/issues" rel="noopener">
