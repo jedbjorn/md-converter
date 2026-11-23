@@ -370,10 +370,35 @@
 		downloadFile(`${filename}.html`, html, 'text/html');
 		showToast('HTML exported');
 	}
+
+	const SITE_TITLE = 'md-converter – Themed Markdown to Styled, Shareable HTML';
+	const SITE_DESCRIPTION =
+		'Turn Markdown into a styled, shareable HTML document in your browser. Nine themes, live color and type controls, share links and standalone HTML export. Free and open source.';
+	const SITE_JSON_LD =
+		'{"@context":"https://schema.org","@type":"SoftwareApplication","@id":"https://md-converter.designs-os.com/#app","name":"md-converter","url":"https://md-converter.designs-os.com/","description":"A free, open-source web app that renders themed Markdown into styled, shareable HTML, with nine themes, share links and standalone HTML export.","applicationCategory":"DeveloperApplication","operatingSystem":"Web browser","license":"https://opensource.org/licenses/MIT","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"screenshot":"https://md-converter.designs-os.com/og-image.png","sameAs":"https://github.com/jedbjorn/md-converter","publisher":{"@type":"Organization","@id":"https://designs-os.com/#org","name":"Designs/OS","url":"https://designs-os.com/"}}';
 </script>
 
 <svelte:head>
-	<title>{ir.title}</title>
+	<!-- The demo is what search engines see, so it carries the app's own title;
+	     a loaded document shows its title instead. -->
+	<title>{currentSource === demoSource ? SITE_TITLE : `${ir.title} · md-converter`}</title>
+	<meta name="description" content={SITE_DESCRIPTION} />
+	<meta name="robots" content="index, follow, max-image-preview:large" />
+	<link rel="canonical" href="https://md-converter.designs-os.com/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="md-converter" />
+	<meta property="og:title" content={SITE_TITLE} />
+	<meta property="og:description" content={SITE_DESCRIPTION} />
+	<meta property="og:url" content="https://md-converter.designs-os.com/" />
+	<meta property="og:image" content="https://md-converter.designs-os.com/og-image.png" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta
+		property="og:image:alt"
+		content="md-converter showing a Markdown document rendered in the dossier theme"
+	/>
+	<meta name="twitter:card" content="summary_large_image" />
+	{@html `<script type="application/ld+json">${SITE_JSON_LD}</` + `script>`}
 </svelte:head>
 
 {#if layout === 'deck'}
